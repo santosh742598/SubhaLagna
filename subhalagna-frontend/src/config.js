@@ -26,7 +26,7 @@ export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5
  * Application version.
  * @type {string}
  */
-export const APP_VERSION = '2.0.5';
+export const APP_VERSION = '2.0.6';
 
 /**
  * App name constant (used across the app for branding).

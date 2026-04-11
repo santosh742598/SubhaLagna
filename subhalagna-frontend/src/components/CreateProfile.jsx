@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { STATES, LOCATION_DATA } from '../data/locationData.js';
 import { API_BASE_URL } from '../config';
+import CaptureModal from './CaptureModal';
 
 // ─── Floating Heart Component ────────────────────────────────────────────────
 const FloatingHeart = ({ style, size = 'sm' }) => {
@@ -156,6 +157,7 @@ const CreateProfile = () => {
   const [profilePhotoPreview, setProfilePhotoPreview] = useState(null);
   const [additionalFiles, setAdditionalFiles] = useState([]);
   const [additionalPreviews, setAdditionalPreviews] = useState([]);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   useEffect(() => { if (user?.name && !formData.name) setFormData(prev => ({ ...prev, name: user.name })); }, [user]);
 
@@ -180,6 +182,12 @@ const CreateProfile = () => {
     if (target === 'profile') { const f = files[0]; if (f) { setProfilePhoto(f); setProfilePhotoPreview(URL.createObjectURL(f)); } }
     else { if (additionalFiles.length + files.length > 5) { alert("Maximum 5 additional photos."); return; } setAdditionalFiles(prev => [...prev, ...files]); setAdditionalPreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))]); }
   };
+
+  const handleCapture = (file) => {
+    setProfilePhoto(file);
+    setProfilePhotoPreview(URL.createObjectURL(file));
+  };
+
   const removePhoto = (i) => { setAdditionalFiles(prev => prev.filter((_, idx) => idx !== i)); setAdditionalPreviews(prev => prev.filter((_, idx) => idx !== i)); };
 
   const handleSubmit = async (e) => {
@@ -497,7 +505,7 @@ const CreateProfile = () => {
                         <span className="w-7 h-7 bg-rose-100 flex items-center justify-center rounded-lg text-rose-500 text-xs font-bold">1</span>
                         Primary Profile Photo
                       </label>
-                      <div className="flex justify-center">
+                      <div className="flex flex-col items-center gap-6">
                         <div
                           className="relative w-44 h-44 md:w-52 md:h-52 rounded-2xl border-2 border-dashed border-rose-300 flex flex-col items-center justify-center cursor-pointer hover:bg-rose-50/30 overflow-hidden transition-all group"
                           onClick={() => document.getElementById('profile-file').click()}>
@@ -517,6 +525,15 @@ const CreateProfile = () => {
                           )}
                           <input id="profile-file" type="file" className="hidden" accept="image/*" onChange={(e) => handlePhotoChange(e, 'profile')} />
                         </div>
+                        
+                        <button 
+                          type="button"
+                          onClick={() => setIsCameraOpen(true)}
+                          className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-xs hover:bg-rose-50 transition-all shadow-sm"
+                        >
+                          <CameraIcon />
+                          Take Photo with Camera
+                        </button>
                       </div>
                     </div>
 
@@ -587,6 +604,12 @@ const CreateProfile = () => {
           </div>
         </main>
       </div>
+
+      <CaptureModal 
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        onCapture={handleCapture}
+      />
     </>
   );
 };

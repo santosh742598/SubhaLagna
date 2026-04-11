@@ -13,6 +13,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { updateProfile as updateProfileService } from '../services/profileService';
 import { getMyInterests, respondToInterest } from '../services/interestService';
+import CaptureModal from './CaptureModal';
 
 // Re-using consistent Icon style from the app
 const Sparkles = ({ className }) => (
@@ -63,6 +64,7 @@ const ProfileDashboard = () => {
   const [galleryFiles, setGalleryFiles] = useState([]);
   const [galleryPreviews, setGalleryPreviews] = useState([]);
   const [removePhotos, setRemovePhotos] = useState([]);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -120,6 +122,11 @@ const ProfileDashboard = () => {
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleFileChange = (e) => setFile(e.target.files[0]);
+
+  const handleCapture = (file) => {
+    setFile(file);
+    setStatusMsg('Photo captured! Click "Update Profile" to save. ✨');
+  };
 
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files);
@@ -272,14 +279,23 @@ const ProfileDashboard = () => {
 
                  <div className="bg-rose-50/30 p-8 rounded-[2rem] border border-rose-100/50">
                    <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-6">Profile Photo</h3>
-                   <div className="flex items-center gap-8">
-                      <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-white shadow-xl">
-                         <img src={file ? URL.createObjectURL(file) : user.profile.profilePhoto} className="w-full h-full object-cover" alt="" />
-                      </div>
-                      <label className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm cursor-pointer hover:bg-rose-50">
-                         Change Photo
-                         <input type="file" onChange={handleFileChange} className="hidden" />
-                      </label>
+                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8">
+                       <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-white shadow-xl flex-shrink-0">
+                          <img src={file ? URL.createObjectURL(file) : user.profile.profilePhoto} className="w-full h-full object-cover" alt="" />
+                       </div>
+                       <div className="flex flex-wrap gap-4">
+                          <label className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm cursor-pointer hover:bg-rose-50 transition-all shadow-sm">
+                             Change Photo
+                             <input type="file" onChange={handleFileChange} className="hidden" />
+                          </label>
+                          <button 
+                            type="button" 
+                            onClick={() => setIsCameraOpen(true)}
+                            className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm hover:bg-rose-50 transition-all shadow-sm"
+                          >
+                             Take Photo
+                          </button>
+                       </div>
                    </div>
                  </div>
 
@@ -328,6 +344,12 @@ const ProfileDashboard = () => {
            )}
         </div>
       </div>
+
+      <CaptureModal 
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        onCapture={handleCapture}
+      />
     </div>
   );
 };
