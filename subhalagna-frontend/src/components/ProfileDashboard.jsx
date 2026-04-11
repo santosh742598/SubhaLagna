@@ -1,12 +1,14 @@
-/**
- * @fileoverview SubhaLagna v2.1.0 — User Dashboard
+ * @fileoverview SubhaLagna v2.2.0 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
  *                v2.1.0 changes:
  *                  - Integrated Guna Milan data management (Nakshatra/Pada editing)
  *                  - Automated Rashi calculation and locking based on Pada mapping
- *                  - Improved birth-details integrity for astrological matching
+ *                  - birth-details integrity for astrological matching
+ *                v2.2.0 changes:
+ *                  - Direct "Upgrade to Platinum" CTA for Gold members
  *                  - Enhanced Glassmorphism styling and performance
+ * @version       2.2.0
  */
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -64,6 +66,12 @@ const X = ({ className }) => (
 const ShieldCheck = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+);
+const Camera = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7a2 2 0 012-2h3.5l1-2h9l1 2H21a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+    <circle cx="12" cy="13" r="4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
   </svg>
 );
 
@@ -274,16 +282,22 @@ const ProfileDashboard = () => {
                        </p>
                     </div>
                     {user.premiumPlan === 'gold' && (
-                       <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] block mb-1">Contacts Left</span>
-                          <div className="flex items-end gap-2">
-                             <p className="text-2xl font-black text-white">{Math.max(0, 30 - (user.contactsViewed?.length || 0))}</p>
-                             <p className="text-[10px] text-slate-400 pb-1">out of 30</p>
-                          </div>
-                          <div className="w-full h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
-                             <div className="h-full bg-rose-500 transition-all duration-1000" style={{ width: `${Math.max(0, ((30 - (user.contactsViewed?.length || 0)) / 30) * 100)}%` }} />
-                          </div>
-                       </div>
+                       <>
+                         <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] block mb-1">Contacts Left</span>
+                            <div className="flex items-end gap-2">
+                               <p className="text-2xl font-black text-white">{Math.max(0, 30 - (user.contactsViewed?.length || 0))}</p>
+                               <p className="text-[10px] text-slate-400 pb-1">out of 30</p>
+                            </div>
+                            <div className="w-full h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
+                               <div className="h-full bg-rose-500 transition-all duration-1000" style={{ width: `${Math.max(0, ((30 - (user.contactsViewed?.length || 0)) / 30) * 100)}%` }} />
+                            </div>
+                         </div>
+                         <button onClick={() => window.location.href='/premium'} className="w-full py-3 mt-4 bg-white/10 hover:bg-white/20 text-white border border-rose-500/30 rounded-xl font-bold text-sm transition-all shadow-lg hover:border-rose-500/60 flex items-center justify-center gap-2">
+                            <span>Upgrade to Platinum</span>
+                            <span className="text-lg">✨</span>
+                         </button>
+                       </>
                     )}
                  </div>
                ) : (
@@ -376,6 +390,28 @@ const ProfileDashboard = () => {
                      </div>
 
                      <div className="space-y-6">
+                        <div className="bg-rose-50/30 p-6 rounded-[2rem] border border-rose-100/50">
+                          <h3 className="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-6">Profile Photo</h3>
+                          <div className="flex flex-col sm:flex-row items-center gap-6">
+                              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-white shadow-xl flex-shrink-0">
+                                 <img src={file ? URL.createObjectURL(file) : user.profile.profilePhoto} className="w-full h-full object-cover" alt="" />
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                 <label className="flex-1 text-center items-center justify-center gap-2 px-4 py-2.5 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-xs cursor-pointer hover:bg-rose-50 transition-all shadow-sm">
+                                    Change
+                                    <input type="file" onChange={handleFileChange} className="hidden" />
+                                 </label>
+                                 <button 
+                                   type="button" 
+                                   onClick={() => setIsCameraOpen(true)}
+                                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-xs hover:bg-rose-50 transition-all shadow-sm"
+                                 >
+                                    Camera
+                                 </button>
+                              </div>
+                          </div>
+                        </div>
+
                         <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Background</h3>
                         <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="Current City, State" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
                         <input type="text" name="education" value={formData.education} onChange={handleChange} placeholder="Highest Education" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
@@ -470,26 +506,39 @@ const ProfileDashboard = () => {
                      </div>
                   </div>
 
-                  <div className="bg-rose-50/30 p-8 rounded-[2rem] border border-rose-100/50">
-                    <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-6">Profile Photo</h3>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8">
-                        <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-white shadow-xl flex-shrink-0">
-                           <img src={file ? URL.createObjectURL(file) : user.profile.profilePhoto} className="w-full h-full object-cover" alt="" />
-                        </div>
-                        <div className="flex flex-wrap gap-4">
-                           <label className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm cursor-pointer hover:bg-rose-50 transition-all shadow-sm">
-                              Change Photo
-                              <input type="file" onChange={handleFileChange} className="hidden" />
-                           </label>
-                           <button 
-                             type="button" 
-                             onClick={() => setIsCameraOpen(true)}
-                             className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm hover:bg-rose-50 transition-all shadow-sm"
-                           >
-                              Take Photo
-                           </button>
-                        </div>
-                    </div>
+                  {/* ── Gallery Photos ── */}
+                  <div className="bg-rose-50/30 p-8 rounded-[2.5rem] border border-rose-100 mt-8 space-y-6">
+                     <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-2">Gallery Photos</h3>
+                     <p className="text-xs text-gray-400 mb-6 font-medium">Add up to 5 additional photos here to complete your profile.</p>
+                     
+                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                        {existingGallery.map((photoUrl, idx) => (
+                          <div key={idx} className="relative aspect-square rounded-xl overflow-hidden shadow-sm group border border-rose-100">
+                            <img src={photoUrl} className="w-full h-full object-cover" alt="Gallery" />
+                            <button type="button" onClick={() => handleRemoveExisting(photoUrl)}
+                              className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                        {galleryPreviews.map((src, idx) => (
+                          <div key={'new-'+idx} className="relative aspect-square rounded-xl overflow-hidden shadow-sm group border border-emerald-100">
+                            <img src={src} className="w-full h-full object-cover" alt="New Gallery" />
+                            <button type="button" onClick={() => handleRemoveNew(idx)}
+                              className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md">
+                              <X className="w-3 h-3" />
+                            </button>
+                            <div className="absolute bottom-0 left-0 right-0 bg-emerald-500 text-white text-[9px] text-center font-bold py-0.5">NEW</div>
+                          </div>
+                        ))}
+                        {(existingGallery.length + galleryFiles.length) < 5 && (
+                          <label className="cursor-pointer aspect-square rounded-xl border-2 border-dashed border-rose-200 flex flex-col items-center justify-center text-rose-400 hover:bg-rose-50/50 transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center mb-1"><Camera className="w-4 h-4" /></div>
+                            <span className="text-[10px] font-bold">Add Photo</span>
+                            <input type="file" multiple accept="image/*" className="hidden" onChange={handleGalleryChange} />
+                          </label>
+                        )}
+                     </div>
                   </div>
 
                   <div className="pt-6">

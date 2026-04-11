@@ -107,7 +107,8 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validatePassword = (password) => {
-    const re = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&.])[A-Za-z\d@$!%*#?&.]{8,}$/;
+    // Backend requires at least 8 chars, at least 1 uppercase letter, at least 1 number.
+    const re = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
     return re.test(password);
   };
 
@@ -122,7 +123,7 @@ const Signup = () => {
       return;
     }
     if (!validatePassword(formData.password)) {
-      setErrorStr('Password must be at least 8 characters and include letters, numbers, and special characters.');
+      setErrorStr('Password must be at least 8 characters and include at least one uppercase letter and one number.');
       return;
     }
 
@@ -136,7 +137,8 @@ const Signup = () => {
       });
       navigate('/create-profile');
     } catch (err) {
-      setErrorStr(err.response?.data?.message || 'Sign up failed');
+      const specificError = err.response?.data?.errors?.[0]?.message;
+      setErrorStr(specificError || err.response?.data?.message || 'Sign up failed');
     } finally {
       setIsSubmitting(false);
     }

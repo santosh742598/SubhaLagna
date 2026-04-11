@@ -1,8 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.0.6 — Premium Membership & Payments
+ * @fileoverview SubhaLagna v2.2.0 — Premium Membership & Payments
  * @description   Dynamic membership selection with Coupon system, 
  *                Razorpay integration, and Bank Transfer support.
- * @version       2.1.0
+ *                v2.2.0 changes:
+ *                  - Active plan highlighting and upgrade hierarchy logic
+ *                  - Enhanced gateway error feedback to UI
+ * @version       2.2.0
  */
 
 import React, { useState, useEffect, useContext } from 'react';
@@ -20,7 +23,7 @@ import {
 import { BANK_DETAILS } from '../config';
 
 const PremiumMembership = () => {
-  const { user, token } = useContext(AuthContext);
+  const { user, token, refreshUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [plans, setPlans] = useState([]);
@@ -98,10 +101,10 @@ const PremiumMembership = () => {
 
       const orderResponse = await createPaymentOrder(plan.id, currentCoupon);
 
-      // ── Handle Zero Price Bypass ──
       if (orderResponse.isFree) {
         const confirm = await confirmFreeSubscription(plan.id, currentCoupon);
         if (confirm.success) {
+          await refreshUser(); // Update global auth context
           alert("🎉 Premium Activated Successfully!");
           navigate('/dashboard');
         }
@@ -126,8 +129,9 @@ const PremiumMembership = () => {
             };
             const verification = await verifyPayment(verifyData);
             if (verification.success) {
+              await refreshUser(); // Force refresh auth state seamlessly without full page reload
               alert("✨ Upgrade Successful! Welcome to Premium.");
-              window.location.href = '/dashboard'; // Force refresh auth state
+              navigate('/dashboard');
             }
           } catch (err) {
             alert("Payment verification failed. Please contact support.");
@@ -205,7 +209,11 @@ const PremiumMembership = () => {
 
       {/* Plans Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-        {plans.map((plan) => {
+        {plans.map((plan, idx) => {
+          const currentPlanIndex = plans.findIndex(p => p.id === user?.premiumPlan);
+          const isDowngrade = currentPlanIndex !== -1 && idx < currentPlanIndex;
+          const isCurrentPlan = plan.id === user?.premiumPlan;
+          
           const isSelected = appliedCoupon?.targetPlanId === plan.id;
           const priceToShow = isSelected ? appliedCoupon.discountedPrice : plan.price;
           const hasDiscount = isSelected && appliedCoupon.discountAmount > 0;
@@ -214,12 +222,22 @@ const PremiumMembership = () => {
             <div 
               key={plan.id}
               className={`relative flex flex-col p-10 rounded-[3rem] border transition-all duration-500 hover:scale-[1.02] ${
-                plan.popular 
+                isCurrentPlan
+                  ? 'border-emerald-300 bg-emerald-50/10 ring-2 ring-emerald-200 shadow-2xl scale-105 z-20'
+                  : plan.popular 
                   ? 'border-rose-200 bg-rose-50/30 ring-1 ring-rose-100 shadow-2xl scale-105 z-10' 
                   : 'border-slate-100 bg-white shadow-xl'
               }`}
             >
-              {plan.popular && (
+              {isCurrentPlan ? (
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1 bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg border border-emerald-400">
+                  Current Plan
+                </span>
+              ) : isDowngrade ? (
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1 bg-gray-400 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">
+                  Included
+                </span>
+              ) : plan.popular && (
                 <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1 bg-rose-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">
                   Best Value
                 </span>
@@ -284,19 +302,21 @@ const PremiumMembership = () => {
                       setShowBankForm(true);
                     }
                   }}
-                  disabled={processing || (plan.id === 'free' && user?.isPremium)}
+                  disabled={processing || isCurrentPlan || isDowngrade || (plan.id === 'free' && user?.isPremium)}
                   className={`w-full py-5 rounded-2xl font-bold transition-all ${
-                    plan.id === 'free' && user?.isPremium
+                    isCurrentPlan
+                      ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-default shadow-sm'
+                      : isDowngrade || (plan.id === 'free' && user?.isPremium)
                       ? 'bg-gray-100 text-gray-400 cursor-default'
                       : plan.popular
                       ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-xl shadow-rose-200'
                       : 'bg-gray-900 text-white hover:bg-black'
                   } disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]`}
                 >
-                  {processing ? 'Processing...' : (plan.id === 'free' && user?.isPremium ? 'Already Applied' : `Get ${plan.name}`)}
+                  {processing ? 'Processing...' : isCurrentPlan ? '✔ Current Plan' : isDowngrade ? 'Already Unlocked' : (plan.id === 'free' && user?.isPremium ? 'Already Applied' : `Upgrade to ${plan.name}`)}
                 </button>
 
-                {plan.id !== 'free' && (
+                {plan.id !== 'free' && !isCurrentPlan && !isDowngrade && (
                   <div className="flex justify-center gap-4 mt-2">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input 

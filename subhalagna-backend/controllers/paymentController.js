@@ -2,8 +2,10 @@
  * @fileoverview SubhaLagna v2.0.0 — Payment & Subscription Controller
  * @description   Handles Razorpay order creation, payment verification, 
  *                and coupon logic. Supports zero-price logic for full discounts.
+ *                v2.2.0 changes:
+ *                  - Enhanced Razorpay error extraction and reporting
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version       2.2.0
  */
 
 const Razorpay = require('razorpay');
@@ -124,7 +126,9 @@ exports.createOrder = async (req, res) => {
       data: order,
     });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error("Razorpay Order Error:", err);
+    const errorMsg = err.error ? err.error.description || err.error.code : err.message;
+    res.status(500).json({ success: false, message: errorMsg || 'Gateway Error' });
   }
 };
 

@@ -19,8 +19,12 @@
  *                  - Data guards for missing horoscope details
  *                  - Precise Pada-to-Rashi resolution
  *
+ *                v2.2.0 changes:
+ *                  - Unified StorageService integration (Local/S3 toggle)
+ *                  - Automatic physical photo cleanup on update/delete
+ *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version       2.2.0
  */
 
 'use strict';
@@ -33,6 +37,7 @@ const Notification = require('../models/Notification');
 const sharp        = require('sharp');
 const path         = require('path');
 const fs           = require('fs');
+const storageService = require('../utils/storageService');
 const { enrichWithMatchScores } = require('../utils/matchingAlgorithm');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 const { calculateGunaMilan } = require('../utils/gunaMilanService');
@@ -68,35 +73,30 @@ const setupProfile = async (req, res, next) => {
     const defaultPhoto = gender === 'Male' ? '/uploads/man.png' : '/uploads/woman.png';
     let profilePhoto   = defaultPhoto;
     let additionalPhotos = [];
-
-    const uploadDir = path.join(__dirname, '..', 'uploads');
-
     // 1. Process Main Profile Photo (800x800 Square Crop)
     if (req.files?.['profilePhoto']?.[0]) {
       const file = req.files['profilePhoto'][0];
       const filename = `profile-${Date.now()}.webp`;
-      const outputPath = path.join(uploadDir, filename);
 
-      await sharp(file.buffer)
+      const buffer = await sharp(file.buffer)
         .resize(800, 800, { fit: 'cover' }) // Square crop
         .webp({ quality: 80 })
-        .toFile(outputPath);
+        .toBuffer();
 
-      profilePhoto = `/uploads/${filename}`;
+      profilePhoto = await storageService.uploadBuffer(buffer, filename);
     }
 
-    // 2. Process Additional Gallery Photos (Max 1200px wide)
     if (req.files?.['additionalPhotos']) {
       for (const file of req.files['additionalPhotos']) {
         const filename = `gallery-${Date.now()}-${Math.round(Math.random() * 1e6)}.webp`;
-        const outputPath = path.join(uploadDir, filename);
 
-        await sharp(file.buffer)
+        const buffer = await sharp(file.buffer)
           .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
           .webp({ quality: 80 })
-          .toFile(outputPath);
+          .toBuffer();
 
-        additionalPhotos.push(`/uploads/${filename}`);
+        const photoUrl = await storageService.uploadBuffer(buffer, filename);
+        additionalPhotos.push(photoUrl);
       }
     }
 
@@ -354,31 +354,34 @@ const updateProfile = async (req, res, next) => {
     if (req.files?.['profilePhoto']?.[0]) {
       const file = req.files['profilePhoto'][0];
       const filename = `profile-${Date.now()}.webp`;
-      const outputPath = path.join(path.join(__dirname, '..', 'uploads'), filename);
 
-      await sharp(file.buffer)
+      const buffer = await sharp(file.buffer)
         .resize(800, 800, { fit: 'cover' })
         .webp({ quality: 80 })
-        .toFile(outputPath);
+        .toBuffer();
 
-      updateData.profilePhoto = `/uploads/${filename}`;
+      // Delete old photo if it exists and isn't a default placeholder
+      if (profile.profilePhoto && !profile.profilePhoto.includes('man.png') && !profile.profilePhoto.includes('woman.png')) {
+          await storageService.deleteFile(profile.profilePhoto);
+      }
+
+      updateData.profilePhoto = await storageService.uploadBuffer(buffer, filename);
     }
 
     // Handle gallery photo additions with Sharp
     if (req.files?.['additionalPhotos']) {
       const newPhotos = [];
-      const uploadDir = path.join(__dirname, '..', 'uploads');
 
       for (const file of req.files['additionalPhotos']) {
         const filename = `gallery-${Date.now()}-${Math.round(Math.random() * 1e6)}.webp`;
-        const outputPath = path.join(uploadDir, filename);
 
-        await sharp(file.buffer)
+        const buffer = await sharp(file.buffer)
           .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
           .webp({ quality: 80 })
-          .toFile(outputPath);
+          .toBuffer();
 
-        newPhotos.push(`/uploads/${filename}`);
+        const photoUrl = await storageService.uploadBuffer(buffer, filename);
+        newPhotos.push(photoUrl);
       }
 
       const existing = profile.additionalPhotos || [];
@@ -388,6 +391,12 @@ const updateProfile = async (req, res, next) => {
     // Handle gallery photo deletions
     if (req.body.removePhotos) {
       const toRemove   = JSON.parse(req.body.removePhotos);
+      
+      // Physically delete files from storage
+      for (const photoUrl of toRemove) {
+          await storageService.deleteFile(photoUrl);
+      }
+
       const remaining  = (updateData.additionalPhotos || profile.additionalPhotos || [])
         .filter((p) => !toRemove.includes(p));
       updateData.additionalPhotos = remaining;

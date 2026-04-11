@@ -1,9 +1,12 @@
 /**
- * @fileoverview SubhaLagna v2.0.1 — Main Server Entry Point
+ * @fileoverview SubhaLagna v2.2.0 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
+ *                v2.2.0 changes:
+ *                  - Dynamic server domain logging based on NODE_ENV
+ *                  - Middleware stabilization for Express 5 compatibility
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version       2.2.0
  *
  * Architecture:
  *  ┌──────────────────────────────────────────┐
@@ -30,6 +33,7 @@ const { Server } = require('socket.io');
 const connectDB       = require('./config/db');
 const socketHandler   = require('./socket/socketHandler');
 const mongoSanitize = require('express-mongo-sanitize');
+const { version }     = require('./package.json');
 
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const {
@@ -82,8 +86,7 @@ app.use(
   })
 );
 
-// NoSQL Injection Protection
-app.use(mongoSanitize());
+
 
 // Strict CORS — only allow the configured frontend origin
 app.use(
@@ -105,6 +108,9 @@ if (process.env.NODE_ENV !== 'test') {
 app.use(express.json({ limit: '10kb' }));       // reject oversized JSON payloads
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
+// NoSQL Injection Protection
+app.use(mongoSanitize());
+
 // ── Static Files (uploaded images) ───────────────────────────────────────────
 app.use('/uploads', express.static('uploads'));
 
@@ -112,7 +118,7 @@ app.use('/uploads', express.static('uploads'));
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'SubhaLagna API v2.0.1 is running 🚀',
+    message: `SubhaLagna API v${version} is running 🚀`,
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
   });
@@ -128,6 +134,11 @@ app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/admin',         require('./routes/adminRoutes'));
 app.use('/api/payments',      require('./routes/paymentRoutes'));
 
+// ── Root Route ────────────────────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.redirect('/api/health');
+});
+
 // ── 404 Handler ───────────────────────────────────────────────────────────────
 app.use(notFound);
 
@@ -138,9 +149,13 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`\n🚀 SubhaLagna v2.0.1 Server`);
-  console.log(`   ✅ HTTP  → http://localhost:${PORT}`);
-  console.log(`   ✅ WS    → ws://localhost:${PORT}  (Socket.io)`);
+  const isProd = process.env.NODE_ENV === 'production';
+  const domain = isProd ? (process.env.BACKEND_URL || `http://<YOUR_PRODUCTION_DOMAIN>:${PORT}`) : `http://localhost:${PORT}`;
+  const wsDomain = isProd ? (process.env.BACKEND_URL ? process.env.BACKEND_URL.replace('http', 'ws') : `ws://<YOUR_PRODUCTION_DOMAIN>:${PORT}`) : `ws://localhost:${PORT}`;
+
+  console.log(`\n🚀 SubhaLagna v${version} Server`);
+  console.log(`   ✅ HTTP  → ${domain}`);
+  console.log(`   ✅ WS    → ${wsDomain}  (Socket.io)`);
   console.log(`   ✅ Env   → ${process.env.NODE_ENV || 'development'}\n`);
 });
 

@@ -155,8 +155,8 @@ const CreateProfile = () => {
   const [errorStr, setErrorStr] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: user?.name || '', gender: 'Male', dateOfBirth: '', religion: 'Hindu', caste: '',
-    rashi: '', nakshatra: '', pada: '',
+    name: user?.name || '', gender: 'Male', dateOfBirth: '', religion: 'Hindu', caste: '', motherTongue: '',
+    rashi: '', nakshatra: '', pada: '', gotra: '',
     location: '', currentState: '', currentCity: '', nativeState: '', nativeCity: '',
     education: '', profession: '', height: "5' 5\"", fatherName: '', motherName: '',
     siblings: '0', familyType: 'Nuclear', bio: '', partnerInterests: ''
@@ -224,12 +224,17 @@ const CreateProfile = () => {
     const consolidatedLocation = `${formData.currentCity}, ${formData.currentState}`;
     Object.keys(formData).forEach(key => { if (key === 'location') submitData.append(key, consolidatedLocation); else if (key !== 'partnerInterests') submitData.append(key, formData[key]); });
     submitData.append('traits', traits.join(', ')); submitData.append('interests', interests.join(', ')); submitData.append('partnerInterests', formData.partnerInterests);
+    if (formData.dateOfBirth) {
+      const birthDate = new Date(formData.dateOfBirth);
+      const computedAge = Math.abs(new Date(Date.now() - birthDate.getTime()).getUTCFullYear() - 1970);
+      submitData.append('age', computedAge);
+    }
     if (profilePhoto) submitData.append('profilePhoto', profilePhoto);
     additionalFiles.forEach(f => submitData.append('additionalPhotos', f));
     try {
       const res = await fetch(`${API_BASE_URL}/api/profiles/setup`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: submitData });
       const data = await res.json();
-      if (res.ok) { updateProfileContext(data); navigate('/matches'); } else setErrorStr(data.message || "Something went wrong.");
+      if (res.ok) { updateProfileContext(data); navigate('/matches'); } else setErrorStr(data.errors?.[0]?.message || data.message || "Something went wrong.");
     } catch { setErrorStr("Failed to connect to server."); }
     finally { setIsSubmitting(false); }
   };
@@ -351,7 +356,7 @@ const CreateProfile = () => {
                 {/* ═══ STEP 2 ═══ */}
                 {currentStep === 2 && (
                   <div className="space-y-7">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Religion</label>
                         <input type="text" name="religion" value={formData.religion} onChange={handleChange}
@@ -362,11 +367,16 @@ const CreateProfile = () => {
                         <input type="text" name="caste" value={formData.caste} onChange={handleChange}
                           placeholder="Optional" className={inputClasses} style={{ outline: 'none' }} />
                       </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Mother Tongue</label>
+                        <input type="text" name="motherTongue" value={formData.motherTongue} onChange={handleChange}
+                          placeholder="e.g. Odia, Hindi" className={inputClasses} style={{ outline: 'none' }} />
+                      </div>
                     </div>
 
                     <div className="pt-5 border-t border-rose-100/60">
                       <p className="text-xs font-bold text-rose-500 uppercase tracking-widest mb-4 ml-1">✨ Horoscope Details (Guna Milan)</p>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <select name="rashi" value={formData.rashi} onChange={handleChange} 
                           className={`${inputClasses} cursor-pointer ${formData.nakshatra && formData.pada ? 'bg-gray-100/50' : ''}`}
                           disabled={!!(formData.nakshatra && formData.pada)}>
@@ -384,6 +394,8 @@ const CreateProfile = () => {
                           <option value="3">3rd Pada</option>
                           <option value="4">4th Pada</option>
                         </select>
+                        <input type="text" name="gotra" value={formData.gotra} onChange={handleChange}
+                          placeholder="Gotra (Optional)" className={inputClasses} style={{ outline: 'none' }} />
                       </div>
                     </div>
 

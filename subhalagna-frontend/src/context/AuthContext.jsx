@@ -66,8 +66,8 @@ export const AuthProvider = ({ children }) => {
 
       try {
         setToken(savedToken);
-        const { user: fetchedUser, profile } = await getMe();
-        setUser({ ...fetchedUser, profile });
+        const { user: fetchedUser, profile, hasProfile } = await getMe();
+        setUser({ ...fetchedUser, profile, hasProfile });
       } catch {
         // Token invalid or expired and refresh failed → clear state
         localStorage.removeItem('accessToken');
@@ -164,8 +164,8 @@ export const AuthProvider = ({ children }) => {
    */
   const refreshUser = useCallback(async () => {
     try {
-      const { user: fetchedUser, profile } = await getMe();
-      setUser({ ...fetchedUser, profile });
+      const { user: fetchedUser, profile, hasProfile } = await getMe();
+      setUser({ ...fetchedUser, profile, hasProfile });
     } catch {
       // Silently fail — user stays logged in with stale data
     }

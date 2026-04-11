@@ -1,6 +1,6 @@
 {
   "name": "subhalagna-backend",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "SubhaLagna Matrimony Platform — RESTful API Backend with Socket.io",
   "main": "index.js",
   "scripts": {
@@ -19,11 +19,13 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1029.0",
+    "@aws-sdk/lib-storage": "^3.1029.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "crypto": "^1.0.1",
     "dotenv": "^17.3.1",
-    "express": "^5.2.1",
+    "express": "^4.21.2",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^7.5.0",
     "express-validator": "^7.2.1",
@@ -32,10 +34,11 @@
     "mongoose": "^9.3.3",
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^8.0.5",
     "razorpay": "^2.9.6",
     "sharp": "^0.34.5",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

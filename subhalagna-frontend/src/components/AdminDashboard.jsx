@@ -12,6 +12,15 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
+import {
+  getDashboardStats,
+  getAllUsers,
+  toggleSuspendUser,
+  toggleVerifyProfile,
+  deleteUser,
+  getAllCoupons,
+  createCoupon,
+  deleteCoupon,
   manualUpgradeUser,
   getPendingBankPayments,
   verifyBankPayment
@@ -52,14 +61,48 @@ const AdminDashboard = () => {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [upgradeForm, setUpgradeForm] = useState({ planId: 'gold', durationDays: '365' });
-
-  });
+  const [coupons, setCoupons] = useState([]);
+  const [newCoupon, setNewCoupon] = useState({ code: '', discountPercent: 10, expiryDate: '' });
 
   // Payments State
   const [pendingPayments, setPendingPayments] = useState([]);
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [verifyForm, setVerifyForm] = useState({ status: 'captured', adminRemarks: '' });
+
+  const handleManualUpgrade = async (e) => {
+    e.preventDefault();
+    try {
+      await manualUpgradeUser(selectedUser._id, upgradeForm);
+      setShowUpgradeModal(false);
+      fetchData(pagination.page);
+      alert('User upgraded successfully!');
+    } catch (err) {
+      alert(err);
+    }
+  };
+
+  const handleCreateCoupon = async (e) => {
+    e.preventDefault();
+    try {
+      await createCoupon(newCoupon);
+      setNewCoupon({ code: '', discountPercent: 10, expiryDate: '' });
+      fetchCoupons();
+      alert('Coupon created!');
+    } catch (err) {
+      alert(err);
+    }
+  };
+
+  const handleDeleteCoupon = async (id) => {
+    if (!window.confirm('Delete this coupon?')) return;
+    try {
+      await deleteCoupon(id);
+      fetchCoupons();
+    } catch (err) {
+      alert(err);
+    }
+  };
 
   const fetchData = async (page = 1) => {
     try {
@@ -274,9 +317,71 @@ const AdminDashboard = () => {
             )}
           </div>
         ) : (
-          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-             <h3 className="text-xl font-serif font-bold text-gray-800">Coupon Hub</h3>
-             <p className="p-20 text-center text-gray-400">Coupon management is active in the Coupons tab above.</p>
+          <div className="space-y-8">
+            <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+               <h3 className="text-xl font-serif font-bold text-gray-800 mb-6">Create New Coupon</h3>
+               <form onSubmit={handleCreateCoupon} className="flex flex-wrap items-end gap-4">
+                  <div className="flex-1 min-w-[200px]">
+                     <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Coupon Code</label>
+                     <input type="text" required placeholder="OFF50" value={newCoupon.code} onChange={e => setNewCoupon({...newCoupon, code: e.target.value.toUpperCase()})} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500" />
+                  </div>
+                  <div className="w-32">
+                     <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Discount %</label>
+                     <input type="number" required min="1" max="100" value={newCoupon.discountPercent} onChange={e => setNewCoupon({...newCoupon, discountPercent: e.target.value})} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500" />
+                  </div>
+                  <div className="flex-1 min-w-[200px]">
+                     <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Expiry Date</label>
+                     <input type="date" value={newCoupon.expiryDate} onChange={e => setNewCoupon({...newCoupon, expiryDate: e.target.value})} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500" />
+                  </div>
+                  <button type="submit" className="px-8 py-3 bg-gray-900 text-white rounded-xl font-bold shadow-xl shadow-gray-200 hover:scale-105 transition-all">Create Coupon</button>
+               </form>
+            </div>
+
+            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+               <div className="p-8 border-b border-gray-50">
+                  <h3 className="text-xl font-serif font-bold text-gray-800">Active Coupons</h3>
+               </div>
+               <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="bg-slate-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        <th className="px-8 py-4">Code</th>
+                        <th className="px-6 py-4">Discount</th>
+                        <th className="px-6 py-4">Status</th>
+                        <th className="px-6 py-4">Expiry</th>
+                        <th className="px-8 py-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {coupons.map((c) => {
+                        const isExpired = c.expiryDate && new Date(c.expiryDate) < new Date();
+                        return (
+                          <tr key={c._id}>
+                            <td className="px-8 py-5">
+                               <code className="text-sm font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-lg">{c.code}</code>
+                            </td>
+                            <td className="px-6 py-5 font-bold text-gray-700">{c.discountPercent}% OFF</td>
+                            <td className="px-6 py-5">
+                               <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${isExpired ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                                  {isExpired ? 'Expired' : 'Active'}
+                               </span>
+                            </td>
+                            <td className="px-6 py-5 text-xs text-gray-400">
+                               {c.expiryDate ? new Date(c.expiryDate).toLocaleDateString() : 'Never'}
+                            </td>
+                            <td className="px-8 py-5 text-right">
+                               <button onClick={() => handleDeleteCoupon(c._id)} className="text-rose-500 hover:text-rose-700 p-2"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {coupons.length === 0 && (
+                        <tr><td colSpan="5" className="p-20 text-center text-gray-400 italic">No coupons found. Create one to get started!</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+               </div>
+            </div>
           </div>
         )}
       </main>

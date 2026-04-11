@@ -12,6 +12,13 @@
 const express = require('express');
 const router  = express.Router();
 
+const {
+  getDashboardStats,
+  getAllUsers,
+  toggleSuspendUser,
+  toggleVerifyProfile,
+  deleteUser,
+  getAllCoupons,
   createCoupon,
   deleteCoupon,
   manualUpgradeUser,

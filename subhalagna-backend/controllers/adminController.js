@@ -326,6 +326,7 @@ const manualUpgradeUser = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 const getPendingPayments = async (req, res, next) => {
+  try {
     const payments = await Payment.find({ status: 'pending' })
       .populate('user', 'name email')
       .sort({ createdAt: -1 })
