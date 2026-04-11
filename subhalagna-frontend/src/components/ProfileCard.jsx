@@ -47,13 +47,24 @@ const ProfileCard = ({ profile, index }) => {
         {isBlurred && <PrivacyShield compact={true} />}
         
         {/* Compatibility Overlay */}
-        <div className="absolute top-4 right-4 z-10 transition-transform duration-500 group-hover:translate-z-0 group-hover:scale-110 group-hover:translate-y-[-4px]">
-          <div className="bg-white/90 backdrop-blur-md rounded-2xl px-3 py-1.5 flex flex-col items-center border border-white/20 shadow-lg animate-glow">
+        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 transition-transform duration-500 group-hover:translate-z-0 group-hover:scale-110 group-hover:translate-y-[-4px]">
+          {/* Behavioral Match Score */}
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl px-3 py-1.5 flex flex-col items-center border border-white/20 shadow-lg">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Match</span>
             <span className={`text-lg font-black leading-none ${matchScore > 85 ? 'text-emerald-500' : 'text-pink-500'}`}>
               {matchScore}%
             </span>
           </div>
+
+          {/* Guna Milan Score (Traditional) */}
+          {profile.gunaMilan && (
+            <div className="bg-rose-500/90 backdrop-blur-md rounded-2xl px-3 py-1.5 flex flex-col items-center border border-white/20 shadow-lg animate-glow">
+              <span className="text-[10px] font-bold text-white/70 uppercase tracking-tighter">Gunas</span>
+              <span className="text-lg font-black leading-none text-white">
+                {profile.gunaMilan.total}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Name & Basic Info Overlay */}

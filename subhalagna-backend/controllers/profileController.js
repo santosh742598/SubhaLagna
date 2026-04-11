@@ -30,6 +30,7 @@ const path         = require('path');
 const fs           = require('fs');
 const { enrichWithMatchScores } = require('../utils/matchingAlgorithm');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
+const { calculateGunaMilan } = require('../utils/gunaMilanService');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Create initial profile (Step 2 onboarding)

@@ -14,6 +14,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { updateProfile as updateProfileService } from '../services/profileService';
 import { getMyInterests, respondToInterest } from '../services/interestService';
+import { RASHIS, NAKSHATRAS, PADA_RASHI_MAP } from '../data/astrologyData.js';
 import CaptureModal from './CaptureModal';
 import { RAZORPAY_KEY_ID } from '../config';
 
@@ -120,6 +121,16 @@ const ProfileDashboard = () => {
       setInterestsList(user.profile.interests || []);
     }
   }, [user]);
+
+  // ── Auto-select Rashi based on Nakshatra + Pada ───────────────────────────
+  useEffect(() => {
+    if (formData.nakshatra && formData.pada) {
+      const correctRashi = PADA_RASHI_MAP[formData.nakshatra]?.[formData.pada];
+      if (correctRashi && formData.rashi !== correctRashi) {
+        setFormData(prev => ({ ...prev, rashi: correctRashi }));
+      }
+    }
+  }, [formData.nakshatra, formData.pada]);
 
   useEffect(() => {
     if (activeTab === 'interests') {
@@ -376,16 +387,24 @@ const ProfileDashboard = () => {
                              <Sparkles className="w-3 h-3 text-rose-400" /> Horoscope (Guna Milan)
                            </h3>
                            <div className="grid grid-cols-2 gap-4">
-                              <input type="text" name="rashi" value={formData.rashi} onChange={handleChange} placeholder="Rashi" className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
-                              <input type="text" name="nakshatra" value={formData.nakshatra} onChange={handleChange} placeholder="Nakshatra" className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                              <select name="rashi" value={formData.rashi} onChange={handleChange} 
+                                className={`w-full px-5 py-3.5 rounded-xl border border-gray-100 text-sm font-medium cursor-pointer ${formData.nakshatra && formData.pada ? 'bg-gray-100/50' : 'bg-gray-50/30'}`}
+                                disabled={!!(formData.nakshatra && formData.pada)}>
+                                <option value="">Select Rashi</option>
+                                {RASHIS.map(r => <option key={r} value={r}>{r}</option>)}
+                              </select>
+                              <select name="nakshatra" value={formData.nakshatra} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium cursor-pointer">
+                                <option value="">Select Nakshatra</option>
+                                {NAKSHATRAS.map(n => <option key={n} value={n}>{n}</option>)}
+                              </select>
                            </div>
                            <div className="grid grid-cols-2 gap-4">
-                              <select name="pada" value={formData.pada} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium">
+                              <select name="pada" value={formData.pada} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium cursor-pointer">
                                 <option value="">Select Pada</option>
-                                <option value="1">Pada 1</option>
-                                <option value="2">Pada 2</option>
-                                <option value="3">Pada 3</option>
-                                <option value="4">Pada 4</option>
+                                <option value="1">1st Pada</option>
+                                <option value="2">2nd Pada</option>
+                                <option value="3">3rd Pada</option>
+                                <option value="4">4th Pada</option>
                               </select>
                               <input type="text" name="gotra" value={formData.gotra} onChange={handleChange} placeholder="Gotra" className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
                            </div>

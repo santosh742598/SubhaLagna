@@ -1,0 +1,84 @@
+/**
+ * @fileoverview SubhaLagna v2.1.0 — Guna Milan (Ashta Koota) Data
+ * @description   Standard properties for 27 Nakshatras and 12 Rashis.
+ *                Includes precise mapping for 108 Padas to Rashis.
+ */
+
+const RASHIS = [
+  { name: 'Aries (Mesha)',       lord: 'Mars',      varna: 'Kshatriya', vashya: 'Chatushpada' },
+  { name: 'Taurus (Vrishabha)',  lord: 'Venus',     varna: 'Vaishya',   vashya: 'Chatushpada' },
+  { name: 'Gemini (Mithuna)',    lord: 'Mercury',   varna: 'Shudra',    vashya: 'Manushya' },
+  { name: 'Cancer (Karka)',      lord: 'Moon',      varna: 'Brahmin',   vashya: 'Jalachar' },
+  { name: 'Leo (Simha)',         lord: 'Sun',       varna: 'Kshatriya', vashya: 'Banachar' },
+  { name: 'Virgo (Kanya)',       lord: 'Mercury',   varna: 'Vaishya',   vashya: 'Manushya' },
+  { name: 'Libra (Tula)',        lord: 'Venus',     varna: 'Shudra',    vashya: 'Manushya' },
+  { name: 'Scorpio (Vrishchika)', lord: 'Mars',      varna: 'Brahmin',   vashya: 'Keeta' },
+  { name: 'Sagittarius (Dhanu)', lord: 'Jupiter',   varna: 'Kshatriya', vashya: 'Manushya' },
+  { name: 'Capricorn (Makara)',  lord: 'Saturn',    varna: 'Vaishya',   vashya: 'Jalachar' },
+  { name: 'Aquarius (Kumbha)',   lord: 'Saturn',    varna: 'Shudra',    vashya: 'Manushya' },
+  { name: 'Pisces (Meena)',      lord: 'Jupiter',   varna: 'Brahmin',   vashya: 'Jalachar' }
+];
+
+const NAKSHATRAS = [
+  { name: 'Ashwini',          gana: 'Deva',     nadi: 'Adi',    yoni: 'Horse',    rashiMapping: { 1: 'Aries (Mesha)', 2: 'Aries (Mesha)', 3: 'Aries (Mesha)', 4: 'Aries (Mesha)' } },
+  { name: 'Bharani',          gana: 'Manushya', nadi: 'Madhya', yoni: 'Elephant', rashiMapping: { 1: 'Aries (Mesha)', 2: 'Aries (Mesha)', 3: 'Aries (Mesha)', 4: 'Aries (Mesha)' } },
+  { name: 'Krittika',         gana: 'Rakshasa', nadi: 'Antya',  yoni: 'Sheep',    rashiMapping: { 1: 'Aries (Mesha)', 2: 'Taurus (Vrishabha)', 3: 'Taurus (Vrishabha)', 4: 'Taurus (Vrishabha)' } },
+  { name: 'Rohini',           gana: 'Manushya', nadi: 'Antya',  yoni: 'Serpent',  rashiMapping: { 1: 'Taurus (Vrishabha)', 2: 'Taurus (Vrishabha)', 3: 'Taurus (Vrishabha)', 4: 'Taurus (Vrishabha)' } },
+  { name: 'Mrigashira',       gana: 'Deva',     nadi: 'Madhya', yoni: 'Serpent',  rashiMapping: { 1: 'Taurus (Vrishabha)', 2: 'Taurus (Vrishabha)', 3: 'Gemini (Mithuna)', 4: 'Gemini (Mithuna)' } },
+  { name: 'Ardra',            gana: 'Manushya', nadi: 'Adi',    yoni: 'Dog',      rashiMapping: { 1: 'Gemini (Mithuna)', 2: 'Gemini (Mithuna)', 3: 'Gemini (Mithuna)', 4: 'Gemini (Mithuna)' } },
+  { name: 'Punarvasu',        gana: 'Deva',     nadi: 'Adi',    yoni: 'Cat',      rashiMapping: { 1: 'Gemini (Mithuna)', 2: 'Gemini (Mithuna)', 3: 'Gemini (Mithuna)', 4: 'Cancer (Karka)' } },
+  { name: 'Pushya',           gana: 'Deva',     nadi: 'Madhya', yoni: 'Sheep',    rashiMapping: { 1: 'Cancer (Karka)', 2: 'Cancer (Karka)', 3: 'Cancer (Karka)', 4: 'Cancer (Karka)' } },
+  { name: 'Ashlesha',         gana: 'Rakshasa', nadi: 'Antya',  yoni: 'Cat',      rashiMapping: { 1: 'Cancer (Karka)', 2: 'Cancer (Karka)', 3: 'Cancer (Karka)', 4: 'Cancer (Karka)' } },
+  { name: 'Magha',            gana: 'Rakshasa', nadi: 'Antya',  yoni: 'Rat',      rashiMapping: { 1: 'Leo (Simha)', 2: 'Leo (Simha)', 3: 'Leo (Simha)', 4: 'Leo (Simha)' } },
+  { name: 'Purva Phalguni',   gana: 'Manushya', nadi: 'Madhya', yoni: 'Rat',      rashiMapping: { 1: 'Leo (Simha)', 2: 'Leo (Simha)', 3: 'Leo (Simha)', 4: 'Leo (Simha)' } },
+  { name: 'Uttara Phalguni',  gana: 'Manushya', nadi: 'Adi',    yoni: 'Cow',      rashiMapping: { 1: 'Leo (Simha)', 2: 'Virgo (Kanya)', 3: 'Virgo (Kanya)', 4: 'Virgo (Kanya)' } },
+  { name: 'Hasta',            gana: 'Deva',     nadi: 'Adi',    yoni: 'Buffalo',  rashiMapping: { 1: 'Virgo (Kanya)', 2: 'Virgo (Kanya)', 3: 'Virgo (Kanya)', 4: 'Virgo (Kanya)' } },
+  { name: 'Chitra',           gana: 'Rakshasa', nadi: 'Madhya', yoni: 'Tiger',    rashiMapping: { 1: 'Virgo (Kanya)', 2: 'Virgo (Kanya)', 3: 'Libra (Tula)', 4: 'Libra (Tula)' } },
+  { name: 'Swati',            gana: 'Deva',     nadi: 'Madhya', yoni: 'Buffalo',  rashiMapping: { 1: 'Libra (Tula)', 2: 'Libra (Tula)', 3: 'Libra (Tula)', 4: 'Libra (Tula)' } },
+  { name: 'Vishakha',         gana: 'Rakshasa', nadi: 'Adi',    yoni: 'Tiger',    rashiMapping: { 1: 'Libra (Tula)', 2: 'Libra (Tula)', 3: 'Libra (Tula)', 4: 'Scorpio (Vrishchika)' } },
+  { name: 'Anuradha',         gana: 'Deva',     nadi: 'Madhya', yoni: 'Deer',     rashiMapping: { 1: 'Scorpio (Vrishchika)', 2: 'Scorpio (Vrishchika)', 3: 'Scorpio (Vrishchika)', 4: 'Scorpio (Vrishchika)' } },
+  { name: 'Jyeshtha',         gana: 'Rakshasa', nadi: 'Adi',    yoni: 'Deer',     rashiMapping: { 1: 'Scorpio (Vrishchika)', 2: 'Scorpio (Vrishchika)', 3: 'Scorpio (Vrishchika)', 4: 'Scorpio (Vrishchika)' } },
+  { name: 'Mula',             gana: 'Rakshasa', nadi: 'Adi',    yoni: 'Dog',      rashiMapping: { 1: 'Sagittarius (Dhanu)', 2: 'Sagittarius (Dhanu)', 3: 'Sagittarius (Dhanu)', 4: 'Sagittarius (Dhanu)' } },
+  { name: 'Purva Ashadha',    gana: 'Manushya', nadi: 'Madhya', yoni: 'Monkey',    rashiMapping: { 1: 'Sagittarius (Dhanu)', 2: 'Sagittarius (Dhanu)', 3: 'Sagittarius (Dhanu)', 4: 'Sagittarius (Dhanu)' } },
+  { name: 'Uttara Ashadha',   gana: 'Manushya', nadi: 'Antya',  yoni: 'Mongoose',  rashiMapping: { 1: 'Sagittarius (Dhanu)', 2: 'Capricorn (Makara)', 3: 'Capricorn (Makara)', 4: 'Capricorn (Makara)' } },
+  { name: 'Shravana',         gana: 'Deva',     nadi: 'Antya',  yoni: 'Monkey',    rashiMapping: { 1: 'Capricorn (Makara)', 2: 'Capricorn (Makara)', 3: 'Capricorn (Makara)', 4: 'Capricorn (Makara)' } },
+  { name: 'Dhanistha',        gana: 'Rakshasa', nadi: 'Madhya', yoni: 'Lion',      rashiMapping: { 1: 'Capricorn (Makara)', 2: 'Capricorn (Makara)', 3: 'Aquarius (Kumbha)', 4: 'Aquarius (Kumbha)' } },
+  { name: 'Shatabhisha',      gana: 'Rakshasa', nadi: 'Adi',    yoni: 'Horse',     rashiMapping: { 1: 'Aquarius (Kumbha)', 2: 'Aquarius (Kumbha)', 3: 'Aquarius (Kumbha)', 4: 'Aquarius (Kumbha)' } },
+  { name: 'Purva Bhadrapada', gana: 'Manushya', nadi: 'Madhya', yoni: 'Lion',      rashiMapping: { 1: 'Aquarius (Kumbha)', 2: 'Aquarius (Kumbha)', 3: 'Aquarius (Kumbha)', 4: 'Pisces (Meena)' } },
+  { name: 'Uttara Bhadrapada', gana: 'Manushya', nadi: 'Adi',    yoni: 'Cow',       rashiMapping: { 1: 'Pisces (Meena)', 2: 'Pisces (Meena)', 3: 'Pisces (Meena)', 4: 'Pisces (Meena)' } },
+  { name: 'Revati',           gana: 'Deva',     nadi: 'Antya',  yoni: 'Elephant',  rashiMapping: { 1: 'Pisces (Meena)', 2: 'Pisces (Meena)', 3: 'Pisces (Meena)', 4: 'Pisces (Meena)' } }
+];
+
+const YONI_COMPATIBILITY = {
+  Horse:    { Horse: 4, Elephant: 3, Sheep: 2, Serpent: 1, Dog: 1, Cat: 2, Rat: 2, Cow: 1, Buffalo: 0, Tiger: 1, Deer: 1, Monkey: 2, Mongoose: 2, Lion: 1 },
+  Elephant: { Horse: 3, Elephant: 4, Sheep: 2, Serpent: 3, Dog: 2, Cat: 2, Rat: 1, Cow: 2, Buffalo: 2, Tiger: 1, Deer: 0, Monkey: 1, Mongoose: 1, Lion: 0 },
+  Sheep:    { Horse: 2, Elephant: 2, Sheep: 4, Serpent: 1, Dog: 1, Cat: 2, Rat: 1, Cow: 3, Buffalo: 2, Tiger: 2, Deer: 2, Monkey: 0, Mongoose: 1, Lion: 0 },
+  Serpent:  { Horse: 1, Elephant: 3, Sheep: 1, Serpent: 4, Dog: 2, Cat: 1, Rat: 1, Cow: 1, Buffalo: 1, Tiger: 2, Deer: 2, Monkey: 2, Mongoose: 0, Lion: 1 },
+  Dog:      { Horse: 1, Elephant: 2, Sheep: 1, Serpent: 2, Dog: 4, Cat: 2, Rat: 1, Cow: 0, Buffalo: 1, Tiger: 1, Deer: 0, Monkey: 1, Mongoose: 1, Lion: 2 },
+  Cat:      { Horse: 2, Elephant: 2, Sheep: 2, Serpent: 1, Dog: 2, Cat: 4, Rat: 0, Cow: 2, Buffalo: 1, Tiger: 1, Deer: 2, Monkey: 1, Mongoose: 2, Lion: 1 },
+  Rat:      { Horse: 2, Elephant: 1, Sheep: 1, Serpent: 1, Dog: 1, Cat: 0, Rat: 4, Cow: 2, Buffalo: 2, Tiger: 1, Deer: 1, Monkey: 2, Mongoose: 2, Lion: 1 },
+  Cow:      { Horse: 1, Elephant: 2, Sheep: 3, Serpent: 1, Dog: 0, Cat: 2, Rat: 2, Cow: 4, Buffalo: 3, Tiger: 0, Deer: 1, Monkey: 1, Mongoose: 1, Lion: 1 },
+  Buffalo:  { Horse: 0, Elephant: 2, Sheep: 2, Serpent: 1, Dog: 1, Cat: 1, Rat: 2, Cow: 3, Buffalo: 4, Tiger: 1, Deer: 1, Monkey: 2, Mongoose: 1, Lion: 1 },
+  Tiger:    { Horse: 1, Elephant: 1, Sheep: 2, Serpent: 2, Dog: 1, Cat: 1, Rat: 1, Cow: 0, Buffalo: 1, Tiger: 4, Deer: 1, Monkey: 1, Mongoose: 1, Lion: 1 },
+  Deer:     { Horse: 1, Elephant: 0, Sheep: 2, Serpent: 2, Dog: 0, Cat: 2, Rat: 1, Cow: 1, Buffalo: 1, Tiger: 1, Deer: 4, Monkey: 1, Mongoose: 1, Lion: 1 },
+  Monkey:   { Horse: 2, Elephant: 1, Sheep: 0, Serpent: 2, Dog: 1, Cat: 1, Rat: 2, Cow: 1, Buffalo: 2, Tiger: 1, Deer: 1, Monkey: 4, Mongoose: 3, Lion: 2 },
+  Mongoose: { Horse: 2, Elephant: 1, Sheep: 1, Serpent: 0, Dog: 1, Cat: 2, Rat: 2, Cow: 1, Buffalo: 1, Tiger: 1, Deer: 1, Monkey: 3, Mongoose: 4, Lion: 2 },
+  Lion:     { Horse: 1, Elephant: 0, Sheep: 0, Serpent: 1, Dog: 2, Cat: 1, Rat: 1, Cow: 1, Buffalo: 1, Tiger: 1, Deer: 1, Monkey: 2, Mongoose: 2, Lion: 4 }
+};
+
+const LORD_FRIENDSHIP = {
+  Sun:     { Sun: 5, Moon: 5, Mars: 5, Mercury: 4, Jupiter: 5, Venus: 0, Saturn: 0 },
+  Moon:    { Sun: 5, Moon: 5, Mars: 4, Mercury: 5, Jupiter: 4, Venus: 1, Saturn: 1 },
+  Mars:    { Sun: 5, Moon: 4, Mars: 5, Mercury: 1, Jupiter: 5, Venus: 4, Saturn: 4 },
+  Mercury: { Sun: 4, Moon: 1, Mars: 1, Mercury: 5, Jupiter: 1, Venus: 5, Saturn: 5 },
+  Jupiter: { Sun: 5, Moon: 4, Mars: 5, Mercury: 1, Jupiter: 5, Venus: 0, Saturn: 3 },
+  Venus:   { Sun: 0, Moon: 1, Mars: 1, Mercury: 5, Jupiter: 0, Venus: 5, Saturn: 5 },
+  Saturn:  { Sun: 0, Moon: 1, Mars: 1, Mercury: 5, Jupiter: 3, Venus: 5, Saturn: 5 }
+};
+
+module.exports = {
+  RASHIS,
+  NAKSHATRAS,
+  YONI_COMPATIBILITY,
+  LORD_FRIENDSHIP
+};

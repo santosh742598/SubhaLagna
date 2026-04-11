@@ -11,6 +11,7 @@ import React, { useState, useContext, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { STATES, LOCATION_DATA } from '../data/locationData.js';
+import { RASHIS, NAKSHATRAS, PADA_RASHI_MAP } from '../data/astrologyData.js';
 import { API_BASE_URL } from '../config';
 import CaptureModal from './CaptureModal';
 
@@ -170,6 +171,16 @@ const CreateProfile = () => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   useEffect(() => { if (user?.name && !formData.name) setFormData(prev => ({ ...prev, name: user.name })); }, [user]);
+
+  // ── Auto-select Rashi based on Nakshatra + Pada ───────────────────────────
+  useEffect(() => {
+    if (formData.nakshatra && formData.pada) {
+      const correctRashi = PADA_RASHI_MAP[formData.nakshatra]?.[formData.pada];
+      if (correctRashi && formData.rashi !== correctRashi) {
+        setFormData(prev => ({ ...prev, rashi: correctRashi }));
+      }
+    }
+  }, [formData.nakshatra, formData.pada]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -354,14 +365,22 @@ const CreateProfile = () => {
                     <div className="pt-5 border-t border-rose-100/60">
                       <p className="text-xs font-bold text-rose-500 uppercase tracking-widest mb-4 ml-1">✨ Horoscope Details (Guna Milan)</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input type="text" name="rashi" value={formData.rashi} onChange={handleChange} placeholder="Rashi" className={inputClasses} />
-                        <input type="text" name="nakshatra" value={formData.nakshatra} onChange={handleChange} placeholder="Nakshatra" className={inputClasses} />
+                        <select name="rashi" value={formData.rashi} onChange={handleChange} 
+                          className={`${inputClasses} cursor-pointer ${formData.nakshatra && formData.pada ? 'bg-gray-100/50' : ''}`}
+                          disabled={!!(formData.nakshatra && formData.pada)}>
+                          <option value="">Select Rashi</option>
+                          {RASHIS.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                        <select name="nakshatra" value={formData.nakshatra} onChange={handleChange} className={`${inputClasses} cursor-pointer`}>
+                          <option value="">Select Nakshatra</option>
+                          {NAKSHATRAS.map(n => <option key={n} value={n}>{n}</option>)}
+                        </select>
                         <select name="pada" value={formData.pada} onChange={handleChange} className={`${inputClasses} cursor-pointer`}>
                           <option value="">Select Pada</option>
-                          <option value="1">Pada 1</option>
-                          <option value="2">Pada 2</option>
-                          <option value="3">Pada 3</option>
-                          <option value="4">Pada 4</option>
+                          <option value="1">1st Pada</option>
+                          <option value="2">2nd Pada</option>
+                          <option value="3">3rd Pada</option>
+                          <option value="4">4th Pada</option>
                         </select>
                       </div>
                     </div>

@@ -5,7 +5,7 @@
  *                via environment variables in your deployment platform.
  *
  * @author        SubhaLagna Team
- * @version       2.0.9
+ * @version       2.1.0
  */
 
 /**
@@ -26,7 +26,7 @@ export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5
  * Application version.
  * @type {string}
  */
-export const APP_VERSION = '2.0.9';
+export const APP_VERSION = '2.1.0';
 
 /**
  * App name constant (used across the app for branding).
