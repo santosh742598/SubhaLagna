@@ -6,22 +6,32 @@ A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB,
 
 ## 🚀 Key Features
 
-### 🌟 Premium Monetization & Gating
-- **Tiered Access**: Support for **Gold** and **Platinum** subscription plans.
-- **Secure Reveal**: Contact information (Email/Phone) is server-side redacted for free users and revealed only for authorized premium users.
-- **View Quotas**: Gold plans come with a 30-contact reveal limit, while Platinum offers unlimited access.
-- **Razorpay Integration**: Fully automated checkout flow with signature verification and secure activation.
+### ⚖️ Smart Match Algorithm (Weighted Scoring)
+SubhaLagna v2.0.0 implements a **weighted compatibility engine** (`matchingAlgorithm.js`) that computes scores (0–100) using:
+- **Interest Synergy (25pts)**: Uses Jaccard similarity to find common ground.
+- **Personality Traits (15pts)**: Multi-dimensional overlap scoring.
+- **Hard Filters (30pts)**: Automatic point allocation for Religion and Caste matches.
+- **Demographic Proximity (30pts)**: Weighted scoring for Age, Location, and Education tiers.
 
-### 🛡️ Smart Moderation & Admin Pro
-- **Verification Engine**: Admins can approve profiles to display a "Verified" trust badge.
-- **Manual Upgrades**: Admin dashboard allows manual granting of premium status for offline payments with custom day-based durations.
-- **Revenue Dashboard**: Real-time tracking of Total and Daily revenue stats.
-- **Coupon Engine**: Create/Manage percentage or fixed-amount discount codes.
+### 🛡️ Privacy Engine & Data Gating
+- **Contact Redaction**: Server-side masking of Email/Phone for non-authorized viewers.
+- **Photo Privacy**: Integrated support for `privacySettings` including profile hiding and blurred view teasers.
+- **View Insights**: Premium users can track "Who Viewed My Profile" with a complete audit trail.
+- **Ownership Guard**: Strict middleware checks ensure users only modify their own data.
 
-### 💬 Engagement & Matching
-- **Interest System**: Send and moderating connection interests with a high-fidelity inbox.
-- **Real-time Messaging**: Built-in chat for connected matches.
-- **Profile Search**: Advanced filtering by age, caste, education, and location.
+### 💰 Premium Monetization
+- **Tiered Plans**: **Gold** (30 reveals) vs. **Platinum** (Unlimited access).
+- **Automated Billing**: Razorpay integration with secure HMAC signature verification.
+- **Admin Controls**: Manual subscription overrides and day-based duration management.
+
+### 🛠️ Admin & Moderation
+- **Verification Engine**: Admin approval workflow for the "Verified" trust badge.
+- **Revenue Analytics**: Real-time dashboard for total/daily revenue tracking.
+- **Coupon Engine**: Manage dynamic discount codes (Fixed or Percentage).
+
+### 💬 Engagement
+- **Interest System**: Unified inbox for sending/receiving connection requests.
+- **Real-time Chat**: Integrated messaging via Socket.io for connected matches.
 
 ---
 
