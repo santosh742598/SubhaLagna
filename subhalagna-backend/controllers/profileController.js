@@ -332,6 +332,59 @@ const getProfileViews = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Unlock contact information (Premium feature)
+// @route   POST /api/profiles/:id/unlock-contact
+// @access  Private
+// ─────────────────────────────────────────────────────────────────────────────
+const unlockContact = async (req, res, next) => {
+  try {
+    const profile = await Profile.findById(req.params.id);
+    if (!profile) return sendError(res, 'Profile not found', 404);
+
+    const user = await User.findById(req.user._id);
+
+    // 1. Owner check
+    if (profile.user.toString() === user._id.toString()) {
+      return sendSuccess(res, null, 'You already have access to your own contact info');
+    }
+
+    // 2. Premium check
+    if (!user.isPremiumActive()) {
+      return sendError(res, 'Premium subscription required to unlock contacts', 403);
+    }
+
+    // 3. Already unlocked check
+    if (user.contactsViewed.includes(profile._id.toString())) {
+      return sendSuccess(res, null, 'Contact already unlocked');
+    }
+
+    // 4. Platinum check (unlimited)
+    if (user.premiumPlan === 'platinum') {
+      user.contactsViewed.push(profile._id);
+      await user.save();
+      return sendSuccess(res, null, 'Contact unlocked (Platinum Unlimited)');
+    }
+
+    // 5. Gold quota check
+    if (user.premiumPlan === 'gold') {
+      if (user.contactsAllowed <= 0) {
+        return sendError(res, 'You have reached your 30-contact limit. Upgrade to Platinum for unlimited access.', 403);
+      }
+
+      user.contactsAllowed -= 1;
+      user.contactsViewed.push(profile._id);
+      await user.save();
+
+      return sendSuccess(res, { remaining: user.contactsAllowed }, 'Contact unlocked! Quota deducted.');
+    }
+
+    return sendError(res, 'Unsupported plan tier', 400);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   setupProfile,
   getMatches,
@@ -339,4 +392,5 @@ module.exports = {
   updateProfile,
   getMyProfile,
   getProfileViews,
+  unlockContact,
 };

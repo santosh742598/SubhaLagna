@@ -1,9 +1,9 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Main Server Entry Point
+ * @fileoverview SubhaLagna v2.0.1 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
  * @author        SubhaLagna Team
- * @version       2.0.0
+ * @version       2.0.1
  *
  * Architecture:
  *  ┌──────────────────────────────────────────┐
@@ -99,7 +99,7 @@ app.use('/uploads', express.static('uploads'));
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'SubhaLagna API v2.0.0 is running 🚀',
+    message: 'SubhaLagna API v2.0.1 is running 🚀',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
   });
@@ -125,7 +125,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`\n🚀 SubhaLagna v2.0.0 Server`);
+  console.log(`\n🚀 SubhaLagna v2.0.1 Server`);
   console.log(`   ✅ HTTP  → http://localhost:${PORT}`);
   console.log(`   ✅ WS    → ws://localhost:${PORT}  (Socket.io)`);
   console.log(`   ✅ Env   → ${process.env.NODE_ENV || 'development'}\n`);

@@ -1,0 +1,26 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.1] - 2026-04-11
+
+### Added
+- **Contact Reveal Engine**: Implemented missing `unlockContact` functionality in backend.
+- **Reveal UI**: Added "Reveal Contact Details" button to `ProfileDetail` component.
+- **Quota Enforcement**: Gold tier users now have their 30-reveal limit enforced.
+- **Changelog**: Initialized this file to track project evolution.
+
+### Changed
+- **README Enhancement**: Detailed business logic and smart matching algorithm breakdown.
+- **Version Upgrade**: Project bumped to v2.0.1 across all components.
+
+## [2.0.0] - 2026-04-11
+
+### Added
+- **Initial Release of v2.0.0**: High-fidelity matrimony platform.
+- **Smart Matching**: Weighted compatibility scoring.
+- **Premium Tiers**: Gold and Platinum subscription models with Razorpay.
+- **Admin Dashboard**: Moderation, Revenue, and Coupon management.

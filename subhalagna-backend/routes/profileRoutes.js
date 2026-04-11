@@ -55,6 +55,9 @@ router.get('/', getMatches);
 // Individual profile by ID — also tracks view
 router.get('/:id', getProfileById);
 
+// Unlock contact details (Premium)
+router.post('/:id/unlock-contact', unlockContact);
+
 // Update own profile — ownership check inside controller
 router.put(
   '/:id',

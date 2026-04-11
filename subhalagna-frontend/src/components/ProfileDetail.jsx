@@ -39,7 +39,7 @@ const SectionTitle = ({ title, icon }) => (
 const ProfileDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user: currentUser } = useContext(AuthContext);
+  const { user: currentUser, refreshUser } = useContext(AuthContext);
 
   const [profile, setProfile] = useState(null);
   const [activePhoto, setActivePhoto] = useState(null);
@@ -73,6 +73,7 @@ const ProfileDetail = () => {
     setUnlocking(true);
     try {
       await unlockContact(profile._id);
+      await refreshUser(); // Update global quota
       await loadProfile(); // Reload to get revealed data
     } catch (err) {
       alert(err || "Failed to unlock contact. You may have reached your limit.");
@@ -208,7 +209,9 @@ const ProfileDetail = () => {
                       {unlocking ? 'Unlocking...' : (currentUser?.isPremium ? 'Reveal Contact Info' : 'Upgrade to View Details')}
                     </button>
                     {currentUser?.premiumPlan === 'gold' && (
-                      <p className="mt-3 text-[10px] text-rose-400 font-bold uppercase tracking-widest">Uses 1 of your 30 Gold views</p>
+                      <p className="mt-3 text-[10px] text-rose-400 font-bold uppercase tracking-widest">
+                        {currentUser.contactsAllowed || 0} Gold views remaining
+                      </p>
                     )}
                  </div>
                )}
