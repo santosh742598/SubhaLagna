@@ -3,7 +3,7 @@
  * @description   REST API calls for the chat/messaging feature.
  *                Real-time delivery uses Socket.io (see ChatContext).
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 import api, { getErrorMessage } from './api';

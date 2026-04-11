@@ -4,7 +4,7 @@
  *                these service functions instead of calling fetch/axios directly.
  *
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 import api, { getErrorMessage } from './api';

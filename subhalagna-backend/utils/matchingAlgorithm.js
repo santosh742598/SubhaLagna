@@ -14,7 +14,7 @@
  *                  Total possible       → 100 pts
  *
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 'use strict';

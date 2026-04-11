@@ -4,7 +4,7 @@
  *                Only created after a mutual interest is accepted.
  *                Tracks both participants and the last message for preview.
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 'use strict';

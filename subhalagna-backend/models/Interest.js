@@ -4,7 +4,7 @@
  *                "Send Interest" feature). One interest document per sender-receiver pair.
  *                Status transitions: pending → accepted | rejected | withdrawn.
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 'use strict';

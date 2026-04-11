@@ -5,7 +5,7 @@
  *                2. `errorHandler` — global error handler for all thrown errors,
  *                   including Mongoose validation errors and JWT errors.
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 'use strict';

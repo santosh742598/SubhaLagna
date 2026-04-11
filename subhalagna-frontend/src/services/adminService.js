@@ -3,7 +3,7 @@
  * @description   API calls for the admin dashboard.
  *                All calls require admin privileges.
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 import api, { getErrorMessage } from './api';

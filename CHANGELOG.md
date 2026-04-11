@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-04-11
+
+### Added
+- **🔮 Guna Milan Engine**: Automated Ashta Koota (36-point) Vedic compatibility matching.
+- **📍 Precise Pada Mapping**: Implemented the full 108-Pada-to-Rashi conversion for 100% astronomical accuracy.
+- **⚖️ Dosha Cancellations**: Added logic for Nadi and Bhakoot dosha cancellations based on traditional planetary friendships and birth-star quarters.
+- **✨ Auto-Select UI**: Profile creation and dashboard now auto-calculate and lock the Rashi based on Nakshatra and Pada selections.
+
+### Improved
+- **Profile Detail View**: Integrated a premium compatibility gauge with factor-by-factor score breakdowns.
+- **Profile Cards**: Added high-visibility Guna Match badges to search results.
+
 ## [2.0.8] - 2026-04-11
 
 ### Added

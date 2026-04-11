@@ -3,7 +3,7 @@
  * @description   Connects to MongoDB via Mongoose with retry logic and
  *                connection event logging.
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 'use strict';

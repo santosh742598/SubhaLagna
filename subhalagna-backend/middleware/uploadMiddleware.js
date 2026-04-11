@@ -10,7 +10,7 @@
  *                or S3 storage engine (CloudinaryStorage from multer-storage-cloudinary).
  *
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 'use strict';

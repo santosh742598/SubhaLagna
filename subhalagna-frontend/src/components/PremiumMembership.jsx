@@ -2,7 +2,7 @@
  * @fileoverview SubhaLagna v2.0.6 — Premium Membership & Payments
  * @description   Dynamic membership selection with Coupon system, 
  *                Razorpay integration, and Bank Transfer support.
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 import React, { useState, useEffect, useContext } from 'react';

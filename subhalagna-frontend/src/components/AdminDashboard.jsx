@@ -7,7 +7,7 @@
  *                  - Manual Subscription Upgrades
  *                  - Coupon Management
  *                  - Bank Payment Verification (New)
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 import React, { useState, useEffect } from 'react';

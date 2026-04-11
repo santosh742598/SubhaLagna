@@ -4,7 +4,7 @@
  *                new interests received, messages, profile views, and system alerts.
  *                Powers the notification bell in the UI header.
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 'use strict';

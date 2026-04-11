@@ -1,13 +1,19 @@
-# 💍 SubhaLagna Matrimony — v2.0.8
+# 💍 SubhaLagna Matrimony — v2.1.0
 
-A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.0.8 focuses on premium user experiences, interest-based privacy, and secure data gating.
+A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.1.0 focuses on premium user experiences, Vedic astrological matching, and secure data gating.
 
 ---
 
 ## 🚀 Key Features
 
-### ⚖️ Smart Match Algorithm (Weighted Scoring)
-SubhaLagna v2.0.0 implements a **weighted compatibility engine** (`matchingAlgorithm.js`) that computes scores (0–100) using:
+### 🔮 Vedic Guna Milan (New in v2.1.0)
+SubhaLagna now implements a **professional-grade Ashta Koota compatibility engine**:
+- **Precise 108 Pada Mapping**: Automatic Moon sign (Rashi) determination based on birth star quarter.
+- **36-Point Scoring**: Factor-by-factor breakdown of Varna, Vashya, Tara, Yoni, Maitri, Gana, Bhakoot, and Nadi.
+- **Dosha Cancellation**: Traditional logic for Nadi and Bhakoot cancellations based on planetary friendship and Pada differences.
+
+### ⚖️ Smart Match Algorithm (Behavioral)
+In addition to astrology, we use a **weighted behavioral scorecard**:
 - **Interest Synergy (25pts)**: Uses Jaccard similarity to find common ground.
 - **Personality Traits (15pts)**: Multi-dimensional overlap scoring.
 - **Hard Filters (30pts)**: Automatic point allocation for Religion and Caste matches.

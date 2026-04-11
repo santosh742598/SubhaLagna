@@ -5,7 +5,7 @@
  *                Free users see the count; Premium users see the full list.
  *                Documents auto-expire after 60 days via TTL index.
  * @author        SubhaLagna Team
- * @version       2.0.2
+ * @version       2.1.0
  */
 
 'use strict';
