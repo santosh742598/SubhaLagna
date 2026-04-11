@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.4 — Payment Model
+ * @fileoverview SubhaLagna v2.0.5 — Payment Model
  * @description   Tracks all financial transactions on the platform, including
  *                Razorpay, manual admin upgrades, and pending bank transfers.
  * @author        SubhaLagna Team

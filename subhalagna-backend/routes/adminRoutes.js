@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.4 — Admin Routes
+ * @fileoverview SubhaLagna v2.0.5 — Admin Routes
  * @description   Route definitions for the admin dashboard.
  *                ALL routes require both `protect` and `adminOnly` middleware.
  * @version       2.0.2

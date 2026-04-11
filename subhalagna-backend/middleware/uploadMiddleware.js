@@ -25,30 +25,9 @@ if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
-// ── Disk Storage Engine ───────────────────────────────────────────────────────
-const storage = multer.diskStorage({
-  /**
-   * Set the destination folder for uploaded files.
-   * @param {*} req
-   * @param {*} file
-   * @param {Function} cb
-   */
-  destination(req, file, cb) {
-    cb(null, UPLOAD_DIR);
-  },
-
-  /**
-   * Generate a unique filename: fieldname-timestamp-randomhex.ext
-   * @param {*} req
-   * @param {*} file
-   * @param {Function} cb
-   */
-  filename(req, file, cb) {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e6)}`;
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-  },
-});
+// ── Memory Storage Engine ───────────────────────────────────────────────────
+// We use memory storage so we can process buffers with Sharp before saving
+const storage = multer.memoryStorage();
 
 // ── File Type Filter ──────────────────────────────────────────────────────────
 const ALLOWED_MIME_TYPES = /image\/(jpeg|jpg|png|webp)/;

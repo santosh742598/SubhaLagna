@@ -20,10 +20,13 @@
 
 'use strict';
 
-const Profile     = require('../models/Profile');
-const User        = require('../models/User');
+const Profile      = require('../models/Profile');
+const User         = require('../models/User');
 const ProfileView = require('../models/ProfileView');
 const Notification = require('../models/Notification');
+const sharp        = require('sharp');
+const path         = require('path');
+const fs           = require('fs');
 const { enrichWithMatchScores } = require('../utils/matchingAlgorithm');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 
@@ -53,16 +56,40 @@ const setupProfile = async (req, res, next) => {
       return sendError(res, 'A profile already exists for your account.', 400);
     }
 
-    // ── Handle uploaded photos ─────────────────────────────────────────────
+    // ── Handle uploaded photos with Sharp Optimization ───────────────────
     const defaultPhoto = gender === 'Male' ? '/uploads/man.png' : '/uploads/woman.png';
     let profilePhoto   = defaultPhoto;
     let additionalPhotos = [];
 
-    if (req.files?.['profilePhoto']) {
-      profilePhoto = `/uploads/${req.files['profilePhoto'][0].filename}`;
+    const uploadDir = path.join(__dirname, '..', 'uploads');
+
+    // 1. Process Main Profile Photo (800x800 Square Crop)
+    if (req.files?.['profilePhoto']?.[0]) {
+      const file = req.files['profilePhoto'][0];
+      const filename = `profile-${Date.now()}.webp`;
+      const outputPath = path.join(uploadDir, filename);
+
+      await sharp(file.buffer)
+        .resize(800, 800, { fit: 'cover' }) // Square crop
+        .webp({ quality: 80 })
+        .toFile(outputPath);
+
+      profilePhoto = `/uploads/${filename}`;
     }
+
+    // 2. Process Additional Gallery Photos (Max 1200px wide)
     if (req.files?.['additionalPhotos']) {
-      additionalPhotos = req.files['additionalPhotos'].map((f) => `/uploads/${f.filename}`);
+      for (const file of req.files['additionalPhotos']) {
+        const filename = `gallery-${Date.now()}-${Math.round(Math.random() * 1e6)}.webp`;
+        const outputPath = path.join(uploadDir, filename);
+
+        await sharp(file.buffer)
+          .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 80 })
+          .toFile(outputPath);
+
+        additionalPhotos.push(`/uploads/${filename}`);
+      }
     }
 
     // ── Parse comma-separated string arrays from FormData ─────────────────
@@ -239,16 +266,39 @@ const updateProfile = async (req, res, next) => {
     // ── Build update payload ───────────────────────────────────────────────
     const updateData = { ...req.body };
 
-    // Handle profile photo update
-    if (req.files?.['profilePhoto']) {
-      updateData.profilePhoto = `/uploads/${req.files['profilePhoto'][0].filename}`;
+    // Handle profile photo update with Sharp
+    if (req.files?.['profilePhoto']?.[0]) {
+      const file = req.files['profilePhoto'][0];
+      const filename = `profile-${Date.now()}.webp`;
+      const outputPath = path.join(path.join(__dirname, '..', 'uploads'), filename);
+
+      await sharp(file.buffer)
+        .resize(800, 800, { fit: 'cover' })
+        .webp({ quality: 80 })
+        .toFile(outputPath);
+
+      updateData.profilePhoto = `/uploads/${filename}`;
     }
 
-    // Handle gallery photo additions
+    // Handle gallery photo additions with Sharp
     if (req.files?.['additionalPhotos']) {
-      const newPhotos  = req.files['additionalPhotos'].map((f) => `/uploads/${f.filename}`);
-      const existing   = profile.additionalPhotos || [];
-      updateData.additionalPhotos = [...existing, ...newPhotos].slice(0, 6); // cap at 6
+      const newPhotos = [];
+      const uploadDir = path.join(__dirname, '..', 'uploads');
+
+      for (const file of req.files['additionalPhotos']) {
+        const filename = `gallery-${Date.now()}-${Math.round(Math.random() * 1e6)}.webp`;
+        const outputPath = path.join(uploadDir, filename);
+
+        await sharp(file.buffer)
+          .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 80 })
+          .toFile(outputPath);
+
+        newPhotos.push(`/uploads/${filename}`);
+      }
+
+      const existing = profile.additionalPhotos || [];
+      updateData.additionalPhotos = [...existing, ...newPhotos].slice(0, 6);
     }
 
     // Handle gallery photo deletions

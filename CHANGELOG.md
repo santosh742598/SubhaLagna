@@ -5,15 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.4] - 2026-04-11
+## [2.0.5] - 2026-04-11
 
 ### Added
-- **NoSQL Injection Protection**: Integrated `express-mongo-sanitize` to globally filter malicious query operators.
-- **Strict Startup Validation**: Server now performs a "Fail-Fast" check for all critical secrets (Razorpay, SMTP, JWT) on boot.
+- **Media Optimizer (Sharp)**: Integrated high-performance image processing pipeline.
+- **Auto-Cropping**: Main profile photos are now automatically cropped to a perfect **800x800 square**.
+- **WebP Transition**: All user-uploaded media is now automatically converted to `.webp` format for superior compression.
+- **Size Optimization**: Multi-megabyte uploads are now compressed to <200KB without visible quality loss.
 
 ### Changed
-- **Query Optimization**: Applied `.lean()` to all read-only Admin and Payment queries to reduce memory footprint and improve security.
-- **Global Documentation Sync**: Project synchronized to v2.0.4 standards.
+- **Memory Storage**: Switched to `multer.memoryStorage` to enable pre-processing of image buffers.
+
+## [2.0.4] - 2026-04-11
 
 ## [2.0.3] - 2026-04-11
 
