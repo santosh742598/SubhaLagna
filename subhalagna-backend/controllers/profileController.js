@@ -228,6 +228,11 @@ const getMatches = async (req, res, next) => {
       if (c.isPhotoBlurred) {
         c.additionalPhotos = [];
       }
+
+      // ── Guna Milan Integration (v2.1.0) ───────────────────────────────────
+      if (myProfile && myProfile.nakshatra && myProfile.rashi && c.nakshatra && c.rashi) {
+        c.gunaMilan = calculateGunaMilan(myProfile, c);
+      }
     });
 
     return sendPaginated(res, enriched, total, pageNum, limitNum, 'Matches retrieved');
@@ -304,6 +309,13 @@ const getProfileById = async (req, res, next) => {
       result.isContactUnlocked = false;
     } else {
       result.isContactUnlocked = true;
+    }
+
+    // ── Guna Milan Integration (v2.1.0) ─────────────────────────────────────
+    // Calculate compatibility between viewer and target if both have astrology data
+    const myProfile = await Profile.findOne({ user: req.user._id }).lean();
+    if (myProfile && myProfile.nakshatra && myProfile.rashi && result.nakshatra && result.rashi) {
+      result.gunaMilan = calculateGunaMilan(myProfile, result);
     }
 
     return sendSuccess(res, result);
