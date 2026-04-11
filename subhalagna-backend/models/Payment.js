@@ -1,7 +1,9 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Payment Model
- * @description   Tracks all financial transactions on the platform, both Razorpay 
- *                successes and manual admin upgrades.
+ * @fileoverview SubhaLagna v2.0.2 — Payment Model
+ * @description   Tracks all financial transactions on the platform, including
+ *                Razorpay, manual admin upgrades, and pending bank transfers.
+ * @author        SubhaLagna Team
+ * @version       2.0.2
  */
 
 const mongoose = require('mongoose');
@@ -27,6 +29,7 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       default: 'INR',
     },
+    // Razorpay Specific
     razorpayOrderId: {
       type: String,
       trim: true,
@@ -35,15 +38,35 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    // Bank Transfer Specific
+    utrNumber: {
+      type: String,
+      trim: true,
+    },
+    senderUpiId: {
+      type: String,
+      trim: true,
+    },
+    paymentDateTime: {
+      type: Date,
+    },
+    userRemarks: {
+      type: String,
+      trim: true,
+    },
+    adminRemarks: {
+      type: String,
+      trim: true,
+    },
     status: {
       type: String,
       required: true,
-      enum: ['created', 'captured', 'failed', 'refunded', 'manual'],
+      enum: ['created', 'captured', 'failed', 'refunded', 'manual', 'pending'],
       default: 'created',
     },
     type: {
       type: String,
-      enum: ['razorpay', 'manual'],
+      enum: ['razorpay', 'manual', 'bank_transfer'],
       required: true,
       default: 'razorpay',
     },
@@ -61,5 +84,6 @@ const paymentSchema = new mongoose.Schema(
 paymentSchema.index({ createdAt: 1 });
 paymentSchema.index({ status: 1 });
 paymentSchema.index({ user: 1 });
+paymentSchema.index({ utrNumber: 1 });
 
 module.exports = mongoose.model('Payment', paymentSchema);

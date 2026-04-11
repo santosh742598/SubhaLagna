@@ -22,6 +22,7 @@ const Message      = require('../models/Message');
 const Notification = require('../models/Notification');
 const Coupon       = require('../models/Coupon');
 const Payment      = require('../models/Payment');
+const { upgradeUserSubscription } = require('./paymentController');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -318,6 +319,67 @@ const manualUpgradeUser = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Get all pending bank payments
+// @route   GET /api/admin/payments/pending
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+const getPendingPayments = async (req, res, next) => {
+  try {
+    const payments = await Payment.find({ status: 'pending' })
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 });
+
+    return sendSuccess(res, payments, 'Pending payments retrieved');
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Verify (Approve/Reject) a bank payment
+// @route   PUT /api/admin/payments/:id/verify
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+const verifyBankPayment = async (req, res, next) => {
+  try {
+    const { status, adminRemarks } = req.body; // status: 'captured' or 'failed'
+    
+    if (!['captured', 'failed'].includes(status)) {
+      return sendError(res, 'Invalid status. Use captured or failed.', 400);
+    }
+
+    const payment = await Payment.findById(req.params.id);
+    if (!payment) return sendError(res, 'Payment record not found', 404);
+    if (payment.status !== 'pending') return sendError(res, 'Payment is already processed', 400);
+
+    payment.status = status;
+    payment.adminRemarks = adminRemarks;
+    await payment.save();
+
+    if (status === 'captured') {
+      // Logic from paymentController to upgrade user
+      await upgradeUserSubscription(payment.user, payment.planId, null, payment.amount);
+
+      await Notification.create({
+        recipient: payment.user,
+        type: 'system',
+        message: `✅ Your bank payment (UTR: ${payment.utrNumber}) has been verified. Your ${payment.planId.toUpperCase()} subscription is now active!`,
+      });
+    } else {
+      await Notification.create({
+        recipient: payment.user,
+        type: 'system',
+        message: `❌ Your bank payment (UTR: ${payment.utrNumber}) was rejected. Reason: ${adminRemarks || 'Information could not be verified'}.`,
+      });
+    }
+
+    return sendSuccess(res, payment, `Payment ${status === 'captured' ? 'approved' : 'rejected'} successfully`);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllUsers,
@@ -327,5 +389,7 @@ module.exports = {
   getAllCoupons,
   createCoupon,
   deleteCoupon,
-  manualUpgradeUser
+  manualUpgradeUser,
+  getPendingPayments,
+  verifyBankPayment
 };

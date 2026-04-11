@@ -1,6 +1,7 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Razorpay Integration Service
- * @description   Handles Razorpay SDK loading and backend communication.
+ * @fileoverview SubhaLagna v2.0.2 — Razorpay & Bank Payment Integration Service
+ * @description   Handles Razorpay SDK loading and backend communication (including Bank Transfers).
+ * @version       2.0.2
  */
 
 import api from './api';
@@ -56,5 +57,13 @@ export const verifyPayment = async (paymentData) => {
  */
 export const confirmFreeSubscription = async (planId, couponCode) => {
   const { data } = await api.post('/payments/confirm-free', { planId, couponCode });
+  return data;
+};
+
+/**
+ * Submit bank transfer payment request.
+ */
+export const requestBankTransfer = async (transferData) => {
+  const { data } = await api.post('/payments/bank-transfer', transferData);
   return data;
 };

@@ -26,7 +26,7 @@ export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5
  * Application version.
  * @type {string}
  */
-export const APP_VERSION = '2.0.0';
+export const APP_VERSION = '2.0.2';
 
 /**
  * App name constant (used across the app for branding).
@@ -40,6 +40,17 @@ export const APP_NAME = 'SubhaLagna';
  * @type {string}
  */
 export const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+
+/**
+ * Bank Account details for manual transfers.
+ * @type {object}
+ */
+export const BANK_DETAILS = {
+  name:   import.meta.env.VITE_BANK_ACC_NAME || 'SubhaLagna Matrimony',
+  accNo:  import.meta.env.VITE_BANK_ACC_NO   || '1234567890',
+  ifsc:   import.meta.env.VITE_BANK_IFSC     || 'SBIN0001234',
+  upiId:  import.meta.env.VITE_BANK_UPI_ID   || 'subhalagna@upi',
+};
 
 /**
  * Premium plan pricing (INR).

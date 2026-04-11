@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.2] - 2026-04-11
 
 ### Added
-- **Project Standardization**: Synchronized `@version` headers across all code files (45+ files).
+- **Bank Payments System**: Implemented manual verification workflow for Bank/UPI transfers with UTR and UPI ID tracking.
+- **Admin Review UI**: Expanded dashboard with a "Pending Payments" tab for verification and manual subscription triggers.
+- **Project Standardization**: Synchronized `@version` headers across all code files (59+ files).
 - **Standards Update**: Updated `AGENTS.md` to mandate version header maintenance.
 
 ### Changed

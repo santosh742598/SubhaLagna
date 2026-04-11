@@ -1,7 +1,8 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Admin Routes
+ * @fileoverview SubhaLagna v2.0.2 — Admin Routes
  * @description   Route definitions for the admin dashboard.
  *                ALL routes require both `protect` and `adminOnly` middleware.
+ * @version       2.0.2
  *
  * Base path: /api/admin
  */
@@ -11,16 +12,11 @@
 const express = require('express');
 const router  = express.Router();
 
-const {
-  getDashboardStats, 
-  getAllUsers, 
-  toggleSuspendUser,
-  toggleVerifyProfile, 
-  deleteUser,
-  getAllCoupons,
   createCoupon,
   deleteCoupon,
-  manualUpgradeUser
+  manualUpgradeUser,
+  getPendingPayments,
+  verifyBankPayment
 } = require('../controllers/adminController');
 
 const { protect, adminOnly } = require('../middleware/authMiddleware');
@@ -41,5 +37,9 @@ router.delete('/coupons/:id',           deleteCoupon);
 
 // Manual Subscription
 router.post('/users/:id/upgrade',       manualUpgradeUser);
+
+// Bank Payment Verification
+router.get('/payments/pending',         getPendingPayments);
+router.put('/payments/:id/verify',      verifyBankPayment);
 
 module.exports = router;

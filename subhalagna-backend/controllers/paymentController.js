@@ -203,7 +203,7 @@ exports.confirmFreeSubscription = async (req, res) => {
 /**
  * Helper to update user status and expiry and record payment.
  */
-async function upgradeUserSubscription(userId, planId, couponCode, amount, razorData = {}) {
+const upgradeUserSubscription = async (userId, planId, couponCode, amount, razorData = {}) => {
   const plan = plans.find(p => p.id === planId);
   if (!plan) return;
 
@@ -240,3 +240,54 @@ async function upgradeUserSubscription(userId, planId, couponCode, amount, razor
     type: razorData.orderId ? 'razorpay' : 'manual'
   });
 }
+
+/**
+ * Request a manual bank transfer payment.
+ * POST /api/payments/bank-transfer
+ */
+exports.requestBankTransfer = async (req, res) => {
+  const { 
+    planId, 
+    couponCode, 
+    amount, 
+    utrNumber, 
+    senderUpiId, 
+    paymentDateTime, 
+    userRemarks 
+  } = req.body;
+
+  try {
+    const plan = plans.find(p => p.id === planId);
+    if (!plan) return res.status(404).json({ success: false, message: 'Plan not found' });
+
+    // Calculate expiry (1 Year from now if approved)
+    const expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear() + 1);
+
+    const payment = await Payment.create({
+      user: req.user._id,
+      planId,
+      amount,
+      utrNumber,
+      senderUpiId,
+      paymentDateTime: paymentDateTime || new Date(),
+      userRemarks,
+      status: 'pending',
+      type: 'bank_transfer',
+      expiryDate: expiry // Tentative
+    });
+
+    res.json({ 
+      success: true, 
+      message: 'Payment request submitted! Admin will verify your UTR and activate your plan shortly.',
+      data: payment 
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports = {
+  ...module.exports,
+  upgradeUserSubscription
+};

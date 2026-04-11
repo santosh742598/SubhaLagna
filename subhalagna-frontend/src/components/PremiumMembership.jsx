@@ -1,7 +1,8 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Premium Membership & Payments
- * @description   Dynamic membership selection with Coupon system and 
- *                Razorpay integration. Supports ₹0 payment bypass.
+ * @fileoverview SubhaLagna v2.0.2 — Premium Membership & Payments
+ * @description   Dynamic membership selection with Coupon system, 
+ *                Razorpay integration, and Bank Transfer support.
+ * @version       2.0.2
  */
 
 import React, { useState, useEffect, useContext } from 'react';
@@ -13,8 +14,10 @@ import {
   createPaymentOrder, 
   verifyPayment, 
   validateCoupon,
-  confirmFreeSubscription
+  confirmFreeSubscription,
+  requestBankTransfer
 } from '../services/razorpayService';
+import { BANK_DETAILS } from '../config';
 
 const PremiumMembership = () => {
   const { user, token } = useContext(AuthContext);
@@ -29,6 +32,16 @@ const PremiumMembership = () => {
   const [couponLoading, setCouponLoading] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null); // { code, discountedPrice, discountAmount }
   const [couponError, setCouponError] = useState('');
+
+  // Payment State
+  const [paymentMethod, setPaymentMethod] = useState('razorpay'); // 'razorpay' or 'bank'
+  const [showBankForm, setShowBankForm] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [bankData, setBankData] = useState({
+    utrNumber: '',
+    senderUpiId: '',
+    userRemarks: ''
+  });
 
   // ── Load Plans ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -137,6 +150,39 @@ const PremiumMembership = () => {
     }
   };
 
+  const handleBankTransferSubmit = async () => {
+    if (!bankData.utrNumber || !bankData.senderUpiId) {
+      alert("Please enter UTR Number and your UPI ID");
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const currentCoupon = (appliedCoupon && appliedCoupon.targetPlanId === selectedPlan.id) 
+        ? appliedCoupon.couponCode 
+        : null;
+      
+      const priceToShow = (appliedCoupon && appliedCoupon.targetPlanId === selectedPlan.id) 
+        ? appliedCoupon.discountedPrice 
+        : selectedPlan.price;
+
+      await requestBankTransfer({
+        planId: selectedPlan.id,
+        couponCode: currentCoupon,
+        amount: priceToShow,
+        ...bankData
+      });
+
+      alert("✨ Request Submitted! Admin will verify your payment soon.");
+      setShowBankForm(false);
+      navigate('/dashboard');
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to submit request");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -228,19 +274,53 @@ const PremiumMembership = () => {
                  ))}
               </ul>
 
-              <button 
-                onClick={() => handlePlanSelect(plan)}
-                disabled={processing || (plan.id === 'free' && user?.isPremium)}
-                className={`w-full py-5 rounded-2xl font-bold transition-all ${
-                  plan.id === 'free' && user?.isPremium
-                    ? 'bg-gray-100 text-gray-400 cursor-default'
-                    : plan.popular
-                    ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-xl shadow-rose-200'
-                    : 'bg-gray-900 text-white hover:bg-black'
-                } disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]`}
-              >
-                {processing ? 'Processing...' : (plan.id === 'free' && user?.isPremium ? 'Already Applied' : `Get ${plan.name}`)}
-              </button>
+              <div className="flex flex-col gap-3 mt-auto">
+                <button 
+                  onClick={() => {
+                    if (paymentMethod === 'razorpay') {
+                      handlePlanSelect(plan);
+                    } else {
+                      setSelectedPlan(plan);
+                      setShowBankForm(true);
+                    }
+                  }}
+                  disabled={processing || (plan.id === 'free' && user?.isPremium)}
+                  className={`w-full py-5 rounded-2xl font-bold transition-all ${
+                    plan.id === 'free' && user?.isPremium
+                      ? 'bg-gray-100 text-gray-400 cursor-default'
+                      : plan.popular
+                      ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-xl shadow-rose-200'
+                      : 'bg-gray-900 text-white hover:bg-black'
+                  } disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]`}
+                >
+                  {processing ? 'Processing...' : (plan.id === 'free' && user?.isPremium ? 'Already Applied' : `Get ${plan.name}`)}
+                </button>
+
+                {plan.id !== 'free' && (
+                  <div className="flex justify-center gap-4 mt-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name={`method-${plan.id}`} 
+                        checked={paymentMethod === 'razorpay'} 
+                        onChange={() => setPaymentMethod('razorpay')}
+                        className="accent-rose-600"
+                      />
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Online</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name={`method-${plan.id}`} 
+                        checked={paymentMethod === 'bank'} 
+                        onChange={() => setPaymentMethod('bank')} 
+                        className="accent-rose-600"
+                      />
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Bank/UPI</span>
+                    </label>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}
@@ -249,6 +329,71 @@ const PremiumMembership = () => {
       <div className="mt-20 text-center text-gray-400 text-xs">
          Secure payments by Razorpay. Prices inclusive of 18% GST. No hidden charges.
       </div>
+
+      {/* Bank Transfer Modal */}
+      {showBankForm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl animate-fade-in">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Payment Proof</h2>
+            
+            <div className="bg-rose-50 p-5 rounded-2xl mb-6 text-sm text-rose-900 leading-relaxed">
+              <p className="font-bold mb-2 uppercase text-[10px] tracking-widest text-rose-500">Our Details</p>
+              <p><strong>Name:</strong> {BANK_DETAILS.name}</p>
+              <p><strong>Account:</strong> {BANK_DETAILS.accNo}</p>
+              <p><strong>IFSC:</strong> {BANK_DETAILS.ifsc}</p>
+              <p><strong>UPI ID:</strong> {BANK_DETAILS.upiId}</p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-gray-400 mb-2 ml-2">UTR / Transaction ID</label>
+                <input 
+                  type="text" 
+                  className="w-full bg-gray-50 border-none rounded-2xl p-4 focus:ring-2 ring-rose-500 outline-none"
+                  placeholder="Enter 12-digit UTR"
+                  value={bankData.utrNumber}
+                  onChange={(e) => setBankData({...bankData, utrNumber: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-gray-400 mb-2 ml-2">Your UPI ID</label>
+                <input 
+                  type="text" 
+                  className="w-full bg-gray-50 border-none rounded-2xl p-4 focus:ring-2 ring-rose-500 outline-none"
+                  placeholder="e.g. name@upi"
+                  value={bankData.senderUpiId}
+                  onChange={(e) => setBankData({...bankData, senderUpiId: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-gray-400 mb-2 ml-2">Remarks (Optional)</label>
+                <textarea 
+                  className="w-full bg-gray-50 border-none rounded-2xl p-4 focus:ring-2 ring-rose-500 outline-none h-24 resize-none"
+                  placeholder="Anything we should know?"
+                  value={bankData.userRemarks}
+                  onChange={(e) => setBankData({...bankData, userRemarks: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-4 mt-8">
+              <button 
+                onClick={() => setShowBankForm(false)}
+                className="flex-1 py-4 text-gray-400 font-bold hover:text-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleBankTransferSubmit}
+                disabled={processing}
+                className="flex-[2] py-4 bg-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-rose-100 hover:bg-rose-700 transition-all disabled:opacity-50"
+              >
+                {processing ? 'Wait...' : 'Submit Proof'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

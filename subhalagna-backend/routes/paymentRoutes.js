@@ -1,6 +1,7 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Payment Routes
+ * @fileoverview SubhaLagna v2.0.2 — Payment Routes
  * @description   Endpoints for subscription management and payments.
+ * @version       2.0.2
  */
 
 const express = require('express');
@@ -18,5 +19,6 @@ router.post('/validate-coupon', paymentController.validateCoupon);
 router.post('/order',           paymentController.createOrder);
 router.post('/verify',          paymentController.verifyPayment);
 router.post('/confirm-free',    paymentController.confirmFreeSubscription);
+router.post('/bank-transfer',   paymentController.requestBankTransfer);
 
 module.exports = router;

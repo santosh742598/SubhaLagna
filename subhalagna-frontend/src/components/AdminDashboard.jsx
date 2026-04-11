@@ -1,25 +1,20 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Admin Dashboard
+ * @fileoverview SubhaLagna v2.0.2 — Admin Dashboard
  * @description   Executive interface for platform management.
- *                v2.0.0 features:
+ *                v2.0.2 features:
  *                  - Financial Oversight (Total & Today's Revenue)
  *                  - User Moderation (Verify, Suspend, Delete)
  *                  - Manual Subscription Upgrades
  *                  - Coupon Management
+ *                  - Bank Payment Verification (New)
+ * @version       2.0.2
  */
 
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
-import { 
-  getDashboardStats, 
-  getAllUsers, 
-  toggleSuspendUser, 
-  toggleVerifyProfile, 
-  deleteUser,
-  getAllCoupons,
-  createCoupon,
-  deleteCoupon,
-  manualUpgradeUser
+  manualUpgradeUser,
+  getPendingBankPayments,
+  verifyBankPayment
 } from '../services/adminService';
 
 // ─── Stat Card Component ─────────────────────────────────────────────────────
@@ -58,16 +53,13 @@ const AdminDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [upgradeForm, setUpgradeForm] = useState({ planId: 'gold', durationDays: '365' });
 
-  // Coupons State
-  const [coupons, setCoupons] = useState([]);
-  const [showCouponModal, setShowCouponModal] = useState(false);
-  const [newCoupon, setNewCoupon] = useState({
-    code: '',
-    discountType: 'percentage',
-    discountValue: '',
-    usageLimit: '',
-    expiryDate: ''
   });
+
+  // Payments State
+  const [pendingPayments, setPendingPayments] = useState([]);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [verifyForm, setVerifyForm] = useState({ status: 'captured', adminRemarks: '' });
 
   const fetchData = async (page = 1) => {
     try {
@@ -95,9 +87,19 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchPayments = async () => {
+    try {
+      const data = await getPendingBankPayments();
+      setPendingPayments(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'users') fetchData();
     if (activeTab === 'coupons') fetchCoupons();
+    if (activeTab === 'payments') fetchPayments();
   }, [search, filterRole, activeTab]);
 
   const handleAction = async (actionFn, id) => {
@@ -110,13 +112,14 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleManualUpgrade = async (e) => {
+  const handleVerifyPayment = async (e) => {
     e.preventDefault();
     try {
-      await manualUpgradeUser(selectedUser._id, upgradeForm);
-      setShowUpgradeModal(false);
-      fetchData(pagination.page);
-      alert('User upgraded successfully!');
+      await verifyBankPayment(selectedPayment._id, verifyForm);
+      setShowVerifyModal(false);
+      fetchPayments();
+      fetchData(); // Refresh stats
+      alert(`Payment ${verifyForm.status === 'captured' ? 'Approved' : 'Rejected'}!`);
     } catch (err) {
       alert(err);
     }
@@ -134,9 +137,13 @@ const AdminDashboard = () => {
             <h1 className="text-3xl font-serif font-bold text-gray-800">Admin Dashboard</h1>
             <p className="text-gray-400 text-sm mt-1">Platform overview and commercial controls.</p>
           </div>
-          <div className="flex gap-3">
-             <button onClick={() => setActiveTab('users')} className={`px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'users' ? 'bg-rose-600 text-white shadow-lg shadow-rose-200' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'}`}>User Moderation</button>
-             <button onClick={() => setActiveTab('coupons')} className={`px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'coupons' ? 'bg-rose-600 text-white shadow-lg shadow-rose-200' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'}`}>Coupons</button>
+          <div className="flex gap-2 flex-wrap">
+             <button onClick={() => setActiveTab('users')} className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'users' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}>Users</button>
+             <button onClick={() => setActiveTab('payments')} className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'payments' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}>
+               Pending Payments 
+               {pendingPayments.length > 0 && <span className="ml-2 bg-white text-rose-600 px-1.5 py-0.5 rounded-md text-[9px]">{pendingPayments.length}</span>}
+             </button>
+             <button onClick={() => setActiveTab('coupons')} className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'coupons' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}>Coupons</button>
           </div>
         </div>
 
@@ -207,6 +214,65 @@ const AdminDashboard = () => {
               </table>
             </div>
           </div>
+        ) : activeTab === 'payments' ? (
+          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+            <div className="p-8 border-b border-gray-50">
+               <h3 className="text-xl font-serif font-bold text-gray-800">Pending Bank Transfers</h3>
+               <p className="text-gray-400 text-xs mt-1">Review UTR numbers and UPI IDs to verify manual payments.</p>
+            </div>
+            {pendingPayments.length === 0 ? (
+               <div className="p-20 text-center">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
+                  </div>
+                  <p className="text-gray-400 font-medium tracking-tight">No pending payments to review.</p>
+               </div>
+            ) : (
+              <div className="overflow-x-auto font-sans">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-slate-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                      <th className="px-8 py-4">User</th>
+                      <th className="px-6 py-4">UTR Number</th>
+                      <th className="px-6 py-4">Amount</th>
+                      <th className="px-6 py-4">Date</th>
+                      <th className="px-8 py-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {pendingPayments.map((p) => (
+                      <tr key={p._id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-8 py-5">
+                          <div>
+                            <p className="font-bold text-gray-800 text-sm">{p.user?.name || 'Unknown'}</p>
+                            <p className="text-[10px] text-gray-400 uppercase tracking-tighter">{p.planId} Plan</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5">
+                          <code className="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-600">{p.utrNumber}</code>
+                          <p className="text-[10px] text-gray-400 mt-1">From: {p.senderUpiId}</p>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="font-bold text-gray-700">₹{p.amount}</span>
+                        </td>
+                        <td className="px-6 py-5 text-xs text-gray-500 whitespace-nowrap">
+                          {new Date(p.paymentDateTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                        </td>
+                        <td className="px-8 py-5 text-right">
+                          <button 
+                            onClick={() => { setSelectedPayment(p); setShowVerifyModal(true); }}
+                            className="bg-rose-600 text-white text-[10px] font-bold px-4 py-2 rounded-xl shadow-lg shadow-rose-100 hover:scale-105 transition-all"
+                          >
+                            Review
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
              <h3 className="text-xl font-serif font-bold text-gray-800">Coupon Hub</h3>
@@ -238,6 +304,52 @@ const AdminDashboard = () => {
                  <div className="flex gap-4 pt-4">
                     <button type="button" onClick={() => setShowUpgradeModal(false)} className="flex-1 py-4 bg-slate-50 text-slate-500 rounded-2xl font-bold">Cancel</button>
                     <button type="submit" className="flex-1 py-4 bg-amber-500 text-white rounded-2xl font-bold shadow-xl shadow-amber-100">Grant Premium</button>
+                 </div>
+              </form>
+           </div>
+        </div>
+      )}
+
+      {/* ── Payment Verification Modal ── */}
+      {showVerifyModal && selectedPayment && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
+           <div className="bg-white rounded-[3rem] w-full max-w-md p-10 shadow-2xl animate-scale-in">
+              <h3 className="text-2xl font-serif font-bold text-gray-800 mb-2">Verify Payment</h3>
+              <p className="text-gray-400 text-sm mb-6">Reviewing claim for <span className="font-bold text-gray-700">{selectedPayment.user?.name}</span></p>
+              
+              <div className="bg-slate-50 p-5 rounded-2xl mb-8 space-y-2 text-sm">
+                 <p className="text-gray-500"><strong>UTR:</strong> {selectedPayment.utrNumber}</p>
+                 <p className="text-gray-500"><strong>UPI:</strong> {selectedPayment.senderUpiId}</p>
+                 <p className="text-gray-500"><strong>Amount:</strong> ₹{selectedPayment.amount} ({selectedPayment.planId})</p>
+                 {selectedPayment.userRemarks && <p className="text-gray-500 pt-2 border-t border-slate-100 mt-2 italic">"{selectedPayment.userRemarks}"</p>}
+              </div>
+
+              <form onSubmit={handleVerifyPayment} className="space-y-6">
+                 <div>
+                    <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Action</label>
+                    <select 
+                      value={verifyForm.status} 
+                      onChange={e => setVerifyForm({...verifyForm, status: e.target.value})} 
+                      className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold"
+                    >
+                       <option value="captured">✅ Approve & Activate</option>
+                       <option value="failed">❌ Reject Request</option>
+                    </select>
+                 </div>
+                 <div>
+                    <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Admin Remarks (Sent to user)</label>
+                    <textarea 
+                      placeholder="e.g. UTR verified OR UTR mismatch..."
+                      value={verifyForm.adminRemarks} 
+                      onChange={e => setVerifyForm({...verifyForm, adminRemarks: e.target.value})} 
+                      className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50 text-sm h-24 resize-none"
+                    />
+                 </div>
+                 <div className="flex gap-4 pt-4">
+                    <button type="button" onClick={() => setShowVerifyModal(false)} className="flex-1 py-4 bg-slate-50 text-slate-500 rounded-2xl font-bold">Cancel</button>
+                    <button type="submit" className={`flex-1 py-4 text-white rounded-2xl font-bold shadow-xl ${verifyForm.status === 'captured' ? 'bg-emerald-500 shadow-emerald-100' : 'bg-rose-500 shadow-rose-100'}`}>
+                      {verifyForm.status === 'captured' ? 'Approve' : 'Reject'}
+                    </button>
                  </div>
               </form>
            </div>

@@ -127,3 +127,29 @@ export const manualUpgradeUser = async (userId, upgradeData) => {
     throw getErrorMessage(err, 'Failed to manually upgrade user');
   }
 };
+
+/**
+ * Get all pending bank transfer requests.
+ */
+export const getPendingBankPayments = async () => {
+  try {
+    const { data } = await api.get('/admin/payments/pending');
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to fetch pending payments');
+  }
+};
+
+/**
+ * Verify (Approve/Reject) a bank payment.
+ * @param {string} id - Payment ID
+ * @param {object} verifyData - { status, adminRemarks }
+ */
+export const verifyBankPayment = async (id, verifyData) => {
+  try {
+    const { data } = await api.put(`/admin/payments/${id}/verify`, verifyData);
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to verify payment');
+  }
+};
