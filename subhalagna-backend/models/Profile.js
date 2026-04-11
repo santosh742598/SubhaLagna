@@ -31,7 +31,7 @@ const profileSchema = new mongoose.Schema(
     // ── Basic Info ────────────────────────────────────────────────────────────
     name:   { type: String, required: true, trim: true },
     gender: { type: String, required: true, enum: ['Male', 'Female'] },
-    age:    { type: Number, required: true, min: 18, max: 80 },
+    age:    { type: Number, min: 18, max: 80 }, // Now auto-calculated from DOB
 
     // ── Location ──────────────────────────────────────────────────────────────
     location:    { type: String, default: '' }, // Derived: "City, State"
@@ -86,6 +86,7 @@ const profileSchema = new mongoose.Schema(
       placeOfBirth: { type: String, default: '' },
       rashi:        { type: String, default: '' }, // Moon sign
       nakshatra:    { type: String, default: '' },
+      pada:         { type: Number, enum: [1, 2, 3, 4], default: null }, // Nakshatra quarter
       gotra:        { type: String, default: '' },
       manglik:      { type: Boolean, default: false },
     },
@@ -124,6 +125,15 @@ profileSchema.index({ completenessScore: -1 });
 
 // ── Pre-save Hook: Compute profile completeness score ─────────────────────────
 profileSchema.pre('save', function (next) {
+  // 1. Auto-calculate Age from DOB if available
+  if (this.horoscope?.dateOfBirth) {
+    const dob = new Date(this.horoscope.dateOfBirth);
+    const diff = Date.now() - dob.getTime();
+    const ageDate = new Date(diff); 
+    this.age = Math.abs(ageDate.getUTCFullYear() - 1970);
+  }
+
+  // 2. Compute profile completeness score
   let score = 0;
   const w = { // field: weight
     name: 10, bio: 15, profilePhoto: 15, age: 5, religion: 5,

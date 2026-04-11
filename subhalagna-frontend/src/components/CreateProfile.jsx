@@ -143,7 +143,8 @@ const CreateProfile = () => {
   const [errorStr, setErrorStr] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: user?.name || '', gender: 'Male', age: '', religion: 'Hindu', caste: '',
+    name: user?.name || '', gender: 'Male', dateOfBirth: '', religion: 'Hindu', caste: '',
+    rashi: '', nakshatra: '', pada: '',
     location: '', currentState: '', currentCity: '', nativeState: '', nativeCity: '',
     education: '', profession: '', height: "5' 5\"", fatherName: '', motherName: '',
     siblings: '0', familyType: 'Nuclear', bio: '', partnerInterests: ''
@@ -164,8 +165,12 @@ const CreateProfile = () => {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const nextStep = () => {
-    if (currentStep === 1 && (!formData.name || !formData.age)) { setErrorStr("Please fill in your name and age."); return; }
-    if (currentStep === 1 && parseInt(formData.age) < 18) { setErrorStr("Must be 18 or older."); return; }
+    if (currentStep === 1 && (!formData.name || !formData.dateOfBirth)) { setErrorStr("Please fill in your name and date of birth."); return; }
+    if (currentStep === 1) {
+      const birthDate = new Date(formData.dateOfBirth);
+      const age = Math.abs(new Date(Date.now() - birthDate.getTime()).getUTCFullYear() - 1970);
+      if (age < 18) { setErrorStr("You must be 18 or older to register."); return; }
+    }
     if (currentStep === 2 && (!formData.currentState || !formData.currentCity || !formData.nativeState || !formData.nativeCity)) { setErrorStr("Please fill in both Current and Native locations."); return; }
     setErrorStr(null); setCurrentStep(prev => Math.min(prev + 1, 6)); window.scrollTo(0, 0);
   };
@@ -313,10 +318,10 @@ const CreateProfile = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Age</label>
-                      <input type="number" name="age" value={formData.age} onChange={handleChange}
-                        required placeholder="e.g. 25" className={inputClasses} style={{ outline: 'none' }} />
-                      <p className="text-xs text-gray-400 mt-1.5 ml-1">You must be at least 18 years old.</p>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Date of Birth</label>
+                      <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange}
+                        required className={inputClasses} style={{ outline: 'none' }} />
+                      <p className="text-xs text-gray-400 mt-1.5 ml-1 italic">Format: DD-MMM-YYYY (e.g., 25-Aug-1995)</p>
                     </div>
                   </div>
                 )}
@@ -334,6 +339,21 @@ const CreateProfile = () => {
                         <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Caste</label>
                         <input type="text" name="caste" value={formData.caste} onChange={handleChange}
                           placeholder="Optional" className={inputClasses} style={{ outline: 'none' }} />
+                      </div>
+                    </div>
+
+                    <div className="pt-5 border-t border-rose-100/60">
+                      <p className="text-xs font-bold text-rose-500 uppercase tracking-widest mb-4 ml-1">✨ Horoscope Details (Guna Milan)</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="text" name="rashi" value={formData.rashi} onChange={handleChange} placeholder="Rashi" className={inputClasses} />
+                        <input type="text" name="nakshatra" value={formData.nakshatra} onChange={handleChange} placeholder="Nakshatra" className={inputClasses} />
+                        <select name="pada" value={formData.pada} onChange={handleChange} className={`${inputClasses} cursor-pointer`}>
+                          <option value="">Select Pada</option>
+                          <option value="1">Pada 1</option>
+                          <option value="2">Pada 2</option>
+                          <option value="3">Pada 3</option>
+                          <option value="4">Pada 4</option>
+                        </select>
                       </div>
                     </div>
 

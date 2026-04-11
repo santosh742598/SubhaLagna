@@ -44,6 +44,7 @@ const setupProfile = async (req, res, next) => {
       fatherName, motherName, siblings, familyType,
       currentState, currentCity, nativeState, nativeCity,
       partnerInterests,
+      dateOfBirth, rashi, nakshatra, pada, gotra, manglik
     } = req.body;
 
     // ── Age validation (server-side double-check) ─────────────────────────
@@ -125,6 +126,14 @@ const setupProfile = async (req, res, next) => {
         familyType: familyType || 'Nuclear',
       },
       partnerInterests: partnerInterests || '',
+      horoscope: {
+        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
+        rashi: rashi || '',
+        nakshatra: nakshatra || '',
+        pada: pada ? Number(pada) : null,
+        gotra: gotra || '',
+        manglik: manglik === 'true' || manglik === true,
+      }
     });
 
     return sendSuccess(res, profile, 'Profile created successfully', 201);
@@ -382,6 +391,29 @@ const updateProfile = async (req, res, next) => {
       const city  = req.body.currentCity  || profile.currentCity;
       const state = req.body.currentState || profile.currentState;
       updateData.location = `${city}, ${state}`;
+    }
+
+    // Handle Horoscope Updates
+    if (req.body.dateOfBirth || req.body.rashi || req.body.nakshatra || req.body.pada || req.body.gotra || req.body.manglik !== undefined) {
+      updateData.horoscope = {
+        ...profile.horoscope,
+        dateOfBirth:  req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : profile.horoscope?.dateOfBirth,
+        rashi:        req.body.rashi       !== undefined ? req.body.rashi       : profile.horoscope?.rashi,
+        nakshatra:    req.body.nakshatra   !== undefined ? req.body.nakshatra   : profile.horoscope?.nakshatra,
+        pada:         req.body.pada        !== undefined ? Number(req.body.pada) : profile.horoscope?.pada,
+        gotra:        req.body.gotra       !== undefined ? req.body.gotra       : profile.horoscope?.gotra,
+        manglik:      req.body.manglik     !== undefined ? (req.body.manglik === 'true' || req.body.manglik === true) : profile.horoscope?.manglik,
+      };
+    }
+
+    // Handle Privacy Settings Updates
+    if (req.body.showPhotoTo || req.body.showContactTo || req.body.isProfileHidden !== undefined) {
+      updateData.privacySettings = {
+        ...profile.privacySettings,
+        showPhotoTo:    req.body.showPhotoTo    || profile.privacySettings?.showPhotoTo,
+        showContactTo:  req.body.showContactTo  || profile.privacySettings?.showContactTo,
+        isProfileHidden: req.body.isProfileHidden !== undefined ? (req.body.isProfileHidden === 'true' || req.body.isProfileHidden === true) : profile.privacySettings?.isProfileHidden,
+      };
     }
 
     const updated = await Profile.findByIdAndUpdate(

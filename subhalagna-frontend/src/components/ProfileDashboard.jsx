@@ -1,12 +1,13 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — User Dashboard
+ * @fileoverview SubhaLagna v2.0.9 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
- *                v2.0.0 changes:
- *                  - Premium status & limit tracking
- *                  - Interests Received inbox (Accept/Reject)
- *                  - Integrated profile editor with gallery
- *                  - Elegant glassmorphism UI
+ *                v2.0.9 changes:
+ *                  - Identity Fortification: Locked name/gender/dob
+ *                  - Date of Birth display (dd-mmm-yyyy)
+ *                  - Detailed Horoscope Editor (Rashi, Nakshatra, Pada)
+ *                  - Integrated Privacy & Security Suite
+ *                  - Multi-tag Traits & Interests Editor
  */
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -14,6 +15,20 @@ import { AuthContext } from '../context/AuthContext';
 import { updateProfile as updateProfileService } from '../services/profileService';
 import { getMyInterests, respondToInterest } from '../services/interestService';
 import CaptureModal from './CaptureModal';
+import { RAZORPAY_KEY_ID } from '../config';
+
+const PREDEFINED_INTERESTS = ["Travel", "Music", "Cooking", "Photography", "Fitness", "Reading", "Movies", "Sports", "Art"];
+const PREDEFINED_TRAITS = ["Introvert", "Extrovert", "Ambivert", "Ambitious", "Creative", "Organized", "Spontaneous", "Rational", "Empathetic"];
+
+const formatDate = (date) => {
+  if (!date) return '—';
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, '0');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+};
 
 // Re-using consistent Icon style from the app
 const Sparkles = ({ className }) => (
@@ -72,12 +87,17 @@ const ProfileDashboard = () => {
   const [interests, setInterests] = useState([]);
   const [loadingInterests, setLoadingInterests] = useState(false);
 
+  // Multi-tag lists
+  const [traits, setTraits] = useState([]);
+  const [interestsList, setInterestsList] = useState([]);
+
   useEffect(() => {
     if (user?.profile) {
       setFormData({
         name:          user.profile.name || '',
+        gender:        user.profile.gender || 'Male',
         location:      user.profile.location || '',
-        age:           user.profile.age || '',
+        dateOfBirth:   user.profile.horoscope?.dateOfBirth || '',
         caste:         user.profile.caste || '',
         religion:      user.profile.religion || '',
         education:     user.profile.education || '',
@@ -85,7 +105,19 @@ const ProfileDashboard = () => {
         bio:           user.profile.bio || '',
         height:        user.profile.height || '',
         motherTongue:  user.profile.motherTongue || '',
+        // Horoscope
+        rashi:         user.profile.horoscope?.rashi || '',
+        nakshatra:     user.profile.horoscope?.nakshatra || '',
+        pada:          user.profile.horoscope?.pada || '',
+        gotra:         user.profile.horoscope?.gotra || '',
+        manglik:       user.profile.horoscope?.manglik || false,
+        // Privacy
+        showPhotoTo:   user.profile.privacySettings?.showPhotoTo || 'everyone',
+        showContactTo: user.profile.privacySettings?.showContactTo || 'premium_only',
+        isProfileHidden: user.profile.privacySettings?.isProfileHidden || false,
       });
+      setTraits(user.profile.traits || []);
+      setInterestsList(user.profile.interests || []);
     }
   }, [user]);
 
@@ -120,7 +152,11 @@ const ProfileDashboard = () => {
     }
   };
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setFormData({ ...formData, [e.target.name]: value });
+  };
+  
   const handleFileChange = (e) => setFile(e.target.files[0]);
 
   const handleCapture = (file) => {
@@ -135,6 +171,9 @@ const ProfileDashboard = () => {
     setGalleryPreviews(prev => [...prev, ...newPreviews]);
   };
 
+  const toggleTrait = (t) => setTraits(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
+  const toggleInterest = (i) => setInterestsList(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
+
   const handleRemoveExisting = (photoUrl) => setRemovePhotos(prev => [...prev, photoUrl]);
   const handleRemoveNew = (index) => {
     setGalleryFiles(prev => prev.filter((_, i) => i !== index));
@@ -148,6 +187,8 @@ const ProfileDashboard = () => {
     
     const submitData = new FormData();
     Object.keys(formData).forEach(key => submitData.append(key, formData[key]));
+    submitData.append('traits', traits.join(', '));
+    submitData.append('interests', interestsList.join(', '));
     if (file) submitData.append('profilePhoto', file);
     galleryFiles.forEach(f => submitData.append('additionalPhotos', f));
     if (removePhotos.length > 0) submitData.append('removePhotos', JSON.stringify(removePhotos));
@@ -168,7 +209,7 @@ const ProfileDashboard = () => {
   const calculateProfileStrength = () => {
     if (!user?.profile) return 0;
     const fields = [
-      user.profile.name, user.profile.age, user.profile.religion, 
+      user.profile.name, user.profile.horoscope?.dateOfBirth, user.profile.religion, 
       user.profile.location, user.profile.education, user.profile.profession, 
       user.profile.bio, user.profile.profilePhoto
     ];
@@ -297,51 +338,147 @@ const ProfileDashboard = () => {
            {activeTab === 'profile' ? (
              <div className="bg-white p-8 md:p-10 rounded-[3rem] shadow-sm border border-rose-50">
                <form onSubmit={handleSubmit} className="space-y-10">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
-                    <div className="space-y-6">
-                       <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Basic Identity</h3>
-                       <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Display Name" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
-                       <div className="grid grid-cols-2 gap-4">
-                         <input type="number" name="age" value={formData.age} onChange={handleChange} placeholder="Age" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
-                         <input type="text" name="height" value={formData.height} onChange={handleChange} placeholder="Height" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
-                       </div>
-                       <textarea name="bio" value={formData.bio} onChange={handleChange} rows="4" placeholder="Briefly describe yourself..." className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
-                    </div>
-                    <div className="space-y-6">
-                       <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Background</h3>
-                       <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="Current City, State" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
-                       <input type="text" name="education" value={formData.education} onChange={handleChange} placeholder="Highest Education" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
-                       <input type="text" name="profession" value={formData.profession} onChange={handleChange} placeholder="Profession" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
-                    </div>
-                 </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                     <div className="space-y-6">
+                        <h3 className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Identity (Locked)</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1.5 focus-within:opacity-100 opacity-60 transition-opacity">
+                             <label className="text-[10px] font-bold text-gray-400 ml-1">NAME</label>
+                             <input type="text" value={formData.name} disabled className="w-full px-5 py-3 rounded-2xl border border-gray-100 bg-gray-50/50 text-xs font-bold cursor-not-allowed" />
+                          </div>
+                          <div className="space-y-1.5 focus-within:opacity-100 opacity-60 transition-opacity">
+                             <label className="text-[10px] font-bold text-gray-400 ml-1">GENDER</label>
+                             <input type="text" value={formData.gender} disabled className="w-full px-5 py-3 rounded-2xl border border-gray-100 bg-gray-50/50 text-xs font-bold cursor-not-allowed" />
+                          </div>
+                        </div>
 
-                 <div className="bg-rose-50/30 p-8 rounded-[2rem] border border-rose-100/50">
-                   <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-6">Profile Photo</h3>
-                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8">
-                       <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-white shadow-xl flex-shrink-0">
-                          <img src={file ? URL.createObjectURL(file) : user.profile.profilePhoto} className="w-full h-full object-cover" alt="" />
-                       </div>
-                       <div className="flex flex-wrap gap-4">
-                          <label className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm cursor-pointer hover:bg-rose-50 transition-all shadow-sm">
-                             Change Photo
-                             <input type="file" onChange={handleFileChange} className="hidden" />
-                          </label>
-                          <button 
-                            type="button" 
-                            onClick={() => setIsCameraOpen(true)}
-                            className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm hover:bg-rose-50 transition-all shadow-sm"
-                          >
-                             Take Photo
-                          </button>
-                       </div>
-                   </div>
-                 </div>
+                        <div className="space-y-1.5 focus-within:opacity-100 opacity-60 transition-opacity">
+                          <label className="text-[10px] font-bold text-gray-400 ml-1">DATE OF BIRTH</label>
+                          <input type="text" value={formatDate(formData.dateOfBirth)} disabled className="w-full px-5 py-3 rounded-2xl border border-gray-100 bg-gray-50/50 text-xs font-bold cursor-not-allowed" />
+                        </div>
 
-                 <div className="pt-6">
-                    <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-gradient-to-r from-rose-600 to-pink-500 text-white rounded-2xl font-black shadow-xl shadow-rose-200 disabled:opacity-50">
-                       {isSubmitting ? 'SAVING...' : 'UPDATE PROFILE'}
-                    </button>
-                 </div>
+                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest pt-4">Additional Info</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <input type="text" name="height" value={formData.height} onChange={handleChange} placeholder="Height" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                          <input type="text" name="motherTongue" value={formData.motherTongue} onChange={handleChange} placeholder="Mother Tongue" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                        </div>
+                        <textarea name="bio" value={formData.bio} onChange={handleChange} rows="4" placeholder="Briefly describe yourself..." className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                     </div>
+
+                     <div className="space-y-6">
+                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Background</h3>
+                        <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="Current City, State" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                        <input type="text" name="education" value={formData.education} onChange={handleChange} placeholder="Highest Education" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                        <input type="text" name="profession" value={formData.profession} onChange={handleChange} placeholder="Profession" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                        
+                        <div className="pt-4 space-y-4">
+                           <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                             <Sparkles className="w-3 h-3 text-rose-400" /> Horoscope (Guna Milan)
+                           </h3>
+                           <div className="grid grid-cols-2 gap-4">
+                              <input type="text" name="rashi" value={formData.rashi} onChange={handleChange} placeholder="Rashi" className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                              <input type="text" name="nakshatra" value={formData.nakshatra} onChange={handleChange} placeholder="Nakshatra" className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                           </div>
+                           <div className="grid grid-cols-2 gap-4">
+                              <select name="pada" value={formData.pada} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium">
+                                <option value="">Select Pada</option>
+                                <option value="1">Pada 1</option>
+                                <option value="2">Pada 2</option>
+                                <option value="3">Pada 3</option>
+                                <option value="4">Pada 4</option>
+                              </select>
+                              <input type="text" name="gotra" value={formData.gotra} onChange={handleChange} placeholder="Gotra" className="w-full px-5 py-3.5 rounded-xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* Personality Tags */}
+                  <div className="pt-8 border-t border-rose-50 space-y-8">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div>
+                           <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-4">Interests & Hobbies</label>
+                           <div className="flex flex-wrap gap-2 mb-4">
+                              {PREDEFINED_INTERESTS.map(i => (
+                                <button key={i} type="button" onClick={() => toggleInterest(i)}
+                                  className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border 
+                                  ${interestsList.includes(i) ? 'bg-rose-500 border-rose-500 text-white' : 'bg-gray-50 border-gray-100 text-gray-400 hover:border-rose-200'}`}>
+                                  {i}
+                                </button>
+                              ))}
+                           </div>
+                        </div>
+                        <div>
+                           <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-4">Personality Traits</label>
+                           <div className="flex flex-wrap gap-2 mb-4">
+                              {PREDEFINED_TRAITS.map(t => (
+                                <button key={t} type="button" onClick={() => toggleTrait(t)}
+                                  className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border 
+                                  ${traits.includes(t) ? 'bg-rose-500 border-rose-500 text-white' : 'bg-gray-50 border-gray-100 text-gray-400 hover:border-rose-200'}`}>
+                                  {t}
+                                </button>
+                              ))}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* Privacy Suite */}
+                  <div className="bg-gradient-to-br from-rose-50/50 to-pink-50/50 p-8 rounded-[2.5rem] border border-rose-100 space-y-6">
+                     <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-rose-500 text-white rounded-xl flex items-center justify-center">
+                           <ShieldCheck className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Privacy & Security Controls</h3>
+                     </div>
+                     
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-bold text-gray-500 ml-1">PHOTO VISIBILITY</label>
+                           <select name="showPhotoTo" value={formData.showPhotoTo} onChange={handleChange} className="w-full px-5 py-4 rounded-2xl border-2 border-white bg-white/60 focus:bg-white transition-all text-sm font-bold text-gray-800">
+                              <option value="everyone">Everyone (Public)</option>
+                              <option value="interests_only">Only Accepted Connections (Frosted)</option>
+                              <option value="none">Nobody (Max Stealth)</option>
+                           </select>
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-bold text-gray-500 ml-1">CONTACT VISIBILITY</label>
+                           <select name="showContactTo" value={formData.showContactTo} onChange={handleChange} className="w-full px-5 py-4 rounded-2xl border-2 border-white bg-white/60 focus:bg-white transition-all text-sm font-bold text-gray-800">
+                              <option value="premium_only">Premium Members Only</option>
+                              <option value="interests_only">Only Accepted Connections</option>
+                              <option value="none">Hidden from All</option>
+                           </select>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div className="bg-rose-50/30 p-8 rounded-[2rem] border border-rose-100/50">
+                    <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-6">Profile Photo</h3>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8">
+                        <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-white shadow-xl flex-shrink-0">
+                           <img src={file ? URL.createObjectURL(file) : user.profile.profilePhoto} className="w-full h-full object-cover" alt="" />
+                        </div>
+                        <div className="flex flex-wrap gap-4">
+                           <label className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm cursor-pointer hover:bg-rose-50 transition-all shadow-sm">
+                              Change Photo
+                              <input type="file" onChange={handleFileChange} className="hidden" />
+                           </label>
+                           <button 
+                             type="button" 
+                             onClick={() => setIsCameraOpen(true)}
+                             className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm hover:bg-rose-50 transition-all shadow-sm"
+                           >
+                              Take Photo
+                           </button>
+                        </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6">
+                     <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-gradient-to-r from-rose-600 to-pink-500 text-white rounded-2xl font-black shadow-xl shadow-rose-200 disabled:opacity-50">
+                        {isSubmitting ? 'SAVING...' : 'UPDATE PROFILE'}
+                     </button>
+                  </div>
                </form>
              </div>
            ) : (
