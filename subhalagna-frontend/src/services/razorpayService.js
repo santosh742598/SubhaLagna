@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.3 — Razorpay & Bank Payment Integration Service
+ * @fileoverview SubhaLagna v2.0.4 — Razorpay & Bank Payment Integration Service
  * @description   Handles Razorpay SDK loading and backend communication (including Bank Transfers).
  * @version       2.0.2
  */

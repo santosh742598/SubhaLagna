@@ -1,6 +1,6 @@
-# 💍 SubhaLagna Matrimony — v2.0.3
+# 💍 SubhaLagna Matrimony — v2.0.4
 
-A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.0.3 focuses on premium user experiences, secure contact management, and robust administrative tools.
+A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.0.4 focuses on premium user experiences, secure contact management, and robust administrative tools.
 
 ---
 

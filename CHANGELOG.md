@@ -5,11 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.3] - 2026-04-11
+## [2.0.4] - 2026-04-11
 
 ### Added
-- **Bank Payments System**: Implemented manual verification workflow for Bank/UPI transfers with UTR and UPI ID tracking.
-- **Admin Review UI**: Expanded dashboard with a "Pending Payments" tab for verification and manual subscription triggers.
+- **NoSQL Injection Protection**: Integrated `express-mongo-sanitize` to globally filter malicious query operators.
+- **Strict Startup Validation**: Server now performs a "Fail-Fast" check for all critical secrets (Razorpay, SMTP, JWT) on boot.
+
+### Changed
+- **Query Optimization**: Applied `.lean()` to all read-only Admin and Payment queries to reduce memory footprint and improve security.
+- **Global Documentation Sync**: Project synchronized to v2.0.4 standards.
+
+## [2.0.3] - 2026-04-11
 
 ## [2.0.2] - 2026-04-11
 

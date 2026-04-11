@@ -29,6 +29,8 @@ const { Server } = require('socket.io');
 
 const connectDB       = require('./config/db');
 const socketHandler   = require('./socket/socketHandler');
+const mongoSanitize = require('express-mongo-sanitize');
+
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const {
   globalLimiter,
@@ -36,7 +38,15 @@ const {
 } = require('./middleware/rateLimitMiddleware');
 
 // ── Validate critical env vars on startup ────────────────────────────────────
-const REQUIRED_ENV = ['MONGO_URI', 'JWT_SECRET', 'JWT_REFRESH_SECRET'];
+// Including Razorpay and SMTP secrets to prevent silent security failures
+const REQUIRED_ENV = [
+  'MONGO_URI', 
+  'JWT_SECRET', 
+  'JWT_REFRESH_SECRET',
+  'RAZORPAY_KEY_ID',
+  'RAZORPAY_KEY_SECRET',
+  'SMTP_PASS'
+];
 REQUIRED_ENV.forEach((key) => {
   if (!process.env[key]) {
     console.error(`❌ FATAL: Missing required environment variable: ${key}`);
@@ -71,6 +81,9 @@ app.use(
     crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow images from /uploads
   })
 );
+
+// NoSQL Injection Protection
+app.use(mongoSanitize());
 
 // Strict CORS — only allow the configured frontend origin
 app.use(

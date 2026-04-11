@@ -112,7 +112,8 @@ const getAllUsers = async (req, res, next) => {
         .select('-password -refreshToken -resetPasswordToken')
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit)),
+        .limit(Number(limit))
+        .lean(),
       User.countDocuments(query),
     ]);
 
@@ -226,7 +227,7 @@ const deleteUser = async (req, res, next) => {
 // ─────────────────────────────────────────────────────────────────────────────
 const getAllCoupons = async (req, res, next) => {
   try {
-    const coupons = await Coupon.find({}).sort({ createdAt: -1 });
+    const coupons = await Coupon.find({}).sort({ createdAt: -1 }).lean();
     return sendSuccess(res, coupons);
   } catch (err) {
     next(err);
@@ -325,10 +326,10 @@ const manualUpgradeUser = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 const getPendingPayments = async (req, res, next) => {
-  try {
     const payments = await Payment.find({ status: 'pending' })
       .populate('user', 'name email')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     return sendSuccess(res, payments, 'Pending payments retrieved');
   } catch (err) {
