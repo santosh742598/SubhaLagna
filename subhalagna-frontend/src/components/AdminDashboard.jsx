@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.2 — Admin Dashboard
+ * @fileoverview SubhaLagna v2.0.3 — Admin Dashboard
  * @description   Executive interface for platform management.
  *                v2.0.2 features:
  *                  - Financial Oversight (Total & Today's Revenue)
