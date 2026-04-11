@@ -1,3 +1,12 @@
+/**
+ * @fileoverview SubhaLagna v2.0.9 — Profile Creation (Onboarding)
+ * @description   Multi-step onboarding flow for newly registered users.
+ *                v2.0.9 changes:
+ *                  - Replaced Age with Date of Birth
+ *                  - Added Horoscope data entry (Rashi, Nakshatra, Pada)
+ *                  - Enhanced Glassmorphism styling
+ */
+
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
