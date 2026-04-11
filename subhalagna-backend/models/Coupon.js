@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Coupon Model
+ * @fileoverview SubhaLagna v2.3.0 — Coupon Model
  * @description   Schema for managing discount coupons.
  *                Supports percentage and fixed-amount discounts.
  */

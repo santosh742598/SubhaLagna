@@ -1,5 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+/**
+ * @fileoverview SubhaLagna v2.3.0 — Interactive Landing Page
+ * @description Transitioned to session-aware UI.
+ * - v2.3.0 changes:
+ *   - Implemented conditional rendering for auth states (Login/Logout/Dashboard toggle).
+ *   - Integrated AuthContext for real-time session detection.
+ *   - Enhanced Hero and CTA sections with personalized action buttons.
+ */
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import heroImage from '../assets/hero-image.jpg';
 import Couple1 from '../assets/couple1.jpg';
 import Couple2 from '../assets/couple2.jpeg';
@@ -84,8 +93,15 @@ const useSlider = (length, interval = 5000) => {
 
 // ─── Header ─────────────────────────────────────────────────────────────────
 const Header = () => {
+   const { token, logoutContext } = useContext(AuthContext);
+   const navigate = useNavigate();
    const [scrolled, setScrolled] = useState(false);
    const [menuOpen, setMenuOpen] = useState(false);
+
+   const handleLogout = async () => {
+      await logoutContext();
+      navigate('/login');
+   };
 
    useEffect(() => {
       const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -130,21 +146,43 @@ const Header = () => {
             </nav>
 
             <div className="hidden md:flex items-center gap-3">
-               <Link
-                  to="/login"
-                  className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${scrolled
-                     ? 'text-gray-700 hover:text-rose-600'
-                     : 'text-white/90 hover:text-white'
-                     }`}
-               >
-                  Login
-               </Link>
-               <Link
-                  to="/signup"
-                  className="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-0.5 transition-all duration-300"
-               >
-                  Register Free
-               </Link>
+               {token ? (
+                  <>
+                     <Link
+                        to="/matches"
+                        className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${scrolled
+                           ? 'text-gray-700 hover:text-rose-600'
+                           : 'text-white/90 hover:text-white'
+                           }`}
+                     >
+                        Dashboard
+                     </Link>
+                     <button
+                        onClick={handleLogout}
+                        className="px-6 py-2.5 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-black hover:to-black text-white font-semibold rounded-xl shadow-lg transition-all duration-300"
+                     >
+                        Logout
+                     </button>
+                  </>
+               ) : (
+                  <>
+                     <Link
+                        to="/login"
+                        className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${scrolled
+                           ? 'text-gray-700 hover:text-rose-600'
+                           : 'text-white/90 hover:text-white'
+                           }`}
+                     >
+                        Login
+                     </Link>
+                     <Link
+                        to="/signup"
+                        className="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-0.5 transition-all duration-300"
+                     >
+                        Register Free
+                     </Link>
+                  </>
+               )}
             </div>
 
             <button
@@ -178,8 +216,17 @@ const Header = () => {
                   </a>
                ))}
                 <div className="flex gap-3 pt-2">
-                  <Link to="/login" className="flex-1 text-center py-2.5 border-2 border-rose-200 text-rose-600 rounded-xl font-semibold">Login</Link>
-                  <Link to="/signup" className="flex-1 text-center py-2.5 bg-rose-600 text-white rounded-xl font-semibold">Register Free</Link>
+                  {token ? (
+                    <>
+                      <Link to="/matches" onClick={() => setMenuOpen(false)} className="flex-1 text-center py-2.5 border-2 border-rose-200 text-rose-600 rounded-xl font-semibold">Dashboard</Link>
+                      <button onClick={handleLogout} className="flex-1 text-center py-2.5 bg-slate-900 text-white rounded-xl font-semibold">Logout</button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" onClick={() => setMenuOpen(false)} className="flex-1 text-center py-2.5 border-2 border-rose-200 text-rose-600 rounded-xl font-semibold">Login</Link>
+                      <Link to="/signup" onClick={() => setMenuOpen(false)} className="flex-1 text-center py-2.5 bg-rose-600 text-white rounded-xl font-semibold">Register Free</Link>
+                    </>
+                  )}
                </div>
             </div>
          </div>
@@ -189,6 +236,7 @@ const Header = () => {
 
 // ─── Hero Section ────────────────────────────────────────────────────────────
 const HeroSection = () => {
+   const { token } = useContext(AuthContext);
    const [imgLoaded, setImgLoaded] = useState(false);
 
    return (
@@ -260,21 +308,35 @@ const HeroSection = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-               <Link
-                  to="/signup"
-                  className="group px-10 py-5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
-               >
-                  Begin Your Journey
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-               </Link>
-               <Link
-                  to="/login"
-                  className="px-10 py-5 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold rounded-2xl text-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center"
-               >
-                  Member Login
-               </Link>
+               {token ? (
+                  <Link
+                     to="/matches"
+                     className="group px-10 py-5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                     Go to Dashboard
+                     <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                     </svg>
+                  </Link>
+               ) : (
+                  <>
+                     <Link
+                        to="/signup"
+                        className="group px-10 py-5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                     >
+                        Begin Your Journey
+                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                     </Link>
+                     <Link
+                        to="/login"
+                        className="px-10 py-5 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold rounded-2xl text-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center"
+                     >
+                        Member Login
+                     </Link>
+                  </>
+               )}
             </div>
          </div>
       </section>
@@ -642,6 +704,7 @@ const FloatingHeart = ({ style, size = 'sm' }) => {
 
 // ─── CTA Section (Card with floating hearts) ────────────────────────────────
 const CTASection = () => {
+   const { token } = useContext(AuthContext);
    const hearts = [
       { left: '5%', top: '10%', size: 'xs', color: 'text-rose-200', delay: '0s', duration: '4s' },
       { left: '15%', top: '70%', size: 'sm', color: 'text-pink-200', delay: '1s', duration: '5s' },
@@ -707,21 +770,35 @@ const CTASection = () => {
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                     <Link
-                        to="/signup"
-                        className="group px-10 py-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
-                     >
-                        Register Free Today
-                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                     </Link>
-                     <Link
-                        to="/login"
-                        className="px-10 py-4 bg-white hover:bg-rose-50 border-2 border-rose-200 hover:border-rose-300 text-rose-600 font-bold rounded-2xl text-lg hover:-translate-y-1 transition-all duration-300 shadow-sm"
-                     >
-                        Login to Account
-                     </Link>
+                     {token ? (
+                        <Link
+                           to="/matches"
+                           className="group px-10 py-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                           Go to Dashboard
+                           <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                           </svg>
+                        </Link>
+                     ) : (
+                        <>
+                           <Link
+                              to="/signup"
+                              className="group px-10 py-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                           >
+                              Register Free Today
+                              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                              </svg>
+                           </Link>
+                           <Link
+                              to="/login"
+                              className="px-10 py-4 bg-white hover:bg-rose-50 border-2 border-rose-200 hover:border-rose-300 text-rose-600 font-bold rounded-2xl text-lg hover:-translate-y-1 transition-all duration-300 shadow-sm"
+                           >
+                              Login to Account
+                           </Link>
+                        </>
+                     )}
                   </div>
                </div>
             </div>

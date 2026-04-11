@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Conversation Model
+ * @fileoverview SubhaLagna v2.3.0 — Conversation Model
  * @description   Represents a one-to-one chat conversation between two users.
  *                Only created after a mutual interest is accepted.
  *                Tracks both participants and the last message for preview.
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

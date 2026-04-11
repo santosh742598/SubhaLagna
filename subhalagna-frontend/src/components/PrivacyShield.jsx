@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.8 — Privacy Shield Component
+ * @fileoverview SubhaLagna v2.3.0 — Privacy Shield Component
  * @description   Frosted glass overlay for blurred photos.
  *                Includes a lock icon and "Private Profile" message.
  */

@@ -1,11 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — ProfileView Model
+ * @fileoverview SubhaLagna v2.3.0 — ProfileView Model
  * @description   Tracks which users have viewed a specific profile.
  *                Used for the "Who Viewed My Profile" premium feature.
  *                Free users see the count; Premium users see the full list.
  *                Documents auto-expire after 60 days via TTL index.
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

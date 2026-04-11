@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Socket.io Real-Time Handler
+ * @fileoverview SubhaLagna v2.3.0 — Socket.io Real-Time Handler
  * @description   Manages all WebSocket connections for the live chat feature.
  *                Architecture:
  *                  - Each authenticated user joins a private room named by their userId
@@ -21,7 +21,7 @@
  *                  notification       : real-time notification push
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

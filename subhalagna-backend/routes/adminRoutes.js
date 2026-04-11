@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.0.6 — Admin Routes
- * @description   Route definitions for the admin dashboard.
- *                ALL routes require both `protect` and `adminOnly` middleware.
- * @version       2.1.0
- *
- * Base path: /api/admin
+ * @fileoverview SubhaLagna v2.3.0 — Admin Routes
+ * @description Route definitions for the admin dashboard.
+ * - v2.3.0 changes:
+ *   - Added GET /api/admin/plans and PUT /api/admin/plans/:id for dynamic membership control.
+ *   - Integrated plan management into the administrative API surface.
+ * @version 2.3.0
  */
 
 'use strict';
@@ -23,7 +23,10 @@ const {
   deleteCoupon,
   manualUpgradeUser,
   getPendingPayments,
-  verifyBankPayment
+  verifyBankPayment,
+  getAllPlans,
+  updatePlan,
+  createPlan
 } = require('../controllers/adminController');
 
 const { protect, adminOnly } = require('../middleware/authMiddleware');
@@ -48,5 +51,10 @@ router.post('/users/:id/upgrade',       manualUpgradeUser);
 // Bank Payment Verification
 router.get('/payments/pending',         getPendingPayments);
 router.put('/payments/:id/verify',      verifyBankPayment);
+
+// Membership Plans
+router.get('/plans',                    getAllPlans);
+router.post('/plans',                   createPlan);
+router.put('/plans/:id',                updatePlan);
 
 module.exports = router;

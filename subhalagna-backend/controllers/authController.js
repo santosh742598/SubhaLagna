@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Auth Controller
+ * @fileoverview SubhaLagna v2.3.0 — Auth Controller
  * @description   Handles all authentication operations:
  *                - register     → create account + send OTP email
  *                - login        → validate credentials, issue tokens
@@ -10,7 +10,7 @@
  *                - getMe        → fetch current user + profile
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

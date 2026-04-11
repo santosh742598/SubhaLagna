@@ -1,11 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Global Frontend Configuration
+ * @fileoverview SubhaLagna v2.3.0 — Global Frontend Configuration
  * @description   Centralizes all environment-dependent configuration values.
  *                In production, VITE_API_URL and VITE_SOCKET_URL should be set
  *                via environment variables in your deployment platform.
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 /**

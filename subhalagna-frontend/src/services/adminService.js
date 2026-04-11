@@ -1,9 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Admin Service
- * @description   API calls for the admin dashboard.
- *                All calls require admin privileges.
- * @author        SubhaLagna Team
- * @version       2.1.0
+ * @fileoverview SubhaLagna v2.3.0 — Admin Service
+ * @description API calls for the admin dashboard including user management and membership controls.
+ * - v2.3.0 changes:
+ *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
+ * @author SubhaLagna Team
+ * @version 2.3.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -151,5 +152,31 @@ export const verifyBankPayment = async (id, verifyData) => {
     return data.data;
   } catch (err) {
     throw getErrorMessage(err, 'Failed to verify payment');
+  }
+};
+
+/**
+ * Get all membership plans (for admin management).
+ */
+export const getAdminPlans = async () => {
+  try {
+    const { data } = await api.get('/admin/plans');
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to fetch plans');
+  }
+};
+
+/**
+ * Update a membership plan.
+ * @param {string} id - Plan ObjectID
+ * @param {object} updateData 
+ */
+export const updateAdminPlan = async (id, updateData) => {
+  try {
+    const { data } = await api.put(`/admin/plans/${id}`, updateData);
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to update plan');
   }
 };

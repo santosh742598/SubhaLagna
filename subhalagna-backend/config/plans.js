@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Subscription Plans Configuration
+ * @fileoverview SubhaLagna v2.3.0 — Subscription Plans Configuration
  * @description   Unified source of truth for all membership plans.
  *                Changes here reflect instantly across frontend and payment gateway.
  */

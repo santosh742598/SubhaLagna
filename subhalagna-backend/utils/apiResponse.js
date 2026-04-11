@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Centralized API Response Helper
+ * @fileoverview SubhaLagna v2.3.0 — Centralized API Response Helper
  * @description   Standardizes all API responses across the application.
  *                Every successful response follows { success, data } and
  *                every error follows { success, message } format.
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  *
  * Usage:
  *   const { sendSuccess, sendError } = require('../utils/apiResponse');

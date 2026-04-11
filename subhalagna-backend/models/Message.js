@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Message Model
+ * @fileoverview SubhaLagna v2.3.0 — Message Model
  * @description   Stores individual chat messages within a Conversation.
  *                Each message belongs to a conversation and has a sender.
  *                Supports read receipts via the `isRead` flag.
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

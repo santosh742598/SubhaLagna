@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Profile Model
+ * @fileoverview SubhaLagna v2.3.0 — Profile Model
  * @description   Detailed matrimony profile schema. One profile per user (enforced
  *                by unique index on `user`). Stores biographical, family, career,
  *                personality, and preference data.
@@ -11,7 +11,7 @@
  *                  - completenessScore (computed on save)
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';
@@ -43,6 +43,7 @@ const profileSchema = new mongoose.Schema(
     // ── Religion & Community ──────────────────────────────────────────────────
     religion: { type: String, default: 'Hindu', trim: true },
     caste:    { type: String, default: '', trim: true },
+    motherTongue: { type: String, default: '', trim: true },
 
     // ── Physical & Professional ───────────────────────────────────────────────
     height:     { type: String, default: "5' 5\"" },
@@ -124,7 +125,7 @@ profileSchema.index({ 'privacySettings.isProfileHidden': 1 });
 profileSchema.index({ completenessScore: -1 });
 
 // ── Pre-save Hook: Compute profile completeness score ─────────────────────────
-profileSchema.pre('save', function (next) {
+profileSchema.pre('save', async function () {
   // 1. Auto-calculate Age from DOB if available
   if (this.horoscope?.dateOfBirth) {
     const dob = new Date(this.horoscope.dateOfBirth);
@@ -137,7 +138,7 @@ profileSchema.pre('save', function (next) {
   let score = 0;
   const w = { // field: weight
     name: 10, bio: 15, profilePhoto: 15, age: 5, religion: 5,
-    location: 5, education: 5, profession: 5, height: 5,
+    location: 5, education: 5, profession: 5, height: 5, motherTongue: 5,
     traits: 10, interests: 10, 'family.fatherName': 5, 'horoscope.dateOfBirth': 5,
   };
 
@@ -150,13 +151,13 @@ profileSchema.pre('save', function (next) {
   if (this.education)         score += w.education;
   if (this.profession)        score += w.profession;
   if (this.height)            score += w.height;
+  if (this.motherTongue)      score += w.motherTongue;
   if (this.traits?.length)    score += w.traits;
   if (this.interests?.length) score += w.interests;
   if (this.family?.fatherName) score += w['family.fatherName'];
   if (this.horoscope?.dateOfBirth) score += w['horoscope.dateOfBirth'];
 
   this.completenessScore = Math.min(score, 100);
-  next();
 });
 
 module.exports = mongoose.model('Profile', profileSchema);

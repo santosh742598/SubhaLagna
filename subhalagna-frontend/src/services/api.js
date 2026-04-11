@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Axios API Base Instance
+ * @fileoverview SubhaLagna v2.3.0 — Axios API Base Instance
  * @description   Configures a single axios instance used by all service modules.
  *                Features:
  *                  - Attaches JWT Bearer token from localStorage automatically
@@ -7,7 +7,7 @@
  *                  - Provides consistent error message extraction
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 import axios from 'axios';

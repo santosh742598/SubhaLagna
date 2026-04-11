@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Chat Controller
+ * @fileoverview SubhaLagna v2.3.0 — Chat Controller
  * @description   REST endpoints for the messaging system.
  *                Real-time delivery is handled separately by Socket.io
  *                (see socket/socketHandler.js). These REST endpoints handle:
@@ -9,7 +9,7 @@
  *                  - markAsRead       → mark all messages in a conversation as read
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

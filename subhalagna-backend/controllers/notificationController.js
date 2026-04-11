@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Notification Controller
+ * @fileoverview SubhaLagna v2.3.0 — Notification Controller
  * @description   Handles in-app notifications for the bell icon in the header.
  *                Endpoints:
  *                  - getNotifications → GET paginated list
@@ -7,7 +7,7 @@
  *                  - markAllRead      → PUT mark all as read
  *                  - deleteNotification → DELETE a specific one
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

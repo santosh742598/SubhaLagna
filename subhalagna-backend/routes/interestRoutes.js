@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Interest Routes
+ * @fileoverview SubhaLagna v2.3.0 — Interest Routes
  * @description   Route definitions for the interest/connection request system.
  *
  * Base path: /api/interests
@@ -11,7 +11,7 @@
  *   DELETE /:id                → withdraw a sent interest
  *
  * @author SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

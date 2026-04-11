@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — User Model
+ * @fileoverview SubhaLagna v2.3.0 — User Model
  * @description   Core user account schema. Stores authentication credentials
  *                and account-level metadata. Profile details are in Profile.js.
  *
@@ -11,7 +11,7 @@
  *                  - isSuspended, role (for admin controls)
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';
@@ -92,7 +92,6 @@ const userSchema = new mongoose.Schema(
     },
     premiumPlan: {
       type: String,
-      enum: ['none', 'gold', 'platinum'],
       default: 'none',
     },
     premiumExpires: {
@@ -151,5 +150,17 @@ userSchema.methods.matchPassword = async function (candidatePassword) {
 userSchema.methods.isPremiumActive = function () {
   return this.isPremium && this.premiumExpires && this.premiumExpires > new Date();
 };
+
+// ── Virtual: Profile ────────────────────────────────────────────────────────
+userSchema.virtual('profile', {
+  ref: 'Profile',
+  localField: '_id',
+  foreignField: 'user',
+  justOne: true
+});
+
+// Ensure virtuals are included in toObject and toJSON transformations
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model('User', userSchema);

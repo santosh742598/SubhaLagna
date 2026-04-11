@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Chat Routes
+ * @fileoverview SubhaLagna v2.3.0 — Chat Routes
  * @description   Route definitions for the real-time messaging system.
  *                REST endpoints for persistence; Socket.io handles real-time delivery.
  *
@@ -11,7 +11,7 @@
  *   PUT  /conversations/:conversationId/read       → mark all messages as read
  *
  * @author SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

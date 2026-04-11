@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Profile Detail Page
+ * @fileoverview SubhaLagna v2.3.0 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
  *                v2.0.0 changes:
@@ -136,8 +136,22 @@ const ProfileDetail = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                 
                 {/* Visual Badges */}
-                <div className="absolute bottom-6 left-6 text-white z-10">
-                  <h1 className="text-3xl font-serif font-bold">{profile.name}, {profile.age}</h1>
+                <div className="absolute bottom-6 left-6 text-white z-10 w-full pr-12">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                    <h1 className="text-3xl font-serif font-bold">{profile.name}, {profile.age}</h1>
+                    {profile.user?.isPremium && (
+                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-[0.2em] flex items-center gap-1.5 shadow-xl backdrop-blur-md border ${
+                        profile.user.premiumPlan === 'platinum' 
+                          ? 'bg-cyan-500/60 text-white border-cyan-400/30' 
+                          : 'bg-amber-500/60 text-white border-amber-400/30'
+                      }`}>
+                        <div className={`w-1 h-1 rounded-full animate-pulse ${
+                          profile.user.premiumPlan === 'platinum' ? 'bg-cyan-200' : 'bg-amber-200'
+                        }`} />
+                        {profile.user.premiumPlan.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-rose-200 text-sm font-medium flex items-center gap-2 mt-1">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
@@ -265,20 +279,61 @@ const ProfileDetail = () => {
 
               {/* Family */}
               <div className="bg-white rounded-[2rem] p-8 border border-rose-100 shadow-sm">
-                <SectionTitle title="Family" icon={
+                <SectionTitle title="Family Details" icon={
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                 } />
-                <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-y-4">
                    <div>
-                     <span className="text-xs font-bold text-gray-400 uppercase">Father</span>
-                     <p className="font-medium text-gray-700">{profile.family?.fatherName || 'Not specified'}</p>
+                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Father</span>
+                     <p className="font-bold text-gray-700">{profile.family?.fatherName || 'Not specified'}</p>
                    </div>
                    <div>
-                     <span className="text-xs font-bold text-gray-400 uppercase">Mother</span>
-                     <p className="font-medium text-gray-700">{profile.family?.motherName || 'Not specified'}</p>
+                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Mother</span>
+                     <p className="font-bold text-gray-700">{profile.family?.motherName || 'Not specified'}</p>
+                   </div>
+                   <div>
+                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Siblings</span>
+                     <p className="font-bold text-gray-700">{profile.family?.siblings || '0'}</p>
+                   </div>
+                   <div>
+                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Family Type</span>
+                     <p className="font-bold text-gray-700">{profile.family?.familyType || 'Nuclear'}</p>
                    </div>
                 </div>
               </div>
+            </div>
+
+            {/* Horoscope & Astrology */}
+            <div className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-rose-100 shadow-sm">
+               <div className="flex justify-between items-center mb-6">
+                 <SectionTitle title="Horoscope & Astrology" icon={
+                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                 } />
+                 {profile.horoscope?.manglik !== undefined && (
+                   <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${profile.horoscope.manglik ? 'bg-rose-50 border-rose-100 text-rose-500' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
+                     {profile.horoscope.manglik ? 'Manglik' : 'Non-Manglik'}
+                   </span>
+                 )}
+               </div>
+
+               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Moon Sign (Rashi)</span>
+                    <p className="text-lg font-bold text-gray-800">{profile.horoscope?.rashi || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Birth Star (Nakshatra)</span>
+                    <p className="text-lg font-bold text-gray-800">{profile.horoscope?.nakshatra || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Pada</span>
+                    <p className="text-lg font-bold text-gray-800">{profile.horoscope?.pada || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Gotra</span>
+                    <p className="text-lg font-bold text-gray-800">{profile.horoscope?.gotra || 'Not set'}</p>
+                  </div>
+               </div>
             </div>
 
             {/* Interests & Horoscope */}

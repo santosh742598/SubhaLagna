@@ -1,0 +1,94 @@
+/**
+ * SEED SCRIPT: Populate MasterData with initial entries
+ */
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const MasterData = require('./models/MasterData');
+const { registerValue } = require('./services/masterDataService');
+
+dotenv.config();
+
+const INITIAL_CASTES = [
+  "Brahmin", "Kshatriya", "Vaishya", "Shudra", "Yadav", "Patel", "Reddy", "Nair", 
+  "Maratha", "Jat", "Kayastha", "Aggarwal", "Baniya", "Khatri", "Sikh", "Jain", 
+  "Lingayat", "Vokkaliga", "Thevar", "Gounder", "Ezhava", "Nadar", "Kamma", "Kapu",
+  "Teli", "Khandayat", "Karana", "Gouda", "Dhoba", "Barika", "Kamara", "Kumbhara", "Malis"
+];
+
+const INITIAL_RELIGIONS = ["Hindu", "Muslim", "Sikh", "Christian", "Jain", "Buddhist", "Parsi", "Other"];
+const INITIAL_LANGUAGES = ["Hindi", "English", "Bengali", "Marathi", "Telugu", "Tamil", "Gujarati", "Urdu", "Kannada", "Odia", "Malayalam", "Punjabi", "Assamese", "Maithili", "Santhali", "Kashmiri", "Konkani", "Sindhi", "Dogri", "Manipuri", "Bodo", "Sanskrit"];
+
+const LOCATION_DATA = {
+  "Andaman and Nicobar Islands": ["Port Blair"],
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Anantapur", "Kadapa", "Kakinada"],
+  "Arunachal Pradesh": ["Itanagar"],
+  "Assam": ["Guwahati", "Dibrugarh", "Silchar", "Jorhat", "Nagaon", "Tinsukia", "Tezpur"],
+  "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Arrah", "Begusarai", "Katihar", "Munger"],
+  "Chandigarh": ["Chandigarh"],
+  "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Rajnandgaon", "Jagdalpur", "Ambikapur"],
+  "Dadra and Nagar Haveli and Daman and Diu": ["Daman", "Silvassa", "Diu"],
+  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
+  "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Gandhidham", "Anand"],
+  "Haryana": ["Faridabad", "Gurugram", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal", "Sonipat", "Panchkula"],
+  "Himachal Pradesh": ["Shimla", "Dharamshala", "Solan", "Mandi"],
+  "Jammu and Kashmir": ["Srinagar", "Jammu", "Anantnag", "Baramulla"],
+  "Jharkhand": ["Jamshedpur", "Dhanbad", "Ranchi", "Bokaro Steel City", "Deoghar", "Phusro", "Hazaribagh", "Giridih", "Ramgarh"],
+  "Karnataka": ["Bengaluru", "Hubballi-Dharwad", "Mysuru", "Kalaburagi", "Mangaluru", "Belagavi", "Davangere", "Ballari", "Vijayapura", "Shivamogga"],
+  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kollam", "Thrissur", "Alappuzha", "Palakkad", "Malappuram", "Kannur", "Kottayam"],
+  "Ladakh": ["Leh", "Kargil"],
+  "Lakshadweep": ["Kavaratti"],
+  "Madhya Pradesh": ["Indore", "Bhopal", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna", "Ratlam", "Rewa"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Pimpri-Chinchwad", "Nashik", "Kalyan-Dombivli", "Vasai-Virar", "Aurangabad", "Navi Mumbai", "Solapur", "Mira-Bhayandar", "Bhiwandi", "Amravati", "Nanded"],
+  "Manipur": ["Imphal"],
+  "Meghalaya": ["Shillong"],
+  "Mizoram": ["Aizawl"],
+  "Nagaland": ["Kohima", "Dimapur"],
+  "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore", "Bhadrak", "Baripada", "Jharsuguda", "Jeypore", "Anugul"],
+  "Puducherry": ["Puducherry", "Karaikal", "Mahe", "Yanam"],
+  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Hoshiarpur", "Pathankot", "Moga", "Abohar"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer", "Udaipur", "Bhilwara", "Alwar", "Bharatpur", "Sri Ganganagar"],
+  "Sikkim": ["Gangtok"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tiruppur", "Ambattur", "Tirunelveli", "Avadi", "Tiruvottiyur"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Ramagundam", "Khammam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"],
+  "Tripura": ["Agartala"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Meerut", "Varanasi", "Prayagraj", "Bareilly", "Aligarh", "Moradabad", "Saharanpur", "Gorakhpur", "Noida", "Firozabad", "Jhansi"],
+  "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Kashipur"],
+  "West Bengal": ["Kolkata", "Howrah", "Asansol", "Siliguri", "Durgapur", "Maheshtala", "Rajpur Sonarpur", "Gopalpur", "Bhatpara", "Panihati"],
+  "Outside India": ["Other Country"]
+};
+
+const runSeed = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('Connected to DB...');
+
+    // Castes
+    console.log('Registering Castes...');
+    for (const val of INITIAL_CASTES) await registerValue('caste', val);
+
+    // Religions
+    console.log('Registering Religions...');
+    for (const val of INITIAL_RELIGIONS) await registerValue('religion', val);
+
+    // Languages
+    console.log('Registering Languages...');
+    for (const val of INITIAL_LANGUAGES) await registerValue('motherTongue', val);
+
+    // Locations
+    console.log('Registering Locations...');
+    for (const [state, cities] of Object.entries(LOCATION_DATA)) {
+      await registerValue('state', state);
+      for (const city of cities) {
+        await registerValue('city', city, state);
+      }
+    }
+
+    console.log('Seeding Complete! Cleanup...');
+    await mongoose.disconnect();
+  } catch (err) {
+    console.error('Seed Error:', err);
+  }
+};
+
+runSeed();

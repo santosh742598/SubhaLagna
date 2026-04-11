@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Auth Service
+ * @fileoverview SubhaLagna v2.3.0 — Auth Service
  * @description   All authentication-related API calls. Components should call
  *                these service functions instead of calling fetch/axios directly.
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 import api, { getErrorMessage } from './api';

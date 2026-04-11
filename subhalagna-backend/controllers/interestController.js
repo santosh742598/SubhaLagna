@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Interest Controller
+ * @fileoverview SubhaLagna v2.3.0 — Interest Controller
  * @description   Manages the interest/connection request system (like Shaadi.com).
  *                Users can send interests, and receivers can accept or reject them.
  *                Accepting an interest automatically creates a Conversation for chat.
@@ -11,7 +11,7 @@
  *                  - withdrawInterest→ DELETE /api/interests/:id
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

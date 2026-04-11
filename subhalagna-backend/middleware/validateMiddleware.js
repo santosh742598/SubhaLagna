@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Input Validation Middleware
+ * @fileoverview SubhaLagna v2.3.0 — Input Validation Middleware
  * @description   Express-validator rule sets for all API endpoints.
  *                Provides a reusable `validate` runner that collects errors
  *                and returns a standardized 400 response.
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

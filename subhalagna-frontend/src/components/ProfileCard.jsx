@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Profile Card
+ * @fileoverview SubhaLagna v2.3.0 — Profile Card
  * @description   Brief overview card for the search results grid.
  *                v2.0.0 changes:
  *                  - Integration with InterestButton for quick interactions
@@ -48,6 +48,22 @@ const ProfileCard = ({ profile, index }) => {
         />
         
         {isBlurred && <PrivacyShield compact={true} />}
+        
+        {/* Membership Badge */}
+        {profile.user?.isPremium && (
+          <div className="absolute top-4 left-4 z-20">
+            <div className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex items-center gap-1.5 shadow-lg backdrop-blur-md border ${
+              profile.user.premiumPlan === 'platinum' 
+                ? 'bg-cyan-500/80 text-white border-cyan-400/50' 
+                : 'bg-amber-500/80 text-white border-amber-400/50'
+            }`}>
+              <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                profile.user.premiumPlan === 'platinum' ? 'bg-cyan-200' : 'bg-amber-200'
+              }`} />
+              {profile.user.premiumPlan.toUpperCase()}
+            </div>
+          </div>
+        )}
         
         {/* Compatibility Overlay */}
         <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 transition-transform duration-500 group-hover:translate-z-0 group-hover:scale-110 group-hover:translate-y-[-4px]">

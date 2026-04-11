@@ -1,11 +1,12 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Payment & Subscription Controller
- * @description   Handles Razorpay order creation, payment verification, 
- *                and coupon logic. Supports zero-price logic for full discounts.
- *                v2.2.0 changes:
- *                  - Enhanced Razorpay error extraction and reporting
- * @author        SubhaLagna Team
- * @version       2.2.0
+ * @fileoverview SubhaLagna v2.3.0 — Payment & Subscription Controller
+ * @description Handles Razorpay orders, payment verification, and membership logic.
+ * - v2.3.0 changes:
+ *   - Completely migrated from static config files to dynamic MembershipPlan database lookups.
+ *   - Refactored order creation to calculate parameters (price, name, duration) asynchronously.
+ *   - Integrated MembershipPlan model for all subscription logic.
+ * @author SubhaLagna Team
+ * @version 2.3.0
  */
 
 const Razorpay = require('razorpay');
@@ -13,7 +14,7 @@ const crypto   = require('crypto');
 const User     = require('../models/User');
 const Coupon   = require('../models/Coupon');
 const Payment  = require('../models/Payment');
-const plans    = require('../config/plans');
+const MembershipPlan = require('../models/MembershipPlan');
 
 // Initialize Razorpay
 // Note: In a real app, these would come from process.env
@@ -26,8 +27,13 @@ const razorpay = new Razorpay({
  * Get available subscription plans.
  * GET /api/payments/plans
  */
-exports.getPlans = (req, res) => {
-  res.json({ success: true, data: plans });
+exports.getPlans = async (req, res) => {
+  try {
+    const plans = await MembershipPlan.find({ isActive: true }).lean();
+    res.json({ success: true, data: plans });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to fetch plans' });
+  }
 };
 
 /**
@@ -43,7 +49,7 @@ exports.validateCoupon = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid or expired coupon' });
     }
 
-    const plan = plans.find(p => p.id === planId);
+    const plan = await MembershipPlan.findOne({ planId });
     if (!plan) return res.status(404).json({ success: false, message: 'Plan not found' });
 
     let discount = 0;
@@ -152,8 +158,9 @@ exports.verifyPayment = async (req, res) => {
     .digest("hex");
 
   if (razorpay_signature === expectedSign) {
-    // Get actual amount paid from Razorpay (if possible) or calculate it
-    const plan = plans.find(p => p.id === planId);
+    const plan = await MembershipPlan.findOne({ planId });
+    if (!plan) return res.status(404).json({ success: false, message: 'Plan not found' });
+
     let finalAmount = plan.price;
     if (couponCode) {
       const coupon = await Coupon.findOne({ code: couponCode });
@@ -182,7 +189,9 @@ exports.confirmFreeSubscription = async (req, res) => {
   
   try {
     // Re-verify on server that it's actually free
-    const plan = plans.find(p => p.id === planId);
+    const plan = await MembershipPlan.findOne({ planId });
+    if (!plan) return res.status(404).json({ success: false, message: 'Plan not found' });
+
     const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
     
     let discount = 0;
@@ -208,11 +217,16 @@ exports.confirmFreeSubscription = async (req, res) => {
  * Helper to update user status and expiry and record payment.
  */
 const upgradeUserSubscription = async (userId, planId, couponCode, amount, razorData = {}) => {
-  const plan = plans.find(p => p.id === planId);
+  const plan = await MembershipPlan.findOne({ planId });
   if (!plan) return;
 
   const expiry = new Date();
-  expiry.setFullYear(expiry.getFullYear() + 1); // Default to 1 Year
+  if (plan.durationInMonths > 0) {
+    expiry.setMonth(expiry.getMonth() + plan.durationInMonths);
+  } else {
+    // 0 duration means 100 years (v2 standard for lifetime)
+    expiry.setFullYear(expiry.getFullYear() + 100);
+  }
 
   // Set limits based on plan
   let contactsAllowed = 0;
@@ -261,12 +275,16 @@ exports.requestBankTransfer = async (req, res) => {
   } = req.body;
 
   try {
-    const plan = plans.find(p => p.id === planId);
+    const plan = await MembershipPlan.findOne({ planId });
     if (!plan) return res.status(404).json({ success: false, message: 'Plan not found' });
 
-    // Calculate expiry (1 Year from now if approved)
+    // Calculate expiry from DB plan duration
     const expiry = new Date();
-    expiry.setFullYear(expiry.getFullYear() + 1);
+    if (plan.durationInMonths > 0) {
+      expiry.setMonth(expiry.getMonth() + plan.durationInMonths);
+    } else {
+      expiry.setFullYear(expiry.getFullYear() + 100);
+    }
 
     const payment = await Payment.create({
       user: req.user._id,

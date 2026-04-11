@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Auth Routes
+ * @fileoverview SubhaLagna v2.3.0 — Auth Routes
  * @description   Route definitions for authentication endpoints.
  *                All public routes use input validation before reaching controllers.
  *                Protected routes require a valid JWT access token.
@@ -19,7 +19,7 @@
  *   POST /logout           → invalidate refresh token
  *
  * @author SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

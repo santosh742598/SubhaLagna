@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Interest (Connection Request) Model
+ * @fileoverview SubhaLagna v2.3.0 — Interest (Connection Request) Model
  * @description   Tracks interest requests sent between users (like Shaadi.com's
  *                "Send Interest" feature). One interest document per sender-receiver pair.
  *                Status transitions: pending → accepted | rejected | withdrawn.
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

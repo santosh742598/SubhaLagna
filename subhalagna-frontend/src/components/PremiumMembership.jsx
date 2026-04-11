@@ -1,11 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.2.0 — Premium Membership & Payments
- * @description   Dynamic membership selection with Coupon system, 
- *                Razorpay integration, and Bank Transfer support.
- *                v2.2.0 changes:
- *                  - Active plan highlighting and upgrade hierarchy logic
- *                  - Enhanced gateway error feedback to UI
- * @version       2.2.0
+ * @fileoverview SubhaLagna v2.3.0 — Premium Membership & Payments
+ * @description Dynamic membership selection with Coupon system and Razorpay integration.
+ * - v2.3.0 changes:
+ *   - Migrated from hardcoded plans to dynamic database-driven MembershipPlan lookups.
+ *   - Standardized on plan.planId for checkout and highlighting logic.
+ *   - Added dynamic duration labeling (e.g., "1 yr", "Lifetime").
+ * @version 2.3.0
  */
 
 import React, { useState, useEffect, useContext } from 'react';
@@ -95,14 +95,14 @@ const PremiumMembership = () => {
       }
 
       // 2. Create Order (Backend)
-      const currentCoupon = (appliedCoupon && appliedCoupon.targetPlanId === plan.id) 
+      const currentCoupon = (appliedCoupon && appliedCoupon.targetPlanId === plan.planId) 
         ? appliedCoupon.couponCode 
         : null;
 
-      const orderResponse = await createPaymentOrder(plan.id, currentCoupon);
+      const orderResponse = await createPaymentOrder(plan.planId, currentCoupon);
 
       if (orderResponse.isFree) {
-        const confirm = await confirmFreeSubscription(plan.id, currentCoupon);
+        const confirm = await confirmFreeSubscription(plan.planId, currentCoupon);
         if (confirm.success) {
           await refreshUser(); // Update global auth context
           alert("🎉 Premium Activated Successfully!");
@@ -162,16 +162,16 @@ const PremiumMembership = () => {
 
     setProcessing(true);
     try {
-      const currentCoupon = (appliedCoupon && appliedCoupon.targetPlanId === selectedPlan.id) 
+      const currentCoupon = (appliedCoupon && appliedCoupon.targetPlanId === selectedPlan.planId) 
         ? appliedCoupon.couponCode 
         : null;
       
-      const priceToShow = (appliedCoupon && appliedCoupon.targetPlanId === selectedPlan.id) 
+      const priceToShow = (appliedCoupon && appliedCoupon.targetPlanId === selectedPlan.planId) 
         ? appliedCoupon.discountedPrice 
         : selectedPlan.price;
 
       await requestBankTransfer({
-        planId: selectedPlan.id,
+        planId: selectedPlan.planId,
         couponCode: currentCoupon,
         amount: priceToShow,
         ...bankData
@@ -210,17 +210,17 @@ const PremiumMembership = () => {
       {/* Plans Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
         {plans.map((plan, idx) => {
-          const currentPlanIndex = plans.findIndex(p => p.id === user?.premiumPlan);
+          const currentPlanIndex = plans.findIndex(p => p.planId === user?.premiumPlan);
           const isDowngrade = currentPlanIndex !== -1 && idx < currentPlanIndex;
-          const isCurrentPlan = plan.id === user?.premiumPlan;
+          const isCurrentPlan = plan.planId === user?.premiumPlan;
           
-          const isSelected = appliedCoupon?.targetPlanId === plan.id;
+          const isSelected = appliedCoupon?.targetPlanId === plan.planId;
           const priceToShow = isSelected ? appliedCoupon.discountedPrice : plan.price;
           const hasDiscount = isSelected && appliedCoupon.discountAmount > 0;
 
           return (
             <div 
-              key={plan.id}
+              key={plan.planId}
               className={`relative flex flex-col p-10 rounded-[3rem] border transition-all duration-500 hover:scale-[1.02] ${
                 isCurrentPlan
                   ? 'border-emerald-300 bg-emerald-50/10 ring-2 ring-emerald-200 shadow-2xl scale-105 z-20'
@@ -253,7 +253,9 @@ const PremiumMembership = () => {
                  {hasDiscount && (
                    <span className="text-xl text-gray-400 line-through">₹{plan.price}</span>
                  )}
-                 <span className="text-gray-400 font-medium">/ 1 yr</span>
+                 <span className="text-gray-400 font-medium">
+                   / {plan.durationInMonths === 0 ? 'Forever' : (plan.durationInMonths === 12 ? '1 yr' : `${plan.durationInMonths} mo`)}
+                 </span>
               </div>
 
               {/* Coupon Field for paid plans */}
@@ -267,7 +269,7 @@ const PremiumMembership = () => {
                       onChange={(e) => setCouponCode(e.target.value)}
                     />
                     <button 
-                      onClick={() => handleApplyCoupon(plan.id)}
+                      onClick={() => handleApplyCoupon(plan.planId)}
                       disabled={couponLoading}
                       className="text-xs font-bold text-rose-600 hover:text-rose-700 disabled:opacity-50"
                     >
@@ -302,26 +304,26 @@ const PremiumMembership = () => {
                       setShowBankForm(true);
                     }
                   }}
-                  disabled={processing || isCurrentPlan || isDowngrade || (plan.id === 'free' && user?.isPremium)}
+                  disabled={processing || isCurrentPlan || isDowngrade || (plan.planId === 'free' && user?.isPremium)}
                   className={`w-full py-5 rounded-2xl font-bold transition-all ${
                     isCurrentPlan
                       ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-default shadow-sm'
-                      : isDowngrade || (plan.id === 'free' && user?.isPremium)
+                      : isDowngrade || (plan.planId === 'free' && user?.isPremium)
                       ? 'bg-gray-100 text-gray-400 cursor-default'
                       : plan.popular
                       ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-xl shadow-rose-200'
                       : 'bg-gray-900 text-white hover:bg-black'
                   } disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]`}
                 >
-                  {processing ? 'Processing...' : isCurrentPlan ? '✔ Current Plan' : isDowngrade ? 'Already Unlocked' : (plan.id === 'free' && user?.isPremium ? 'Already Applied' : `Upgrade to ${plan.name}`)}
+                  {processing ? 'Processing...' : isCurrentPlan ? '✔ Current Plan' : isDowngrade ? 'Already Unlocked' : (plan.planId === 'free' && user?.isPremium ? 'Already Applied' : `Upgrade to ${plan.name}`)}
                 </button>
 
-                {plan.id !== 'free' && !isCurrentPlan && !isDowngrade && (
+                {plan.planId !== 'free' && !isCurrentPlan && !isDowngrade && (
                   <div className="flex justify-center gap-4 mt-2">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input 
                         type="radio" 
-                        name={`method-${plan.id}`} 
+                        name={`method-${plan.planId}`} 
                         checked={paymentMethod === 'razorpay'} 
                         onChange={() => setPaymentMethod('razorpay')}
                         className="accent-rose-600"
@@ -331,7 +333,7 @@ const PremiumMembership = () => {
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input 
                         type="radio" 
-                        name={`method-${plan.id}`} 
+                        name={`method-${plan.planId}`} 
                         checked={paymentMethod === 'bank'} 
                         onChange={() => setPaymentMethod('bank')} 
                         className="accent-rose-600"

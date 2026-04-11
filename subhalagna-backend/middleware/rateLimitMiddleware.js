@@ -1,12 +1,12 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Rate Limiting Middleware
+ * @fileoverview SubhaLagna v2.3.0 — Rate Limiting Middleware
  * @description   Defines multiple rate limiters:
  *                - `globalLimiter`  → applied to all routes (100 req / 15 min)
  *                - `authLimiter`    → applied to /api/auth/* (10 req / 15 min)
  *                - `uploadLimiter`  → applied to photo upload routes
  *                All limits are configurable via environment variables.
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

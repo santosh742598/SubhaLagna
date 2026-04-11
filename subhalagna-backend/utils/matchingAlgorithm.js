@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Smart Matching Algorithm
+ * @fileoverview SubhaLagna v2.3.0 — Smart Matching Algorithm
  * @description   Computes a weighted compatibility score (0–100) between the
  *                logged-in user's profile and each candidate profile.
  *
@@ -14,7 +14,7 @@
  *                  Total possible       → 100 pts
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

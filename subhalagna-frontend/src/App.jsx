@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Main Application Router
+ * @fileoverview SubhaLagna v2.3.0 — Main Application Router
  * @description   Entry point for all React routes. Wraps the application
  *                in required context providers (Auth → Notification → Chat)
  *                and configures all route guards.
@@ -19,7 +19,7 @@
  *                  - /reset-password/:token → set new password
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 import React, { useContext } from 'react';

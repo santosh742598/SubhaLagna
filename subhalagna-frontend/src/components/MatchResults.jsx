@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Match Results
+ * @fileoverview SubhaLagna v2.3.0 — Match Results
  * @description   Displays compatible profiles based on user's preferences.
  *                v2.0.0 changes:
  *                  - Centralized data fetching via profileService
@@ -12,7 +12,15 @@ import { AuthContext } from '../context/AuthContext';
 import ProfileCard from './ProfileCard';
 import { getMatches } from '../services/profileService';
 import Header from './Header';
-import { CITIES } from '../data/mockProfiles';
+import SearchableDropdown from './SearchableDropdown';
+import { fetchLookupOptions } from '../services/lookupService';
+
+// ─── Shared Icons ──────────────────────────────────────────────────────────
+const Sparkles = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+  </svg>
+);
 
 // ─── Filter Tag Component ───────────────────────────────────────────────────
 const FilterTag = ({ label, value, onClear }) => {
@@ -49,15 +57,32 @@ const MatchResults = () => {
   const [matches, setMatches] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, pages: 1 });
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    minAge: 18,
-    maxAge: 40,
-    location: 'Any',
-    education: 'Any',
-    religion: 'Any'
+  const [filters, setFilters] = useState(() => {
+    // ── Smart Initialization from Partner Preferences ──────────────────
+    const prefs = user?.profile?.partnerPreferences || {};
+    return {
+      minAge: prefs.ageRange?.min || 18,
+      maxAge: prefs.ageRange?.max || 45,
+      location: prefs.location || 'Any',
+      education: 'Any',
+      religion: prefs.religion || 'Any',
+      caste: prefs.caste || 'Any'
+    };
   });
   const [sortBy, setSortBy] = useState('compatibility');
   const [searchQuery, setSearchQuery] = useState('');
+  const [hasPreferences, setHasPreferences] = useState(!!user?.profile?.partnerPreferences);
+
+  // Master Data Options
+  const [cityOptions, setCityOptions] = useState([]);
+  const [religionOptions, setReligionOptions] = useState([]);
+  const [casteOptions, setCasteOptions] = useState([]);
+
+  useEffect(() => {
+    fetchLookupOptions('city').then(setCityOptions);
+    fetchLookupOptions('religion').then(setReligionOptions);
+    fetchLookupOptions('caste').then(setCasteOptions);
+  }, []);
 
   /**
    * Fetch matches using profileService.
@@ -74,6 +99,7 @@ const MatchResults = () => {
         location: filters.location === 'Any' ? undefined : filters.location,
         education: filters.education === 'Any' ? undefined : filters.education,
         religion: filters.religion === 'Any' ? undefined : filters.religion,
+        caste: filters.caste === 'Any' ? undefined : filters.caste,
         sortBy
       });
       
@@ -154,7 +180,7 @@ const MatchResults = () => {
                   Quick Filters
                 </h3>
                 {activeFilterCount > 0 && (
-                  <button onClick={() => setFilters({ minAge:18, maxAge:40, location:'Any', education:'Any', religion:'Any' })} 
+                  <button onClick={() => setFilters({ minAge:18, maxAge:45, location:'Any', education:'Any', religion:'Any', caste: 'Any' })} 
                           className="text-xs font-bold text-pink-500 hover:text-pink-600">Reset</button>
                 )}
               </div>
@@ -171,24 +197,18 @@ const MatchResults = () => {
                 </div>
 
                 {/* Location */}
-                <div>
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Location</label>
-                  <select name="location" value={filters.location} onChange={handleFilterChange} className="w-full bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-pink-500 outline-none transition-all">
-                    <option value="Any">All Cities</option>
-                    {CITIES.map(city => <option key={city} value={city}>{city}</option>)}
-                  </select>
+                <div className="space-y-1.5">
+                  <SearchableDropdown label="Location" name="location" value={filters.location} options={['Any', ...cityOptions]} onChange={handleFilterChange} placeholder="Search city..." />
                 </div>
 
                  {/* Religion */}
-                 <div>
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Religion</label>
-                  <select name="religion" value={filters.religion} onChange={handleFilterChange} className="w-full bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-pink-500 outline-none transition-all">
-                    <option value="Any">All Religions</option>
-                    <option value="Hindu">Hindu</option>
-                    <option value="Muslim">Muslim</option>
-                    <option value="Christian">Christian</option>
-                    <option value="Sikh">Sikh</option>
-                  </select>
+                 <div className="space-y-1.5">
+                  <SearchableDropdown label="Religion" name="religion" value={filters.religion} options={['Any', ...religionOptions]} onChange={handleFilterChange} />
+                </div>
+
+                {/* Caste */}
+                <div className="space-y-1.5">
+                  <SearchableDropdown label="Caste preference" name="caste" value={filters.caste} options={['Any', ...casteOptions]} onChange={handleFilterChange} placeholder="Brahmin, Any etc." />
                 </div>
 
                 {/* Submit button (triggers fetch) */}
@@ -240,6 +260,28 @@ const MatchResults = () => {
                 <FilterTag label="Age" value={`${filters.minAge}-${filters.maxAge}`} onClear={() => clearFilter('age')} />
                 <FilterTag label="Location" value={filters.location} onClear={() => clearFilter('location')} />
                 <FilterTag label="Religion" value={filters.religion} onClear={() => clearFilter('religion')} />
+                <FilterTag label="Caste" value={filters.caste} onClear={() => clearFilter('caste')} />
+              </div>
+            )}
+
+            {/* Personalized Banner */}
+            {hasPreferences && (
+              <div className="mb-6 px-6 py-3 bg-gradient-to-r from-rose-500/10 to-pink-500/5 rounded-2xl border border-rose-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-rose-500 text-white rounded-xl flex items-center justify-center animate-pulse">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-800">Showing Personalized Matches</h4>
+                    <p className="text-[10px] text-gray-500">Based on your saved partner preferences from your dashboard.</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setHasPreferences(false)}
+                  className="text-[10px] font-bold text-rose-500 hover:underline"
+                >
+                  Clear Preferences
+                </button>
               </div>
             )}
 

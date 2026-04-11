@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Admin Controller
+ * @fileoverview SubhaLagna v2.3.0 — Admin Controller
  * @description   Admin-only operations for platform management.
  *                All routes require role=admin (enforced by adminOnly middleware).
  *                Endpoints:
@@ -10,7 +10,7 @@
  *                  - deleteUser        → hard delete a user + profile
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';
@@ -22,6 +22,7 @@ const Message      = require('../models/Message');
 const Notification = require('../models/Notification');
 const Coupon       = require('../models/Coupon');
 const Payment      = require('../models/Payment');
+const MembershipPlan = require('../models/MembershipPlan');
 const { upgradeUserSubscription } = require('./paymentController');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 
@@ -110,10 +111,10 @@ const getAllUsers = async (req, res, next) => {
     const [users, total] = await Promise.all([
       User.find(query)
         .select('-password -refreshToken -resetPasswordToken')
+        .populate('profile')
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit))
-        .lean(),
+        .limit(Number(limit)),
       User.countDocuments(query),
     ]);
 
@@ -382,6 +383,57 @@ const verifyBankPayment = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Get all membership plans (including inactive ones)
+// @route   GET /api/admin/plans
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+const getAllPlans = async (req, res, next) => {
+  try {
+    const plans = await MembershipPlan.find({}).sort({ price: 1 });
+    return sendSuccess(res, plans);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Update a membership plan (price, duration, etc.)
+// @route   PUT /api/admin/plans/:id
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+const updatePlan = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const plan = await MembershipPlan.findByIdAndUpdate(id, updateData, { 
+      new: true, 
+      runValidators: true 
+    });
+
+    if (!plan) return sendError(res, 'Plan not found', 404);
+
+    return sendSuccess(res, plan, 'Plan updated successfully ✨');
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Create a new membership plan
+// @route   POST /api/admin/plans
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+const createPlan = async (req, res, next) => {
+  try {
+    const plan = await MembershipPlan.create(req.body);
+    return sendSuccess(res, plan, 'New plan created successfully ✨', 201);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllUsers,
@@ -393,5 +445,8 @@ module.exports = {
   deleteCoupon,
   manualUpgradeUser,
   getPendingPayments,
-  verifyBankPayment
+  verifyBankPayment,
+  getAllPlans,
+  updatePlan,
+  createPlan
 };

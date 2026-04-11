@@ -1,11 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Auth & Role Middleware
+ * @fileoverview SubhaLagna v2.3.0 — Auth & Role Middleware
  * @description   JWT-based route protection middleware:
  *                - `protect`     → validates access token, injects req.user
  *                - `adminOnly`   → restricts route to users with role=admin
  *                Both are designed to work with the centralized error handler.
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Auth Context
+ * @fileoverview SubhaLagna v2.3.0 — Auth Context
  * @description   Global authentication state provider. Supplies `user`, `token`,
  *                and auth actions to all child components via React Context API.
  *
@@ -10,7 +10,7 @@
  *                  - Provides `isPremium` computed getter
  *
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';

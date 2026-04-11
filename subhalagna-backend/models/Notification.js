@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Notification Model
+ * @fileoverview SubhaLagna v2.3.0 — Notification Model
  * @description   In-app notifications for user activity events such as
  *                new interests received, messages, profile views, and system alerts.
  *                Powers the notification bell in the UI header.
  * @author        SubhaLagna Team
- * @version       2.1.0
+ * @version 2.3.0
  */
 
 'use strict';

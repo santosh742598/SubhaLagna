@@ -1,17 +1,15 @@
 /**
- * @fileoverview SubhaLagna v2.0.6 — Admin Dashboard
- * @description   Executive interface for platform management.
- *                v2.0.2 features:
- *                  - Financial Oversight (Total & Today's Revenue)
- *                  - User Moderation (Verify, Suspend, Delete)
- *                  - Manual Subscription Upgrades
- *                  - Coupon Management
- *                  - Bank Payment Verification (New)
- * @version       2.1.0
+ * @fileoverview SubhaLagna v2.3.0 — Admin Dashboard
+ * @description Executive interface for platform commercial and user management.
+ * - v2.3.0 changes:
+ *   - Implemented "Membership Plans" management tab for real-time pricing/duration control.
+ *   - Refactored Manual Upgrade logic to dynamically fetch plans from database.
+ *   - Improved tab navigation and added plan edit modals.
+ * @version 2.3.0
  */
 
 import React, { useState, useEffect } from 'react';
-import Header from './Header';
+import { Link } from 'react-router-dom';
 import {
   getDashboardStats,
   getAllUsers,
@@ -62,7 +60,18 @@ const AdminDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [upgradeForm, setUpgradeForm] = useState({ planId: 'gold', durationDays: '365' });
   const [coupons, setCoupons] = useState([]);
-  const [newCoupon, setNewCoupon] = useState({ code: '', discountPercent: 10, expiryDate: '' });
+  const [plans, setPlans] = useState([]);
+  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [planForm, setPlanForm] = useState({ name: '', price: 0, durationInMonths: 0 });
+
+  const [newCoupon, setNewCoupon] = useState({ 
+    code: '', 
+    discountType: 'percentage', 
+    discountValue: 10, 
+    expiryDate: '',
+    usageLimit: 100
+  });
 
   // Payments State
   const [pendingPayments, setPendingPayments] = useState([]);
@@ -86,7 +95,13 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       await createCoupon(newCoupon);
-      setNewCoupon({ code: '', discountPercent: 10, expiryDate: '' });
+      setNewCoupon({ 
+        code: '', 
+        discountType: 'percentage', 
+        discountValue: 10, 
+        expiryDate: '',
+        usageLimit: 100
+      });
       fetchCoupons();
       alert('Coupon created!');
     } catch (err) {
@@ -139,10 +154,25 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchPlans = async () => {
+    try {
+      const { getAdminPlans } = await import('../services/adminService');
+      const data = await getAdminPlans();
+      setPlans(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlans(); // Fetch plans on mount for modals
+  }, []);
+
   useEffect(() => {
     if (activeTab === 'users') fetchData();
     if (activeTab === 'coupons') fetchCoupons();
     if (activeTab === 'payments') fetchPayments();
+    if (activeTab === 'membership_plans') fetchPlans();
   }, [search, filterRole, activeTab]);
 
   const handleAction = async (actionFn, id) => {
@@ -168,11 +198,23 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSavePlan = async (e) => {
+    e.preventDefault();
+    try {
+      const { updateAdminPlan } = await import('../services/adminService');
+      await updateAdminPlan(selectedPlan._id, planForm);
+      setIsPlanModalOpen(false);
+      fetchPlans();
+      alert('Plan updated successfully! ✨');
+    } catch (err) {
+      alert(err);
+    }
+  };
+    
+
   return (
     <div className="min-h-screen bg-slate-50/50">
-      <Header />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+      <main className="max-w-7xl mx-auto pt-10 pb-20">
         
         {/* ── Page Header ── */}
         <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -187,6 +229,7 @@ const AdminDashboard = () => {
                {pendingPayments.length > 0 && <span className="ml-2 bg-white text-rose-600 px-1.5 py-0.5 rounded-md text-[9px]">{pendingPayments.length}</span>}
              </button>
              <button onClick={() => setActiveTab('coupons')} className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'coupons' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}>Coupons</button>
+             <button onClick={() => setActiveTab('membership_plans')} className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'membership_plans' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}>Membership Plans</button>
           </div>
         </div>
 
@@ -246,8 +289,26 @@ const AdminDashboard = () => {
                         )}
                       </td>
                       <td className="px-8 py-5 text-right flex items-center justify-end gap-2">
+                           {user.profile?._id && (
+                             <Link 
+                               to={`/profile/${user.profile._id}`} 
+                               className="p-2 rounded-xl border border-blue-100 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all" 
+                               title="View Profile"
+                             >
+                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                               </svg>
+                             </Link>
+                           )}
                            <button onClick={() => { setSelectedUser(user); setShowUpgradeModal(true); }} className="p-2 rounded-xl border border-amber-100 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-all" title="Manual Upgrade"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1h1a1 1 0 110 2H11v1a1 1 0 11-2 0V6H8a1 1 0 010-2h1V3a1 1 0 011-1z" /><path d="M12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" /></svg></button>
-                           <button onClick={() => handleAction(toggleVerifyProfile, user.profile?._id)} className={`p-2 rounded-xl border transition-all ${user.profile?.isVerified ? 'bg-emerald-50 text-emerald-600' : 'bg-white text-gray-300 hover:text-emerald-500'}`} title="Verify"><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2.166 4.999A11.954 11.954 0 0010 1.944a11.954 11.954 0 007.834 3.056 12.017 12.017 0 01-1.547 4.544 11.968 11.968 0 01-4.04 4.508A11.953 11.953 0 0110 16c-1.353 0-2.65-.224-3.868-.636a11.96 11.96 0 01-4.04-4.508 12.01 12.01 0 01-1.547-4.544l2.166-3.313a1 1 0 011.668.001zM9 11a1 1 0 100-2 1 1 0 000 2zm3-1a1 1 0 11-2 0 1 1 0 012 0z" /></svg></button>
+                           <button 
+                              onClick={() => user.profile?._id ? handleAction(toggleVerifyProfile, user.profile._id) : alert('User has not set up a matrimony profile yet.')} 
+                              className={`p-2 rounded-xl border transition-all ${user.profile?.isVerified ? 'bg-emerald-50 text-emerald-600' : 'bg-white text-gray-300 hover:text-emerald-500'}`} 
+                              title="Verify"
+                            >
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2.166 4.999A11.954 11.954 0 0010 1.944a11.954 11.954 0 007.834 3.056 12.017 12.017 0 01-1.547 4.544 11.968 11.968 0 01-4.04 4.508A11.953 11.953 0 0110 16c-1.353 0-2.65-.224-3.868-.636a11.96 11.96 0 01-4.04-4.508 12.01 12.01 0 01-1.547-4.544l2.166-3.313a1 1 0 011.668.001zM9 11a1 1 0 100-2 1 1 0 000 2zm3-1a1 1 0 11-2 0 1 1 0 012 0z" /></svg>
+                            </button>
                            <button onClick={() => handleAction(toggleSuspendUser, user._id)} className={`p-2 rounded-xl border transition-all ${user.isSuspended ? 'bg-rose-50 text-rose-600' : 'bg-white text-gray-300'}`} title="Suspend"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636" /></svg></button>
                            <button onClick={() => handleAction(deleteUser, user._id)} className="p-2 rounded-xl border border-gray-200 text-gray-300 hover:bg-rose-600 hover:text-white transition-all"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                       </td>
@@ -316,22 +377,90 @@ const AdminDashboard = () => {
               </div>
             )}
           </div>
+        ) : activeTab === 'membership_plans' ? (
+          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+             <div className="p-8 border-b border-gray-50 flex justify-between items-center">
+                <div>
+                   <h3 className="text-xl font-serif font-bold text-gray-800">Plan Management</h3>
+                   <p className="text-gray-400 text-xs mt-1">Control pricing, names, and durations for all subscription tiers.</p>
+                </div>
+             </div>
+             <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-slate-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                      <th className="px-8 py-4">Internal ID</th>
+                      <th className="px-6 py-4">Display Name</th>
+                      <th className="px-6 py-4">Price (₹)</th>
+                      <th className="px-6 py-4">Duration</th>
+                      <th className="px-8 py-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {plans.map((plan) => (
+                      <tr key={plan._id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-8 py-5">
+                          <code className="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-600">{plan.planId}</code>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="font-bold text-gray-800 text-sm">{plan.name}</span>
+                          {plan.popular && <span className="ml-2 text-[8px] bg-amber-100 text-amber-600 font-black px-1.5 py-0.5 rounded uppercase tracking-widest">Popular</span>}
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="font-bold text-gray-800">₹{plan.price.toLocaleString()}</span>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="text-sm text-gray-500 font-medium">
+                            {plan.durationInMonths === 0 ? 'Forever' : `${plan.durationInMonths} Months`}
+                          </span>
+                        </td>
+                        <td className="px-8 py-5 text-right">
+                          <button 
+                            onClick={() => { setSelectedPlan(plan); setPlanForm({ name: plan.name, price: plan.price, durationInMonths: plan.durationInMonths }); setIsPlanModalOpen(true); }}
+                            className="text-rose-600 text-xs font-bold hover:underline"
+                          >
+                            Edit Pricing
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+             </div>
+          </div>
         ) : (
           <div className="space-y-8">
             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
                <h3 className="text-xl font-serif font-bold text-gray-800 mb-6">Create New Coupon</h3>
                <form onSubmit={handleCreateCoupon} className="flex flex-wrap items-end gap-4">
-                  <div className="flex-1 min-w-[200px]">
+                  <div className="flex-1 min-w-[150px]">
                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Coupon Code</label>
                      <input type="text" required placeholder="OFF50" value={newCoupon.code} onChange={e => setNewCoupon({...newCoupon, code: e.target.value.toUpperCase()})} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500" />
                   </div>
-                  <div className="w-32">
-                     <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Discount %</label>
-                     <input type="number" required min="1" max="100" value={newCoupon.discountPercent} onChange={e => setNewCoupon({...newCoupon, discountPercent: e.target.value})} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500" />
+                  <div className="w-40">
+                     <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Type</label>
+                     <select 
+                        value={newCoupon.discountType} 
+                        onChange={e => setNewCoupon({...newCoupon, discountType: e.target.value})} 
+                        className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500 font-bold"
+                     >
+                        <option value="percentage">Percentage (%)</option>
+                        <option value="fixed">Fixed Amount (₹)</option>
+                     </select>
                   </div>
-                  <div className="flex-1 min-w-[200px]">
+                  <div className="w-32">
+                     <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                        {newCoupon.discountType === 'percentage' ? 'Value (%)' : 'Amount (₹)'}
+                     </label>
+                     <input type="number" required min="1" value={newCoupon.discountValue} onChange={e => setNewCoupon({...newCoupon, discountValue: e.target.value})} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500" />
+                  </div>
+                  <div className="flex-1 min-w-[150px]">
                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Expiry Date</label>
-                     <input type="date" value={newCoupon.expiryDate} onChange={e => setNewCoupon({...newCoupon, expiryDate: e.target.value})} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500" />
+                     <input type="date" required value={newCoupon.expiryDate} onChange={e => setNewCoupon({...newCoupon, expiryDate: e.target.value})} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500" />
+                  </div>
+                  <div className="w-32">
+                     <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Usage Limit</label>
+                     <input type="number" required min="1" value={newCoupon.usageLimit} onChange={e => setNewCoupon({...newCoupon, usageLimit: e.target.value})} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500" />
                   </div>
                   <button type="submit" className="px-8 py-3 bg-gray-900 text-white rounded-xl font-bold shadow-xl shadow-gray-200 hover:scale-105 transition-all">Create Coupon</button>
                </form>
@@ -348,6 +477,7 @@ const AdminDashboard = () => {
                         <th className="px-8 py-4">Code</th>
                         <th className="px-6 py-4">Discount</th>
                         <th className="px-6 py-4">Status</th>
+                        <th className="px-6 py-4">Usage</th>
                         <th className="px-6 py-4">Expiry</th>
                         <th className="px-8 py-4 text-right">Actions</th>
                       </tr>
@@ -360,13 +490,32 @@ const AdminDashboard = () => {
                             <td className="px-8 py-5">
                                <code className="text-sm font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-lg">{c.code}</code>
                             </td>
-                            <td className="px-6 py-5 font-bold text-gray-700">{c.discountPercent}% OFF</td>
+                            <td className="px-6 py-5 font-bold text-gray-700">
+                               {c.discountType === 'percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue.toLocaleString()} OFF`}
+                             </td>
                             <td className="px-6 py-5">
                                <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${isExpired ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
                                   {isExpired ? 'Expired' : 'Active'}
                                </span>
                             </td>
-                            <td className="px-6 py-5 text-xs text-gray-400">
+                            <td className="px-6 py-5 whitespace-nowrap">
+                               <div className="flex flex-col gap-1 min-w-[100px]">
+                                 <div className="flex justify-between text-[10px] font-bold text-gray-400 font-sans">
+                                   <span>{c.usageCount || 0} / {c.usageLimit || 100}</span>
+                                   <span>{Math.round(((c.usageCount || 0) / (c.usageLimit || 100)) * 100)}%</span>
+                                 </div>
+                                 <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                   <div 
+                                     className={`h-full transition-all duration-500 ${
+                                       ((c.usageCount || 0) / (c.usageLimit || 100)) >= 0.9 ? 'bg-rose-500' : 
+                                       ((c.usageCount || 0) / (c.usageLimit || 100)) >= 0.7 ? 'bg-amber-500' : 'bg-emerald-500'
+                                     }`}
+                                     style={{ width: `${Math.min(100, ((c.usageCount || 0) / (c.usageLimit || 100)) * 100)}%` }}
+                                   />
+                                 </div>
+                               </div>
+                             </td>
+                             <td className="px-6 py-5 text-xs text-gray-400">
                                {c.expiryDate ? new Date(c.expiryDate).toLocaleDateString() : 'Never'}
                             </td>
                             <td className="px-8 py-5 text-right">
@@ -376,7 +525,7 @@ const AdminDashboard = () => {
                         );
                       })}
                       {coupons.length === 0 && (
-                        <tr><td colSpan="5" className="p-20 text-center text-gray-400 italic">No coupons found. Create one to get started!</td></tr>
+                        <tr><td colSpan="6" className="p-20 text-center text-gray-400 italic">No coupons found. Create one to get started!</td></tr>
                       )}
                     </tbody>
                   </table>
@@ -396,9 +545,15 @@ const AdminDashboard = () => {
               <form onSubmit={handleManualUpgrade} className="space-y-6">
                  <div>
                     <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Select Plan</label>
-                    <select value={upgradeForm.planId} onChange={e => setUpgradeForm({...upgradeForm, planId: e.target.value})} className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold">
-                       <option value="gold">Gold (30 Contacts)</option>
-                       <option value="platinum">Platinum (Unlimited)</option>
+                    <select 
+                      value={upgradeForm.planId} 
+                      onChange={e => setUpgradeForm({...upgradeForm, planId: e.target.value})} 
+                      className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold"
+                    >
+                       <option value="">-- Choose Plan --</option>
+                       {plans.filter(p => p.planId !== 'free').map(p => (
+                         <option key={p.planId} value={p.planId}>{p.name}</option>
+                       ))}
                     </select>
                  </div>
                  <div>
@@ -455,6 +610,38 @@ const AdminDashboard = () => {
                     <button type="submit" className={`flex-1 py-4 text-white rounded-2xl font-bold shadow-xl ${verifyForm.status === 'captured' ? 'bg-emerald-500 shadow-emerald-100' : 'bg-rose-500 shadow-rose-100'}`}>
                       {verifyForm.status === 'captured' ? 'Approve' : 'Reject'}
                     </button>
+                 </div>
+              </form>
+           </div>
+        </div>
+      )}
+
+      {/* ── Plan Edit Modal ── */}
+      {isPlanModalOpen && selectedPlan && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
+           <div className="bg-white rounded-[3rem] w-full max-w-md p-10 shadow-2xl animate-scale-in">
+              <h3 className="text-2xl font-serif font-bold text-gray-800 mb-2">Edit Membership Plan</h3>
+              <p className="text-gray-400 text-sm mb-8 italic">Internal key: <span className="font-bold text-gray-700">{selectedPlan.planId}</span></p>
+              
+              <form onSubmit={handleSavePlan} className="space-y-6">
+                 <div>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Display Name</label>
+                    <input type="text" required value={planForm.name} onChange={e => setPlanForm({...planForm, name: e.target.value})} className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold" />
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Price (₹)</label>
+                        <input type="number" required min="0" value={planForm.price} onChange={e => setPlanForm({...planForm, price: e.target.value})} className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold" />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Duration (Months)</label>
+                        <input type="number" required min="0" value={planForm.durationInMonths} onChange={e => setPlanForm({...planForm, durationInMonths: e.target.value})} className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold" />
+                        <p className="text-[10px] text-gray-400 mt-2">0 = Lifetime</p>
+                    </div>
+                 </div>
+                 <div className="flex gap-4 pt-4">
+                    <button type="button" onClick={() => setIsPlanModalOpen(false)} className="flex-1 py-4 bg-slate-50 text-slate-500 rounded-2xl font-bold">Cancel</button>
+                    <button type="submit" className="flex-1 py-4 bg-gray-900 text-white rounded-2xl font-bold shadow-xl shadow-gray-200">Save Changes</button>
                  </div>
               </form>
            </div>

@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.0.0 — Profile Controller
+ * @fileoverview SubhaLagna v2.3.0 — Profile Controller
  * @description   Manages matrimony profile CRUD operations:
  *                - setupProfile    → create initial profile (onboarding)
  *                - getMatches      → paginated, smart-scored match results
@@ -24,7 +24,7 @@
  *                  - Automatic physical photo cleanup on update/delete
  *
  * @author        SubhaLagna Team
- * @version       2.2.0
+ * @version 2.3.0
  */
 
 'use strict';
@@ -41,6 +41,7 @@ const storageService = require('../utils/storageService');
 const { enrichWithMatchScores } = require('../utils/matchingAlgorithm');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 const { calculateGunaMilan } = require('../utils/gunaMilanService');
+const { registerValue } = require('../services/masterDataService');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Create initial profile (Step 2 onboarding)
@@ -54,13 +55,20 @@ const setupProfile = async (req, res, next) => {
       education, profession, bio, traits, interests,
       fatherName, motherName, siblings, familyType,
       currentState, currentCity, nativeState, nativeCity,
+      motherTongue,
       partnerInterests,
       dateOfBirth, rashi, nakshatra, pada, gotra, manglik
     } = req.body;
 
     // ── Age validation (server-side double-check) ─────────────────────────
-    if (Number(age) < 18) {
-      return sendError(res, 'You must be at least 18 years old.', 400);
+    // Note: age is auto-calculated from dateOfBirth in the model's pre-save hook.
+    // We only keep the 18+ check if dob is provided.
+    if (dateOfBirth) {
+      const dob = new Date(dateOfBirth);
+      const age = Math.abs(new Date(Date.now() - dob.getTime()).getUTCFullYear() - 1970);
+      if (age < 18) {
+        return sendError(res, 'You must be at least 18 years old.', 400);
+      }
     }
 
     // ── Prevent duplicate profiles ─────────────────────────────────────────
@@ -104,19 +112,35 @@ const setupProfile = async (req, res, next) => {
     const traitsArray    = traits    ? traits.split(',').map((t) => t.trim()).filter(Boolean)    : [];
     const interestsArray = interests ? interests.split(',').map((i) => i.trim()).filter(Boolean) : [];
 
+    // ── Smart Master Data Registration ───────────────────────────────────
+    const [regCaste, regReligion, regMT, regState, regCity] = await Promise.all([
+      registerValue('caste',        caste),
+      registerValue('religion',     religion),
+      registerValue('motherTongue', motherTongue),
+      registerValue('state',        currentState),
+      registerValue('city',         currentCity, currentState)
+    ]);
+    // Also register native location
+    await Promise.all([
+       registerValue('state', nativeState),
+       registerValue('city',  nativeCity, nativeState)
+    ]);
+
     // ── Create profile ─────────────────────────────────────────────────────
     const profile = await Profile.create({
       user:     req.user._id,
       name,
       gender,
-      age:      Number(age),
+      // age:      Number(age), // No longer manually set, handled by DOB hook
       location: location || (currentCity && currentState ? `${currentCity}, ${currentState}` : ''),
       currentState:   currentState || '',
       currentCity:    currentCity  || '',
       nativeState:    nativeState  || '',
       nativeCity:     nativeCity   || '',
-      caste:      caste     || '',
-      religion:   religion  || 'Hindu',
+      nativeCity:     nativeCity   || '',
+      caste:      regCaste      || caste     || '',
+      religion:   regReligion   || religion  || 'Hindu',
+      motherTongue: regMT       || motherTongue || '',
       height:     height    || "5' 5\"",
       education:  education || 'Graduate',
       profession: profession|| 'Professional',
@@ -273,12 +297,13 @@ const getProfileById = async (req, res, next) => {
     }
 
     const isOwner = profile.user._id.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
 
     // ── Privacy Shield Logic: Specific connection check ────────────────────
     const showTo = profile.privacySettings?.showPhotoTo || 'everyone';
     let isPhotoBlurred = false;
 
-    if (!isOwner) {
+    if (!isOwner && !isAdmin) {
        if (showTo === 'interests_only') {
           const connection = await Interest.findOne({
              $or: [
@@ -305,7 +330,7 @@ const getProfileById = async (req, res, next) => {
     const isUnlocked = req.user.contactsViewed?.includes(profile._id);
     const isPlatinum = req.user.premiumPlan === 'platinum';
 
-    if (!isOwner && !isPlatinum && !isUnlocked) {
+    if (!isOwner && !isPlatinum && !isUnlocked && !isAdmin) {
       // Hide contact details
       if (result.user) {
         result.user.email = 'LOCKED';
@@ -443,11 +468,35 @@ const updateProfile = async (req, res, next) => {
       };
     }
 
-    const updated = await Profile.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    // Handle Partner Preferences Updates
+    if (req.body.prefMinAge || req.body.prefMaxAge || req.body.prefLocation || req.body.prefCaste || req.body.prefReligion) {
+      updateData.partnerPreferences = {
+        ...profile.partnerPreferences,
+        minAge:   req.body.prefMinAge   ? Number(req.body.prefMinAge)   : profile.partnerPreferences?.minAge,
+        maxAge:   req.body.prefMaxAge   ? Number(req.body.prefMaxAge)   : profile.partnerPreferences?.maxAge,
+        location: req.body.prefLocation !== undefined ? req.body.prefLocation : profile.partnerPreferences?.location,
+        caste:    req.body.prefCaste    !== undefined ? req.body.prefCaste    : profile.partnerPreferences?.caste,
+        religion: req.body.prefReligion !== undefined ? req.body.prefReligion : profile.partnerPreferences?.religion,
+      };
+    }
+
+    // ── Smart Master Data Registration for Updates ────────────────────────
+    if (req.body.caste)        updateData.caste = await registerValue('caste', req.body.caste);
+    if (req.body.religion)     updateData.religion = await registerValue('religion', req.body.religion);
+    if (req.body.motherTongue) updateData.motherTongue = await registerValue('motherTongue', req.body.motherTongue);
+    
+    if (req.body.currentState) await registerValue('state', req.body.currentState);
+    if (req.body.currentCity)  await registerValue('city',  req.body.currentCity, req.body.currentState || profile.currentState);
+    
+    if (req.body.nativeState)  await registerValue('state', req.body.nativeState);
+    if (req.body.nativeCity)   await registerValue('city',  req.body.nativeCity, req.body.nativeState || profile.nativeState);
+
+    // Ensure age is NOT manually updated; it must derive from DOB
+    delete updateData.age;
+
+    // ── Apply updates and trigger .save() for hooks ────────────────────────
+    Object.assign(profile, updateData);
+    const updated = await profile.save();
 
     return sendSuccess(res, updated, 'Profile updated successfully');
   } catch (err) {

@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.1.0 — Profile Creation (Onboarding)
+ * @fileoverview SubhaLagna v2.3.0 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
  *                v2.1.0 changes:
  *                  - Automated Rashi selection logic based on Nakshatra/Pada mapping
@@ -12,7 +12,7 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { STATES, LOCATION_DATA } from '../data/locationData.js';
+import { fetchLookupOptions } from '../services/lookupService';
 import { RASHIS, NAKSHATRAS, PADA_RASHI_MAP } from '../data/astrologyData.js';
 import { API_BASE_URL } from '../config';
 import CaptureModal from './CaptureModal';
@@ -105,44 +105,7 @@ const CheckIcon = () => (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24
 const PREDEFINED_INTERESTS = ["Travel", "Music", "Cooking", "Photography", "Fitness", "Reading", "Movies", "Sports", "Art"];
 const PREDEFINED_TRAITS = ["Introvert", "Extrovert", "Ambivert", "Ambitious", "Creative", "Organized", "Spontaneous", "Rational", "Empathetic"];
 
-// ─── Searchable Dropdown ─────────────────────────────────────────────────────
-const SearchableDropdown = ({ label, name, value, options, onChange, placeholder, disabled, minChars = 0 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(value || '');
-  const wrapperRef = useRef(null);
-
-  useEffect(() => { setSearchTerm(value || ''); }, [value]);
-
-  const filteredOptions = (options || []).filter(opt => opt?.toLowerCase().includes(searchTerm.toLowerCase()));
-
-  const handleSelect = (opt) => { onChange({ target: { name, value: opt } }); setSearchTerm(opt); setIsOpen(false); };
-  const handleInputChange = (e) => { setSearchTerm(e.target.value); onChange({ target: { name, value: e.target.value } }); setIsOpen(true); };
-
-  useEffect(() => {
-    const handler = (e) => { if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setIsOpen(false); };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  return (
-    <div className="relative" ref={wrapperRef}>
-      <label className="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">{label}</label>
-      <input type="text" name={name} value={searchTerm} onChange={handleInputChange} onFocus={() => setIsOpen(true)}
-        disabled={disabled} placeholder={placeholder} autoComplete="off"
-        className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition-all text-sm text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ outline: 'none' }} />
-      {isOpen && searchTerm.length >= minChars && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-rose-100 rounded-xl shadow-xl shadow-rose-100/30 max-h-44 overflow-y-auto">
-          {filteredOptions.length > 0 ? filteredOptions.map((opt, i) => (
-            <div key={i} onClick={() => handleSelect(opt)} className="px-4 py-2.5 hover:bg-rose-50 cursor-pointer text-sm text-gray-700 transition-colors border-b last:border-0 border-gray-50">{opt}</div>
-          )) : searchTerm.length > 0 && (
-            <div className="px-4 py-2.5 text-xs text-gray-400 italic">"{searchTerm}" not in list — using as manual entry.</div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+import SearchableDropdown from './SearchableDropdown';
 
 const inputClasses = 'w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition-all font-sans text-sm text-gray-800';
 
@@ -171,6 +134,51 @@ const CreateProfile = () => {
   const [additionalFiles, setAdditionalFiles] = useState([]);
   const [additionalPreviews, setAdditionalPreviews] = useState([]);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  // Master Data Options
+  const [religionOptions, setReligionOptions] = useState([]);
+  const [casteOptions, setCasteOptions] = useState([]);
+  const [languageOptions, setLanguageOptions] = useState([]);
+  const [stateOptions, setStateOptions] = useState([]);
+  const [curCityOptions, setCurCityOptions] = useState([]);
+  const [natCityOptions, setNatCityOptions] = useState([]);
+
+  useEffect(() => {
+    const loadMasters = async () => {
+      const [r, l, s] = await Promise.all([
+        fetchLookupOptions('religion'),
+        fetchLookupOptions('motherTongue'),
+        fetchLookupOptions('state')
+      ]);
+      setReligionOptions(r);
+      setLanguageOptions(l);
+      setStateOptions(s);
+    };
+    loadMasters();
+  }, []);
+
+  // Dynamic Caste Loader
+  useEffect(() => {
+    const loadCastes = async () => {
+      const c = await fetchLookupOptions('caste');
+      setCasteOptions(c);
+    };
+    loadCastes();
+  }, [formData.religion]); // Reload if religion changes (optional linking)
+
+  // Dynamic City Loader (Current)
+  useEffect(() => {
+    if (formData.currentState) {
+      fetchLookupOptions('city', formData.currentState).then(setCurCityOptions);
+    }
+  }, [formData.currentState]);
+
+  // Dynamic City Loader (Native)
+  useEffect(() => {
+    if (formData.nativeState) {
+      fetchLookupOptions('city', formData.nativeState).then(setNatCityOptions);
+    }
+  }, [formData.nativeState]);
 
   useEffect(() => { if (user?.name && !formData.name) setFormData(prev => ({ ...prev, name: user.name })); }, [user]);
 
@@ -357,21 +365,9 @@ const CreateProfile = () => {
                 {currentStep === 2 && (
                   <div className="space-y-7">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Religion</label>
-                        <input type="text" name="religion" value={formData.religion} onChange={handleChange}
-                          className={inputClasses} style={{ outline: 'none' }} />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Caste</label>
-                        <input type="text" name="caste" value={formData.caste} onChange={handleChange}
-                          placeholder="Optional" className={inputClasses} style={{ outline: 'none' }} />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Mother Tongue</label>
-                        <input type="text" name="motherTongue" value={formData.motherTongue} onChange={handleChange}
-                          placeholder="e.g. Odia, Hindi" className={inputClasses} style={{ outline: 'none' }} />
-                      </div>
+                      <SearchableDropdown label="Religion" name="religion" value={formData.religion} options={religionOptions} onChange={handleChange} />
+                      <SearchableDropdown label="Caste" name="caste" value={formData.caste} options={casteOptions} onChange={handleChange} placeholder="e.g. Brahmin, Rajput" />
+                      <SearchableDropdown label="Mother Tongue" name="motherTongue" value={formData.motherTongue} options={languageOptions} onChange={handleChange} placeholder="e.g. Hindi, English" />
                     </div>
 
                     <div className="pt-5 border-t border-rose-100/60">
@@ -402,16 +398,16 @@ const CreateProfile = () => {
                     <div className="pt-5 border-t border-rose-100/60">
                       <p className="text-xs font-bold text-rose-500 uppercase tracking-widest mb-4 ml-1">📍 Current Residence</p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <SearchableDropdown label="State" name="currentState" value={formData.currentState} options={STATES} onChange={handleChange} placeholder="Select state..." />
-                        <SearchableDropdown label="City" name="currentCity" value={formData.currentCity} options={LOCATION_DATA[formData.currentState] || []} onChange={handleChange} placeholder="Select city..." disabled={!formData.currentState} minChars={2} />
+                        <SearchableDropdown label="State" name="currentState" value={formData.currentState} options={stateOptions} onChange={handleChange} placeholder="Select state..." />
+                        <SearchableDropdown label="City" name="currentCity" value={formData.currentCity} options={curCityOptions} onChange={handleChange} placeholder="Select city..." disabled={!formData.currentState} minChars={2} />
                       </div>
                     </div>
 
                     <div className="pt-5 border-t border-rose-100/60">
                       <p className="text-xs font-bold text-rose-500 uppercase tracking-widest mb-4 ml-1">🏡 Native / Hometown</p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <SearchableDropdown label="State" name="nativeState" value={formData.nativeState} options={STATES} onChange={handleChange} placeholder="Select state..." />
-                        <SearchableDropdown label="City" name="nativeCity" value={formData.nativeCity} options={LOCATION_DATA[formData.nativeState] || []} onChange={handleChange} placeholder="Select city..." disabled={!formData.nativeState} minChars={2} />
+                        <SearchableDropdown label="State" name="nativeState" value={formData.nativeState} options={stateOptions} onChange={handleChange} placeholder="Select state..." />
+                        <SearchableDropdown label="City" name="nativeCity" value={formData.nativeCity} options={natCityOptions} onChange={handleChange} placeholder="Select city..." disabled={!formData.nativeState} minChars={2} />
                       </div>
                     </div>
 
