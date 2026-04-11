@@ -1,0 +1,145 @@
+/**
+ * @fileoverview SubhaLagna v2.0.0 — Main Server Entry Point
+ * @description   Express + Socket.io server with security middleware,
+ *                rate limiting, centralized error handling, and real-time chat.
+ * @author        SubhaLagna Team
+ * @version       2.0.0
+ *
+ * Architecture:
+ *  ┌──────────────────────────────────────────┐
+ *  │  Express HTTP Server + Socket.io          │
+ *  │  ├── Security  (helmet, cors, rate limit) │
+ *  │  ├── Logging   (morgan)                   │
+ *  │  ├── Routes    (/api/...)                 │
+ *  │  ├── Static    (/uploads)                 │
+ *  │  └── Error Handler (centralized)          │
+ *  └──────────────────────────────────────────┘
+ */
+
+'use strict';
+
+require('dotenv').config();
+
+const express    = require('express');
+const http       = require('http');
+const cors       = require('cors');
+const helmet     = require('helmet');
+const morgan     = require('morgan');
+const { Server } = require('socket.io');
+
+const connectDB       = require('./config/db');
+const socketHandler   = require('./socket/socketHandler');
+const { errorHandler, notFound } = require('./middleware/errorMiddleware');
+const {
+  globalLimiter,
+  authLimiter,
+} = require('./middleware/rateLimitMiddleware');
+
+// ── Validate critical env vars on startup ────────────────────────────────────
+const REQUIRED_ENV = ['MONGO_URI', 'JWT_SECRET', 'JWT_REFRESH_SECRET'];
+REQUIRED_ENV.forEach((key) => {
+  if (!process.env[key]) {
+    console.error(`❌ FATAL: Missing required environment variable: ${key}`);
+    process.exit(1);
+  }
+});
+
+// ── Connect to MongoDB ───────────────────────────────────────────────────────
+connectDB();
+
+// ── Initialize Express ───────────────────────────────────────────────────────
+const app = express();
+
+// ── Create HTTP server (required for Socket.io) ──────────────────────────────
+const server = http.createServer(app);
+
+// ── Initialize Socket.io ─────────────────────────────────────────────────────
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+});
+
+// ── Attach Socket.io handlers ────────────────────────────────────────────────
+socketHandler(io);
+
+// ── Security Middleware ──────────────────────────────────────────────────────
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow images from /uploads
+  })
+);
+
+// Strict CORS — only allow the configured frontend origin
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true,
+  })
+);
+
+// ── Global Rate Limiter ───────────────────────────────────────────────────────
+app.use(globalLimiter);
+
+// ── Logging ───────────────────────────────────────────────────────────────────
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+}
+
+// ── Body Parsers ──────────────────────────────────────────────────────────────
+app.use(express.json({ limit: '10kb' }));       // reject oversized JSON payloads
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// ── Static Files (uploaded images) ───────────────────────────────────────────
+app.use('/uploads', express.static('uploads'));
+
+// ── Health Check ─────────────────────────────────────────────────────────────
+app.get('/api/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'SubhaLagna API v2.0.0 is running 🚀',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+  });
+});
+
+// ── API Routes ────────────────────────────────────────────────────────────────
+// Auth routes get a stricter rate limiter (brute-force protection)
+app.use('/api/auth',          authLimiter, require('./routes/authRoutes'));
+app.use('/api/profiles',      require('./routes/profileRoutes'));
+app.use('/api/interests',     require('./routes/interestRoutes'));
+app.use('/api/chat',          require('./routes/chatRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/admin',         require('./routes/adminRoutes'));
+app.use('/api/payments',      require('./routes/paymentRoutes'));
+
+// ── 404 Handler ───────────────────────────────────────────────────────────────
+app.use(notFound);
+
+// ── Centralized Error Handler (must be last middleware) ───────────────────────
+app.use(errorHandler);
+
+// ── Start Server ──────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`\n🚀 SubhaLagna v2.0.0 Server`);
+  console.log(`   ✅ HTTP  → http://localhost:${PORT}`);
+  console.log(`   ✅ WS    → ws://localhost:${PORT}  (Socket.io)`);
+  console.log(`   ✅ Env   → ${process.env.NODE_ENV || 'development'}\n`);
+});
+
+// ── Graceful Shutdown ─────────────────────────────────────────────────────────
+process.on('unhandledRejection', (err) => {
+  console.error('❌ Unhandled Rejection:', err.message);
+  server.close(() => process.exit(1));
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err.message);
+  process.exit(1);
+});
+
+module.exports = { app, server, io };

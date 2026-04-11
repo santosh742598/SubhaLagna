@@ -1,0 +1,256 @@
+/**
+ * @fileoverview SubhaLagna v2.0.0 — Premium Membership & Payments
+ * @description   Dynamic membership selection with Coupon system and 
+ *                Razorpay integration. Supports ₹0 payment bypass.
+ */
+
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import { 
+  getPlans, 
+  loadRazorpayScript, 
+  createPaymentOrder, 
+  verifyPayment, 
+  validateCoupon,
+  confirmFreeSubscription
+} from '../services/razorpayService';
+
+const PremiumMembership = () => {
+  const { user, token } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  
+  // Coupon State
+  const [couponCode, setCouponCode] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // { code, discountedPrice, discountAmount }
+  const [couponError, setCouponError] = useState('');
+
+  // ── Load Plans ─────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const data = await getPlans();
+        setPlans(data);
+      } catch (err) {
+        console.error("Failed to load plans:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPlans();
+  }, []);
+
+  // ── Coupon Logic ───────────────────────────────────────────────────────────
+  const handleApplyCoupon = async (planId) => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError('');
+    try {
+      const result = await validateCoupon(couponCode, planId);
+      setAppliedCoupon({ ...result, targetPlanId: planId });
+    } catch (err) {
+      setCouponError(err.response?.data?.message || 'Invalid coupon');
+      setAppliedCoupon(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  // ── Payment Logic ──────────────────────────────────────────────────────────
+  const handlePlanSelect = async (plan) => {
+    if (!user) {
+      navigate('/login', { state: { from: '/premium' } });
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      // 1. Load Razorpay Script
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        alert("Razorpay SDK failed to load. Check your internet connection.");
+        setProcessing(false);
+        return;
+      }
+
+      // 2. Create Order (Backend)
+      const currentCoupon = (appliedCoupon && appliedCoupon.targetPlanId === plan.id) 
+        ? appliedCoupon.couponCode 
+        : null;
+
+      const orderResponse = await createPaymentOrder(plan.id, currentCoupon);
+
+      // ── Handle Zero Price Bypass ──
+      if (orderResponse.isFree) {
+        const confirm = await confirmFreeSubscription(plan.id, currentCoupon);
+        if (confirm.success) {
+          alert("🎉 Premium Activated Successfully!");
+          navigate('/dashboard');
+        }
+        return;
+      }
+
+      // 3. Open Razorpay Modal
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder',
+        amount: orderResponse.data.amount,
+        currency: orderResponse.data.currency,
+        name: "SubhaLagna Premium",
+        description: `${plan.name} Membership (1 Year)`,
+        image: "/logo.png",
+        order_id: orderResponse.data.id,
+        handler: async (response) => {
+          try {
+            const verifyData = {
+              ...response,
+              planId: plan.id,
+              couponCode: currentCoupon
+            };
+            const verification = await verifyPayment(verifyData);
+            if (verification.success) {
+              alert("✨ Upgrade Successful! Welcome to Premium.");
+              window.location.href = '/dashboard'; // Force refresh auth state
+            }
+          } catch (err) {
+            alert("Payment verification failed. Please contact support.");
+          }
+        },
+        prefill: {
+          name: user.name,
+          email: user.email,
+        },
+        theme: { color: "#f43f5e" }, // Rose-500
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Something went wrong.");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full max-w-7xl mx-auto px-4 py-16 bg-white">
+      {/* Header */}
+      <div className="text-center max-w-3xl mx-auto mb-16">
+        <h1 className="text-5xl font-serif font-bold text-gray-900 mb-6">
+          Premium <span className="text-rose-600">Soulmate</span> Access
+        </h1>
+        <p className="text-gray-500 text-lg">
+          Unlock the full potential of your search with 1 year of unlimited features and priority support.
+        </p>
+      </div>
+
+      {/* Plans Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        {plans.map((plan) => {
+          const isSelected = appliedCoupon?.targetPlanId === plan.id;
+          const priceToShow = isSelected ? appliedCoupon.discountedPrice : plan.price;
+          const hasDiscount = isSelected && appliedCoupon.discountAmount > 0;
+
+          return (
+            <div 
+              key={plan.id}
+              className={`relative flex flex-col p-10 rounded-[3rem] border transition-all duration-500 hover:scale-[1.02] ${
+                plan.popular 
+                  ? 'border-rose-200 bg-rose-50/30 ring-1 ring-rose-100 shadow-2xl scale-105 z-10' 
+                  : 'border-slate-100 bg-white shadow-xl'
+              }`}
+            >
+              {plan.popular && (
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1 bg-rose-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">
+                  Best Value
+                </span>
+              )}
+
+              <header className="mb-8">
+                 <h3 className="text-2xl font-bold text-gray-800">{plan.name}</h3>
+                 <p className="text-gray-400 text-sm mt-2">{plan.description}</p>
+              </header>
+
+              <div className="flex items-baseline gap-2 mb-8">
+                 <span className="text-5xl font-extrabold text-gray-900">₹{priceToShow}</span>
+                 {hasDiscount && (
+                   <span className="text-xl text-gray-400 line-through">₹{plan.price}</span>
+                 )}
+                 <span className="text-gray-400 font-medium">/ 1 yr</span>
+              </div>
+
+              {/* Coupon Field for paid plans */}
+              {plan.price > 0 && (
+                <div className="mb-8 p-4 bg-white/50 rounded-2xl border border-rose-50">
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Coupon Code"
+                      className="flex-1 bg-transparent text-xs font-bold uppercase tracking-tight outline-none"
+                      onChange={(e) => setCouponCode(e.target.value)}
+                    />
+                    <button 
+                      onClick={() => handleApplyCoupon(plan.id)}
+                      disabled={couponLoading}
+                      className="text-xs font-bold text-rose-600 hover:text-rose-700 disabled:opacity-50"
+                    >
+                      {couponLoading ? '...' : 'APPLY'}
+                    </button>
+                  </div>
+                  {couponError && <p className="text-[10px] text-red-500 mt-1">{couponError}</p>}
+                  {hasDiscount && <p className="text-[10px] text-emerald-600 mt-1 font-bold">✓ Coupon Applied (-₹{appliedCoupon.discountAmount})</p>}
+                </div>
+              )}
+
+              <ul className="flex-1 space-y-4 mb-10">
+                 {plan.features.map((f, i) => (
+                   <li key={i} className="flex items-center gap-3 text-sm">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center ${f.included ? 'bg-rose-100' : 'bg-gray-100'}`}>
+                        <svg className={`w-3 h-3 ${f.included ? 'text-rose-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d={f.included ? "M5 13l4 4L19 7" : "M6 18L18 6M6 6l12 12"} />
+                        </svg>
+                      </div>
+                      <span className={f.included ? 'text-gray-700' : 'text-gray-400 line-through'}>{f.text}</span>
+                   </li>
+                 ))}
+              </ul>
+
+              <button 
+                onClick={() => handlePlanSelect(plan)}
+                disabled={processing || (plan.id === 'free' && user?.isPremium)}
+                className={`w-full py-5 rounded-2xl font-bold transition-all ${
+                  plan.id === 'free' && user?.isPremium
+                    ? 'bg-gray-100 text-gray-400 cursor-default'
+                    : plan.popular
+                    ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-xl shadow-rose-200'
+                    : 'bg-gray-900 text-white hover:bg-black'
+                } disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]`}
+              >
+                {processing ? 'Processing...' : (plan.id === 'free' && user?.isPremium ? 'Already Applied' : `Get ${plan.name}`)}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-20 text-center text-gray-400 text-xs">
+         Secure payments by Razorpay. Prices inclusive of 18% GST. No hidden charges.
+      </div>
+    </div>
+  );
+};
+
+export default PremiumMembership;

@@ -1,0 +1,161 @@
+// src/data/mockProfiles.js
+
+export const CITIES = [
+  "Bhubaneswar",
+  "Cuttack",
+  "Rourkela",
+  "Berhampur",
+  "Sambalpur",
+  "Puri",
+  "Balasore"
+];
+
+export const MOCK_PROFILES = [
+  // ---------------- MALE PROFILES ----------------
+  {
+    id: "m1",
+    name: "Aarav Sahu",
+    age: 28,
+    gender: "Male",
+    location: "Bhubaneswar",
+    profession: "Software Engineer",
+    education: "B.Tech in Computer Science",
+    height: "5' 10\"",
+    bio: "Tech enthusiast by day, amateur photographer by night. Looking for an understanding partner who appreciates the little things.",
+    image: "/man.png"
+  },
+  {
+    id: "m2",
+    name: "Rajesh Sahoo",
+    age: 30,
+    gender: "Male",
+    location: "Cuttack",
+    profession: "Bank Manager",
+    education: "MBA Finance",
+    height: "5' 9\"",
+    bio: "Ambitious and family-oriented. Enjoy traveling and trying out new cuisines. Seeking a supportive life partner.",
+    image: "/man.png"
+  },
+  {
+    id: "m3",
+    name: "Vikram Behera",
+    age: 27,
+    gender: "Male",
+    location: "Bhubaneswar",
+    profession: "Business Analyst",
+    education: "B.Sc Economics",
+    height: "6' 0\"",
+    bio: "Love reading and playing tennis. Looking forward to finding someone who shares my values and modern outlook.",
+    image: "/man.png"
+  },
+  {
+    id: "m4",
+    name: "Sanjay Pradhan",
+    age: 32,
+    gender: "Male",
+    location: "Rourkela",
+    profession: "Mechanical Engineer",
+    education: "M.Tech",
+    height: "5' 8\"",
+    bio: "Hardworking, caring, and grounded. Looking to settle down with a like-minded individual.",
+    image: "/man.png"
+  },
+  {
+    id: "m5",
+    name: "Aditya Sahu",
+    age: 26,
+    gender: "Male",
+    location: "Bhubaneswar",
+    profession: "Graphic Designer",
+    education: "BFA",
+    height: "5' 11\"",
+    bio: "Creative mind with a love for arts and culture. Seeking a partner who is easy-going and loves to explore.",
+    image: "/man.png"
+  },
+  {
+    id: "m6",
+    name: "Manish Sahoo",
+    age: 29,
+    gender: "Male",
+    location: "Berhampur",
+    profession: "Doctor",
+    education: "MBBS, MD",
+    height: "5' 10\"",
+    bio: "Dedicated medical professional. Deeply value family ties. Hoping to find a compassionate partner.",
+    image: "/man.png"
+  },
+
+  // ---------------- FEMALE PROFILES ----------------
+  {
+    id: "f1",
+    name: "Ananya Sahoo",
+    age: 25,
+    gender: "Female",
+    location: "Bhubaneswar",
+    profession: "Marketing Executive",
+    education: "MBA",
+    height: "5' 5\"",
+    bio: "Passionate about my career and deeply value family traditions. Love painting and weekend getaways.",
+    image: "/woman.png"
+  },
+  {
+    id: "f2",
+    name: "Smriti Pradhan",
+    age: 27,
+    gender: "Female",
+    location: "Bhubaneswar",
+    profession: "HR Professional",
+    education: "MHRM",
+    height: "5' 4\"",
+    bio: "A blend of modern thoughts and traditional values. Looking for a friend and a true partner.",
+    image: "/woman.png"
+  },
+  {
+    id: "f3",
+    name: "Priyanka Sahu",
+    age: 26,
+    gender: "Female",
+    location: "Cuttack",
+    profession: "School Teacher",
+    education: "B.Ed, M.A.",
+    height: "5' 3\"",
+    bio: "Simple, loving, and family-oriented. Looking for a partner who values mutual respect and happiness.",
+    image: "/woman.png"
+  },
+  {
+    id: "f4",
+    name: "Roshni Behera",
+    age: 28,
+    gender: "Female",
+    location: "Rourkela",
+    profession: "Data Scientist",
+    education: "M.Sc Statistics",
+    height: "5' 6\"",
+    bio: "Independent and optimistic. I enjoy hiking and curling up with a good book. Seeking an ambitious and caring partner.",
+    image: "/woman.png"
+  },
+  {
+    id: "f5",
+    name: "Kirti Sahoo",
+    age: 24,
+    gender: "Female",
+    location: "Sambalpur",
+    profession: "Content Writer",
+    education: "B.A. English Literature",
+    height: "5' 2\"",
+    bio: "Creative, empathetic, and cheerful. Love exploring history and literature. Seeking a kind-hearted man.",
+    image: "/woman.png"
+  },
+  {
+    id: "f6",
+    name: "Nikita Sahu",
+    age: 29,
+    gender: "Female",
+    location: "Bhubaneswar",
+    profession: "Civil Engineer",
+    education: "B.Tech",
+    height: "5' 7\"",
+    bio: "Structured in work, spontaneous in life. Looking for an equal partnership built on trust.",
+    image: "/woman.png"
+  }
+];

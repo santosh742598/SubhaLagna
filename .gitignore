@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+subhalagna-frontend/node_modules/
+subhalagna-backend/node_modules/
+
+# Production / Build
+dist/
+subhalagna-frontend/dist/
+subhalagna-frontend/dist-ssr/
+build/
+coverage/
+
+# Environment Files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+subhalagna-backend/.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Icon?
+
+# IDEs and Editors
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*.swn
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+.project
+.settings/
+
+# Local data / Uploads
+subhalagna-backend/uploads/*
+!subhalagna-backend/uploads/.gitkeep
+
+

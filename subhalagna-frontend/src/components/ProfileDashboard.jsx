@@ -1,0 +1,335 @@
+/**
+ * @fileoverview SubhaLagna v2.0.0 — User Dashboard
+ * @description   Central hub for users to manage their profile, view premium status,
+ *                and handle incoming interest requests.
+ *                v2.0.0 changes:
+ *                  - Premium status & limit tracking
+ *                  - Interests Received inbox (Accept/Reject)
+ *                  - Integrated profile editor with gallery
+ *                  - Elegant glassmorphism UI
+ */
+
+import React, { useState, useContext, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { updateProfile as updateProfileService } from '../services/profileService';
+import { getMyInterests, respondToInterest } from '../services/interestService';
+
+// Re-using consistent Icon style from the app
+const Sparkles = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+  </svg>
+);
+const Trash = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+  </svg>
+);
+const Plus = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H12" />
+  </svg>
+);
+const Heart = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+  </svg>
+);
+const Check = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+  </svg>
+);
+const X = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+const ShieldCheck = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+);
+
+const ProfileDashboard = () => {
+  const { user, updateProfileContext } = useContext(AuthContext);
+  
+  // Tab State
+  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'interests'
+
+  // Profile Form State
+  const [formData, setFormData] = useState({});
+  const [file, setFile] = useState(null);
+  const [galleryFiles, setGalleryFiles] = useState([]);
+  const [galleryPreviews, setGalleryPreviews] = useState([]);
+  const [removePhotos, setRemovePhotos] = useState([]);
+  const [statusMsg, setStatusMsg] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Interests State
+  const [interests, setInterests] = useState([]);
+  const [loadingInterests, setLoadingInterests] = useState(false);
+
+  useEffect(() => {
+    if (user?.profile) {
+      setFormData({
+        name:          user.profile.name || '',
+        location:      user.profile.location || '',
+        age:           user.profile.age || '',
+        caste:         user.profile.caste || '',
+        religion:      user.profile.religion || '',
+        education:     user.profile.education || '',
+        profession:    user.profile.profession || '',
+        bio:           user.profile.bio || '',
+        height:        user.profile.height || '',
+        motherTongue:  user.profile.motherTongue || '',
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (activeTab === 'interests') {
+      const loadPendingInterests = async () => {
+        setLoadingInterests(true);
+        try {
+          const data = await getMyInterests('received', 'pending');
+          setInterests(data);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoadingInterests(false);
+        }
+      };
+      loadPendingInterests();
+    }
+  }, [activeTab]);
+
+  const handleInterestAction = async (id, status) => {
+    try {
+      await respondToInterest(id, status);
+      setInterests(prev => prev.filter(i => i._id !== id));
+      if (status === 'accepted') {
+        setStatusMsg('Interest accepted! You can now chat with them. ❤️');
+      } else {
+        setStatusMsg('Interest declined.');
+      }
+    } catch (err) {
+      alert(err || 'Failed to respond');
+    }
+  };
+
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleFileChange = (e) => setFile(e.target.files[0]);
+
+  const handleGalleryChange = (e) => {
+    const files = Array.from(e.target.files);
+    setGalleryFiles(prev => [...prev, ...files]);
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setGalleryPreviews(prev => [...prev, ...newPreviews]);
+  };
+
+  const handleRemoveExisting = (photoUrl) => setRemovePhotos(prev => [...prev, photoUrl]);
+  const handleRemoveNew = (index) => {
+    setGalleryFiles(prev => prev.filter((_, i) => i !== index));
+    setGalleryPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatusMsg('Saving your changes...');
+    
+    const submitData = new FormData();
+    Object.keys(formData).forEach(key => submitData.append(key, formData[key]));
+    if (file) submitData.append('profilePhoto', file);
+    galleryFiles.forEach(f => submitData.append('additionalPhotos', f));
+    if (removePhotos.length > 0) submitData.append('removePhotos', JSON.stringify(removePhotos));
+
+    try {
+      const updatedProfile = await updateProfileService(user.profile._id, submitData);
+      setStatusMsg('Profile and gallery updated successfully! ✨');
+      updateProfileContext(updatedProfile);
+      setGalleryFiles([]); setGalleryPreviews([]); setRemovePhotos([]); setFile(null);
+    } catch (err) {
+      setStatusMsg(err || 'Failed to update profile');
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setStatusMsg(''), 5000);
+    }
+  };
+
+  if (!user?.profile) {
+    return (
+      <div className="flex flex-col items-center justify-center p-20 text-gray-400">
+        <div className="w-12 h-12 border-4 border-rose-100 border-t-rose-500 rounded-full animate-spin mb-4" />
+        <p>Initializing your dashboard...</p>
+      </div>
+    );
+  }
+
+  const existingGallery = (user.profile.additionalPhotos || []).filter(p => !removePhotos.includes(p));
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in pb-32">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* ══ Sidebar (Stats & Tabs) ══ */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Premium Status Card */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] p-8 text-white shadow-xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
+            
+            <div className="relative z-10">
+               <div className="flex items-center gap-3 mb-6">
+                 <div className="p-2 bg-rose-500 rounded-xl">
+                   <ShieldCheck className="w-6 h-6 text-white" />
+                 </div>
+                 <div>
+                   <h3 className="font-bold text-lg leading-tight">{user.isPremium ? `${user.premiumPlan.toUpperCase()} MEMBER` : 'FREE PLAN'}</h3>
+                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Account Security: High</p>
+                 </div>
+               </div>
+
+               {user.isPremium ? (
+                 <div className="space-y-4">
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                       <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] block mb-1">Expires On</span>
+                       <p className="text-sm font-bold text-rose-300">
+                         {new Date(user.premiumExpires).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                       </p>
+                    </div>
+                    {user.premiumPlan === 'gold' && (
+                       <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] block mb-1">Contacts Left</span>
+                          <div className="flex items-end gap-2">
+                             <p className="text-2xl font-black text-white">{Math.max(0, 30 - (user.contactsViewed?.length || 0))}</p>
+                             <p className="text-[10px] text-slate-400 pb-1">out of 30</p>
+                          </div>
+                          <div className="w-full h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
+                             <div className="h-full bg-rose-500 transition-all duration-1000" style={{ width: `${Math.max(0, ((30 - (user.contactsViewed?.length || 0)) / 30) * 100)}%` }} />
+                          </div>
+                       </div>
+                    )}
+                 </div>
+               ) : (
+                 <button onClick={() => window.location.href='/premium'} className="w-full py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-rose-900/50">
+                    Upgrade to Premium
+                 </button>
+               )}
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="bg-white rounded-[2rem] p-3 border border-rose-100 shadow-sm space-y-2">
+             <button 
+               onClick={() => setActiveTab('profile')}
+               className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold text-sm transition-all ${activeTab === 'profile' ? 'bg-rose-50 text-rose-600' : 'text-gray-400 hover:bg-rose-50/50 hover:text-gray-600'}`}
+             >
+               <Sparkles className="w-5 h-5" /> Edit Profile Details
+             </button>
+             <button 
+               onClick={() => setActiveTab('interests')}
+               className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold text-sm transition-all ${activeTab === 'interests' ? 'bg-rose-50 text-rose-600' : 'text-gray-400 hover:bg-rose-50/50 hover:text-gray-600'}`}
+             >
+               <div className="relative">
+                 <Heart className="w-5 h-5" />
+                 {interests.length > 0 && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full" />}
+               </div>
+               Interests Received
+             </button>
+          </div>
+        </div>
+
+        {/* ══ Main Content (Forms/Inbox) ══ */}
+        <div className="lg:col-span-8">
+           {statusMsg && (
+             <div className={`mb-8 p-5 rounded-2xl font-bold border transition-all animate-scale-in flex items-center gap-4 ${statusMsg.includes('successfully') || statusMsg.includes('accepted') ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>
+               <span className={`w-3 h-3 rounded-full animate-pulse ${statusMsg.includes('successfully') ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+               {statusMsg}
+             </div>
+           )}
+
+           {activeTab === 'profile' ? (
+             <div className="bg-white p-8 md:p-10 rounded-[3rem] shadow-sm border border-rose-50">
+               <form onSubmit={handleSubmit} className="space-y-10">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                    <div className="space-y-6">
+                       <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Basic Identity</h3>
+                       <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Display Name" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                       <div className="grid grid-cols-2 gap-4">
+                         <input type="number" name="age" value={formData.age} onChange={handleChange} placeholder="Age" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                         <input type="text" name="height" value={formData.height} onChange={handleChange} placeholder="Height" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                       </div>
+                       <textarea name="bio" value={formData.bio} onChange={handleChange} rows="4" placeholder="Briefly describe yourself..." className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                    </div>
+                    <div className="space-y-6">
+                       <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Background</h3>
+                       <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="Current City, State" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                       <input type="text" name="education" value={formData.education} onChange={handleChange} placeholder="Highest Education" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                       <input type="text" name="profession" value={formData.profession} onChange={handleChange} placeholder="Profession" className="w-full px-5 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/30 text-sm font-medium" />
+                    </div>
+                 </div>
+
+                 <div className="bg-rose-50/30 p-8 rounded-[2rem] border border-rose-100/50">
+                   <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-6">Profile Photo</h3>
+                   <div className="flex items-center gap-8">
+                      <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-white shadow-xl">
+                         <img src={file ? URL.createObjectURL(file) : user.profile.profilePhoto} className="w-full h-full object-cover" alt="" />
+                      </div>
+                      <label className="flex items-center gap-2 px-6 py-3 bg-white border border-rose-200 text-rose-600 rounded-xl font-bold text-sm cursor-pointer hover:bg-rose-50">
+                         Change Photo
+                         <input type="file" onChange={handleFileChange} className="hidden" />
+                      </label>
+                   </div>
+                 </div>
+
+                 <div className="pt-6">
+                    <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-gradient-to-r from-rose-600 to-pink-500 text-white rounded-2xl font-black shadow-xl shadow-rose-200 disabled:opacity-50">
+                       {isSubmitting ? 'SAVING...' : 'UPDATE PROFILE'}
+                    </button>
+                 </div>
+               </form>
+             </div>
+           ) : (
+             <div className="space-y-4">
+               <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6">Pending Interests</h2>
+               {loadingInterests ? (
+                 <div className="py-20 text-center text-gray-400">Loading your inbox...</div>
+               ) : interests.length === 0 ? (
+                 <div className="bg-white p-16 rounded-[3rem] border border-dashed border-gray-200 text-center">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mx-auto mb-4">
+                       <Heart className="w-8 h-8" />
+                    </div>
+                    <p className="text-gray-400 font-medium">No pending interests at the moment.</p>
+                 </div>
+               ) : (
+                 interests.map(interest => (
+                   <div key={interest._id} className="bg-white p-5 rounded-3xl border border-rose-100 shadow-sm flex items-center gap-6 hover:shadow-md transition-all group animate-fade-in">
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
+                        <img src={interest.sender.profile?.profilePhoto || '/placeholder-profile.png'} className="w-full h-full object-cover" alt="" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-lg font-bold text-gray-800">{interest.sender.name}</h4>
+                        <p className="text-gray-500 text-sm">{interest.sender.profile?.location || 'Location hidden'}</p>
+                        {interest.message && <p className="text-gray-400 text-xs italic mt-1 line-clamp-1">"{interest.message}"</p>}
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => handleInterestAction(interest._id, 'rejected')} className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-rose-50 hover:text-rose-500 transition-all">
+                          <X className="w-5 h-5" />
+                        </button>
+                        <button onClick={() => handleInterestAction(interest._id, 'accepted')} className="p-3 bg-rose-600 text-white rounded-xl hover:bg-rose-700 shadow-lg shadow-rose-200 transition-all">
+                          <Check className="w-5 h-5" />
+                        </button>
+                      </div>
+                   </div>
+                 ))
+               )}
+             </div>
+           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProfileDashboard;

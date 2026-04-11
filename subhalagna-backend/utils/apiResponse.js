@@ -1,0 +1,71 @@
+/**
+ * @fileoverview SubhaLagna v2.0.0 — Centralized API Response Helper
+ * @description   Standardizes all API responses across the application.
+ *                Every successful response follows { success, data } and
+ *                every error follows { success, message } format.
+ * @author        SubhaLagna Team
+ * @version       2.0.0
+ *
+ * Usage:
+ *   const { sendSuccess, sendError } = require('../utils/apiResponse');
+ *   sendSuccess(res, data, 'Profile created', 201);
+ *   sendError(res, 'Not authorized', 403);
+ */
+
+'use strict';
+
+/**
+ * Send a standardized success response.
+ *
+ * @param {import('express').Response} res  - Express response object
+ * @param {*}      data                     - Payload to send
+ * @param {string} [message='Success']      - Human-readable message
+ * @param {number} [statusCode=200]         - HTTP status code
+ */
+const sendSuccess = (res, data = null, message = 'Success', statusCode = 200) => {
+  const payload = { success: true, message };
+  if (data !== null && data !== undefined) payload.data = data;
+  return res.status(statusCode).json(payload);
+};
+
+/**
+ * Send a standardized error response.
+ *
+ * @param {import('express').Response} res  - Express response object
+ * @param {string} message                  - Error message for the client
+ * @param {number} [statusCode=500]         - HTTP status code
+ * @param {*}      [errors=null]            - Optional validation errors array
+ */
+const sendError = (res, message = 'An error occurred', statusCode = 500, errors = null) => {
+  const payload = { success: false, message };
+  if (errors) payload.errors = errors;
+  return res.status(statusCode).json(payload);
+};
+
+/**
+ * Send a paginated list response.
+ *
+ * @param {import('express').Response} res
+ * @param {Array}  data       - Array of results
+ * @param {number} total      - Total count before pagination
+ * @param {number} page       - Current page number
+ * @param {number} limit      - Items per page
+ * @param {string} [message]
+ */
+const sendPaginated = (res, data, total, page, limit, message = 'Success') => {
+  return res.status(200).json({
+    success: true,
+    message,
+    data,
+    pagination: {
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
+    },
+  });
+};
+
+module.exports = { sendSuccess, sendError, sendPaginated };
