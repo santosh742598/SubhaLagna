@@ -8,6 +8,10 @@
  *                  - Automated profile view tracking
  *                  - Premium responsive layout with glassmorphism
  *                  - Contact Information Gating (Unlock Logic)
+ *                v2.1.0 changes:
+ *                  - Guna Milan compatibility gauge (36-point score)
+ *                  - Factor-by-factor Ashta Koota breakdown
+ *                  - Dynamic visibility of compatibility section
  */
 
 import React, { useState, useEffect, useContext } from 'react';

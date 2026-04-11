@@ -5,6 +5,9 @@
  *                  - Integration with InterestButton for quick interactions
  *                  - Improved compatibility scoring UI
  *                  - Premium visual refinements
+ *                v2.1.0 changes:
+ *                  - Guna Milan (Traditional Match) badge overlay
+ *                  - Pulse animation on high-compatibility cards
  */
 
 import React from 'react';

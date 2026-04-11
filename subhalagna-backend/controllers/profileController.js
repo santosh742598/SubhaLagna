@@ -14,6 +14,11 @@
  *                  - Smart matching score using matchingAlgorithm.js
  *                  - Pagination on getMatches (prevents full-table scan)
  *
+ *                v2.1.0 changes:
+ *                  - Guna Milan (Ashta Koota) matchmaking integration
+ *                  - Data guards for missing horoscope details
+ *                  - Precise Pada-to-Rashi resolution
+ *
  * @author        SubhaLagna Team
  * @version       2.1.0
  */

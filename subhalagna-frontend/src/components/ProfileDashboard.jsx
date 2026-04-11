@@ -1,13 +1,12 @@
 /**
- * @fileoverview SubhaLagna v2.0.9 — User Dashboard
+ * @fileoverview SubhaLagna v2.1.0 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
- *                v2.0.9 changes:
- *                  - Identity Fortification: Locked name/gender/dob
- *                  - Date of Birth display (dd-mmm-yyyy)
- *                  - Detailed Horoscope Editor (Rashi, Nakshatra, Pada)
- *                  - Integrated Privacy & Security Suite
- *                  - Multi-tag Traits & Interests Editor
+ *                v2.1.0 changes:
+ *                  - Integrated Guna Milan data management (Nakshatra/Pada editing)
+ *                  - Automated Rashi calculation and locking based on Pada mapping
+ *                  - Improved birth-details integrity for astrological matching
+ *                  - Enhanced Glassmorphism styling and performance
  */
 
 import React, { useState, useContext, useEffect } from 'react';

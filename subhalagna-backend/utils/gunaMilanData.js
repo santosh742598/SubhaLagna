@@ -1,7 +1,12 @@
 /**
  * @fileoverview SubhaLagna v2.1.0 — Guna Milan (Ashta Koota) Data
- * @description   Standard properties for 27 Nakshatras and 12 Rashis.
- *                Includes precise mapping for 108 Padas to Rashis.
+ * @description   Static lookup tables for Vedic astrology compatibility.
+ *                v2.1.0 changes:
+ *                  - Implemented 108 Pada-to-Rashi mapping matrix
+ *                  - Updated Lord Friendship and Yoni compatibility constants
+ *
+ * @author        SubhaLagna Team
+ * @version       2.1.0
  */
 
 const RASHIS = [

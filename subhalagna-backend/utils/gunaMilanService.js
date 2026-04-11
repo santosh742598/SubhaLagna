@@ -1,3 +1,16 @@
+/**
+ * @fileoverview SubhaLagna v2.1.0 — Guna Milan Service
+ * @description   Core matchmaking engine implementing the Ashta Koota (36-point) match.
+ *                v2.1.0 changes:
+ *                  - Implemented 108-Pada precise Rashi resolution
+ *                  - Added Nadi Dosha cancellation rules (Pada/Rashi)
+ *                  - Added Bhakoot Dosha cancellation rules (Maitri/Friendship)
+ *                  - Dynamic results with factor breakdown and labels
+ *
+ * @author        SubhaLagna Team
+ * @version       2.1.0
+ */
+
 const { NAKSHATRAS, RASHIS, YONI_COMPATIBILITY, LORD_FRIENDSHIP } = require('./gunaMilanData');
 
 /**

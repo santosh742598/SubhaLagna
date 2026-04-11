@@ -1,9 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.0.9 — Profile Creation (Onboarding)
+ * @fileoverview SubhaLagna v2.1.0 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
- *                v2.0.9 changes:
- *                  - Replaced Age with Date of Birth
- *                  - Added Horoscope data entry (Rashi, Nakshatra, Pada)
+ *                v2.1.0 changes:
+ *                  - Automated Rashi selection logic based on Nakshatra/Pada mapping
+ *                  - Standardized horoscope dropdowns for Guna Milan data integrity
+ *                  - Laptop camera direct capture support
+ *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  */
 
