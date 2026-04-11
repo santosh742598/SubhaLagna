@@ -23,6 +23,7 @@
 const Profile      = require('../models/Profile');
 const User         = require('../models/User');
 const ProfileView = require('../models/ProfileView');
+const Interest      = require('../models/Interest');
 const Notification = require('../models/Notification');
 const sharp        = require('sharp');
 const path         = require('path');
@@ -185,7 +186,39 @@ const getMatches = async (req, res, next) => {
 
     // ── Enrich with smart match scores ─────────────────────────────────────
     const myProfile = await Profile.findOne({ user: req.user._id }).lean();
-    const enriched  = enrichWithMatchScores(myProfile, candidates);
+    let enriched    = enrichWithMatchScores(myProfile, candidates);
+
+    // ── Privacy Shield Logic: Batch Interest Check ─────────────────────────
+    const candidateUserIds = candidates.map(c => c.user._id);
+    const acceptedInterests = await Interest.find({
+      $or: [
+        { sender: req.user._id, receiver: { $in: candidateUserIds }, status: 'accepted' },
+        { sender: { $in: candidateUserIds }, receiver: req.user._id, status: 'accepted' }
+      ]
+    }).lean();
+
+    const connectedUserIds = new Set([
+      ...acceptedInterests.map(i => i.sender.toString()),
+      ...acceptedInterests.map(i => i.receiver.toString())
+    ]);
+
+    enriched.forEach(c => {
+      const showTo = c.privacySettings?.showPhotoTo || 'everyone';
+      const isConnected = connectedUserIds.has(c.user._id.toString());
+      
+      if (showTo === 'everyone') {
+        c.isPhotoBlurred = false;
+      } else if (showTo === 'interests_only') {
+        c.isPhotoBlurred = !isConnected;
+      } else {
+        c.isPhotoBlurred = true;
+      }
+
+      // Important: If blurred, don't return additionalPhotos
+      if (c.isPhotoBlurred) {
+        c.additionalPhotos = [];
+      }
+    });
 
     return sendPaginated(res, enriched, total, pageNum, limitNum, 'Matches retrieved');
   } catch (err) {
@@ -219,15 +252,39 @@ const getProfileById = async (req, res, next) => {
       } catch (_) {}
     }
 
-    // ── Gating Sensitive Info ───────────────────────────────────────────────
-    // Only show email/phone if user is Premium & has "unlocked" or is own profile
+    const isOwner = profile.user._id.toString() === req.user._id.toString();
+
+    // ── Privacy Shield Logic: Specific connection check ────────────────────
+    const showTo = profile.privacySettings?.showPhotoTo || 'everyone';
+    let isPhotoBlurred = false;
+
+    if (!isOwner) {
+       if (showTo === 'interests_only') {
+          const connection = await Interest.findOne({
+             $or: [
+                { sender: req.user._id, receiver: profile.user._id, status: 'accepted' },
+                { sender: profile.user._id, receiver: req.user._id, status: 'accepted' }
+             ]
+          });
+          isPhotoBlurred = !connection;
+       } else if (showTo === 'none') {
+          isPhotoBlurred = true;
+       }
+    }
+
+    const result = profile.toObject();
+    result.isPhotoBlurred = isPhotoBlurred;
+
+    // Redact gallery if blurred
+    if (isPhotoBlurred) {
+       result.additionalPhotos = [];
+    }
+    
+    // ── Gating Sensitive Info (Contact Details) ───────────────────────────
     const isPremium = req.user.isPremiumActive ? req.user.isPremiumActive() : req.user.isPremium;
     const isUnlocked = req.user.contactsViewed?.includes(profile._id);
     const isPlatinum = req.user.premiumPlan === 'platinum';
-    const isOwner = profile.user._id.toString() === req.user._id.toString();
 
-    const result = profile.toObject();
-    
     if (!isOwner && !isPlatinum && !isUnlocked) {
       // Hide contact details
       if (result.user) {

@@ -65,6 +65,7 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
   const [loading,        setLoading]        = useState(true);
   const [actionLoading,  setActionLoading]  = useState(false);
   const [message,        setMessage]        = useState('');
+  const [bursts,         setBursts]         = useState([]); // For heart particles
 
   // ── Fetch current interest status on mount ────────────────────────────────
   useEffect(() => {
@@ -95,6 +96,16 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
       setStatus('pending');
       setIsMe(true);
       setInterestId(interest._id);
+      
+      // Trigger Heart Burst
+      const newBurst = Array.from({ length: 8 }).map((_, i) => ({
+        id: Date.now() + i,
+        left: Math.random() * 80 - 40, // spread
+        delay: Math.random() * 0.2,
+        scale: Math.random() * 0.5 + 0.5
+      }));
+      setBursts(newBurst);
+      setTimeout(() => setBursts([]), 1500); // Cleanup
     } catch (err) {
       alert(err);
     } finally {
@@ -157,6 +168,22 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
       >
         <HeartIcon className={compact ? 'w-3.5 h-3.5' : 'w-5 h-5'} />
         {actionLoading ? 'Sending...' : 'Send Interest'}
+
+        {/* Heart Burst Particles */}
+        {bursts.map(b => (
+          <div 
+            key={b.id}
+            className="absolute pointer-events-none text-rose-400"
+            style={{ 
+              left: `calc(50% + ${b.left}px)`, 
+              top: '0',
+              animation: `heart-burst 1s ease-out ${b.delay}s forwards`,
+              transform: `scale(${b.scale})`
+            }}
+          >
+            <HeartIcon className="w-5 h-5 fill-current" />
+          </div>
+        ))}
       </button>
     );
   }

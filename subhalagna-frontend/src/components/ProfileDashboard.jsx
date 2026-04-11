@@ -164,6 +164,23 @@ const ProfileDashboard = () => {
       setTimeout(() => setStatusMsg(''), 5000);
     }
   };
+  
+  const calculateProfileStrength = () => {
+    if (!user?.profile) return 0;
+    const fields = [
+      user.profile.name, user.profile.age, user.profile.religion, 
+      user.profile.location, user.profile.education, user.profile.profession, 
+      user.profile.bio, user.profile.profilePhoto
+    ];
+    let score = fields.filter(f => f && f !== '—' && f !== '').length;
+    if (user.profile.traits?.length > 0) score++;
+    if (user.profile.interests?.length > 0) score++;
+    if (user.profile.additionalPhotos?.length > 0) score++;
+    
+    return Math.round((score / 11) * 100);
+  };
+
+  const profileStrength = calculateProfileStrength();
 
   if (!user?.profile) {
     return (
@@ -224,6 +241,27 @@ const ProfileDashboard = () => {
                  </button>
                )}
             </div>
+          </div>
+
+          {/* Profile Strength Card */}
+          <div className="bg-white rounded-[2.5rem] p-8 border border-rose-100 shadow-sm relative overflow-hidden group">
+             <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-gray-800">Profile Strength</h3>
+                <span className={`text-sm font-black ${profileStrength > 80 ? 'text-emerald-500' : profileStrength > 50 ? 'text-amber-500' : 'text-rose-500'}`}>
+                  {profileStrength}%
+                </span>
+             </div>
+             <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-4">
+                <div 
+                  className={`h-full transition-all duration-1000 ${profileStrength > 80 ? 'bg-emerald-500' : profileStrength > 50 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                  style={{ width: `${profileStrength}%` }}
+                />
+             </div>
+             <p className="text-[10px] text-gray-400 font-medium italic">
+                {profileStrength < 100 
+                  ? "💡 Tip: Complete your bio and add more photos to reach 100%!"
+                  : "✨ Perfect! Your profile is fully optimized for matches."}
+             </p>
           </div>
 
           {/* Navigation Tabs */}

@@ -1,6 +1,6 @@
-# 💍 SubhaLagna Matrimony — v2.0.6
+# 💍 SubhaLagna Matrimony — v2.0.8
 
-A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.0.6 focuses on premium user experiences, secure contact management, and robust administrative tools.
+A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.0.8 focuses on premium user experiences, interest-based privacy, and secure data gating.
 
 ---
 
@@ -14,8 +14,9 @@ SubhaLagna v2.0.0 implements a **weighted compatibility engine** (`matchingAlgor
 - **Demographic Proximity (30pts)**: Weighted scoring for Age, Location, and Education tiers.
 
 ### 🛡️ Privacy Engine & Data Gating
+- **Privacy Frost (New in v2.0.8)**: Interest-aware photo protection. Photos and galleries are blurred with a frosted-glass effect and only unlock after an interest is **Accepted**.
 - **Contact Redaction**: Server-side masking of Email/Phone for non-authorized viewers.
-- **Photo Privacy**: Integrated support for `privacySettings` including profile hiding and blurred view teasers.
+- **Photo Privacy Settings**: Integrated support for `privacySettings` including profile hiding and selective photo visibility.
 - **View Insights**: Premium users can track "Who Viewed My Profile" with a complete audit trail.
 - **Ownership Guard**: Strict middleware checks ensure users only modify their own data.
 

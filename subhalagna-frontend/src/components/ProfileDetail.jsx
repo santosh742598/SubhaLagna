@@ -16,6 +16,7 @@ import { AuthContext } from '../context/AuthContext';
 import { getProfileById, unlockContact } from '../services/profileService';
 import InterestButton from './InterestButton';
 import Header from './Header';
+import PrivacyShield from './PrivacyShield';
 
 // ─── Stat Box Component ───────────────────────────────────────────────────────
 const StatBox = ({ label, value, icon }) => (
@@ -105,6 +106,7 @@ const ProfileDetail = () => {
   }
 
   const isOwnProfile = currentUser?._id === profile.user?._id || currentUser?._id === profile.user;
+  const isBlurred = profile.isPhotoBlurred;
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
@@ -118,16 +120,19 @@ const ProfileDetail = () => {
           <div className="lg:col-span-4 space-y-6">
             <div className="bg-white rounded-[2.5rem] overflow-hidden border border-rose-100 shadow-sm sticky top-28">
               {/* Active Photo Container */}
-              <div className="relative aspect-[3/4] group cursor-zoom-in">
+              <div className="relative aspect-[3/4] group cursor-zoom-in overflow-hidden">
                 <img 
                   src={activePhoto} 
                   alt={profile.name} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${isBlurred ? 'blur-3xl px-8 grayscale-[0.2]' : ''}`}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                
+                {isBlurred && <PrivacyShield />}
+                
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                 
                 {/* Visual Badges */}
-                <div className="absolute bottom-6 left-6 text-white">
+                <div className="absolute bottom-6 left-6 text-white z-10">
                   <h1 className="text-3xl font-serif font-bold">{profile.name}, {profile.age}</h1>
                   <p className="text-rose-200 text-sm font-medium flex items-center gap-2 mt-1">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -144,8 +149,8 @@ const ProfileDetail = () => {
                    {[profile.profilePhoto || profile.image, ...profile.additionalPhotos].map((img, i) => (
                      <button 
                        key={i} 
-                       onClick={() => setActivePhoto(img)}
-                       className={`w-16 h-16 rounded-2xl flex-shrink-0 overflow-hidden border-2 transition-all ${activePhoto === img ? 'border-rose-500 scale-105 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                       onClick={() => !isBlurred && setActivePhoto(img)}
+                       className={`w-16 h-16 rounded-2xl flex-shrink-0 overflow-hidden border-2 transition-all ${activePhoto === img ? 'border-rose-500 scale-105 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'} ${isBlurred ? 'blur-md grayscale cursor-not-allowed' : ''}`}
                      >
                        <img src={img} className="w-full h-full object-cover" alt="" />
                      </button>

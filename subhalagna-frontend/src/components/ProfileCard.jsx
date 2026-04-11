@@ -11,6 +11,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import InterestButton from './InterestButton';
 
+import PrivacyShield from './PrivacyShield';
+
 const ProfileCard = ({ profile, index }) => {
   const navigate = useNavigate();
   
@@ -21,6 +23,7 @@ const ProfileCard = ({ profile, index }) => {
     navigate(`/profile/${profile._id || profile.id}`);
   };
 
+  const isBlurred = profile.isPhotoBlurred;
   const profileImage = profile.profilePhoto || profile.image || '/placeholder-profile.png';
   const age = profile.age || '—';
   const location = profile.location || '—';
@@ -30,7 +33,7 @@ const ProfileCard = ({ profile, index }) => {
   return (
     <div 
       onClick={handleNavigate}
-      className="group relative bg-white rounded-[2rem] border border-pink-100/60 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-pink-100/40 transition-all duration-500 cursor-pointer flex flex-col h-full animate-fade-in"
+      className={`group relative bg-white rounded-[2rem] border border-pink-100/60 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-pink-100/40 transition-all duration-500 cursor-pointer flex flex-col h-full animate-fade-in ${isBlurred ? 'grayscale-[0.3]' : ''}`}
       style={{ animationDelay: `${index * 50}ms` }}
     >
       {/* ── Image Section ── */}
@@ -38,12 +41,14 @@ const ProfileCard = ({ profile, index }) => {
         <img 
           src={profileImage} 
           alt={profile.name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isBlurred ? 'blur-2xl bg-slate-200' : ''}`}
         />
         
+        {isBlurred && <PrivacyShield compact={true} />}
+        
         {/* Compatibility Overlay */}
-        <div className="absolute top-4 right-4 z-10">
-          <div className="bg-white/90 backdrop-blur-md rounded-2xl px-3 py-1.5 flex flex-col items-center border border-white/20 shadow-lg">
+        <div className="absolute top-4 right-4 z-10 transition-transform duration-500 group-hover:translate-z-0 group-hover:scale-110 group-hover:translate-y-[-4px]">
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl px-3 py-1.5 flex flex-col items-center border border-white/20 shadow-lg animate-glow">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Match</span>
             <span className={`text-lg font-black leading-none ${matchScore > 85 ? 'text-emerald-500' : 'text-pink-500'}`}>
               {matchScore}%
