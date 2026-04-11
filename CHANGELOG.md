@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-04-11
+
+### Added
+- **☁️ Unified Storage Hub**: Abstracted file storage into a `StorageService` supporting both Local Filesystem and AWS S3 via `.env` toggle.
+- **🔄 Upgrade Hierarchy**: Interactive "Upgrade to Platinum" triggers and active plan highlighting for Gold members.
+- **📦 AWS S3 Logic**: Integrated the `@aws-sdk` with lazy-loading for future cloud migration support.
+
+### Improved
+- **🚨 Enhanced Payment Feedback**: Unpacked nested Razorpay error objects to provide precise feedback (e.g., "Authentication Failed") to the UI.
+- **🧹 Storage Cleanup**: Automated physical file deletion when users update or remove profile photos locally or on S3.
+- **💻 Dynamic Domain Logging**: Implemented server startup logging that automatically respects the production domain URL.
+- **🛠️ Gateway Stability**: Repositioned Express middleware for better sanitization and error capture.
+
 ## [2.1.0] - 2026-04-11
 
 ### Added

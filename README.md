@@ -1,10 +1,16 @@
-# 💍 SubhaLagna Matrimony — v2.1.0
+# 💍 SubhaLagna Matrimony — v2.2.0
 
-A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.1.0 focuses on premium user experiences, Vedic astrological matching, and secure data gating.
+A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.2.0 focuses on **Cloud-Ready Scalability**, Vedic astrological matching, and premium user experiences.
 
 ---
 
 ## 🚀 Key Features
+
+### ☁️ Cloud-Ready Storage (New in v2.2.0)
+SubhaLagna is now optimized for cloud hosting:
+- **Unified Abstraction**: Seamlessly switch between **Local Disk** and **AWS S3** via a single `.env` toggle.
+- **Lazy Loading**: Zero overhead for cloud libraries when using local storage.
+- **Auto-Cleanup**: The system automatically deletes old assets from storage when profile photos are updated, preventing storage bloat.
 
 ### 🔮 Vedic Guna Milan (New in v2.1.0)
 SubhaLagna now implements a **professional-grade Ashta Koota compatibility engine**:
