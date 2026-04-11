@@ -1,11 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Admin Dashboard
+ * @fileoverview SubhaLagna v2.3.1 — Admin Dashboard
  * @description Executive interface for platform commercial and user management.
- * - v2.3.0 changes:
+ * - v2.3.1 changes:
  *   - Implemented "Membership Plans" management tab for real-time pricing/duration control.
- *   - Refactored Manual Upgrade logic to dynamically fetch plans from database.
+ *   - Refactored Manual Upgrade logic with dynamic plan fetching and duration auto-fill.
  *   - Improved tab navigation and added plan edit modals.
- * @version 2.3.0
+ * @version 2.3.1
  */
 
 import React, { useState, useEffect } from 'react';
@@ -167,6 +167,18 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchPlans(); // Fetch plans on mount for modals
   }, []);
+  
+  // Auto-fill Manual Upgrade duration
+  useEffect(() => {
+    if (upgradeForm.planId && plans.length > 0) {
+      const plan = plans.find(p => p.planId === upgradeForm.planId);
+      if (plan) {
+         // months * 30 days approximation, 0 = 36500 (approx lifetime)
+         const days = plan.durationInMonths === 0 ? 36500 : plan.durationInMonths * 30;
+         setUpgradeForm(prev => ({ ...prev, durationDays: days.toString() }));
+      }
+    }
+  }, [upgradeForm.planId, plans]);
 
   useEffect(() => {
     if (activeTab === 'users') fetchData();

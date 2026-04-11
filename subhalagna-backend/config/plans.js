@@ -17,7 +17,8 @@ const plans = [
       { text: 'Send Interests', included: true },
       { text: 'View Contact Info', included: false },
       { text: 'Direct Messaging', included: false },
-    ]
+    ],
+    contactsAllowed: 0
   },
   {
     id: 'gold',
@@ -33,7 +34,8 @@ const plans = [
       { text: 'View 30 Contact Info', included: true },
       { text: 'Direct Messaging', included: true },
       { text: 'View Private Photos', included: true },
-    ]
+    ],
+    contactsAllowed: 30
   },
   {
     id: 'platinum',
@@ -49,7 +51,8 @@ const plans = [
       { text: 'Direct Messaging', included: true },
       { text: 'Priority Placement', included: true },
       { text: 'View Private Photos', included: true },
-    ]
+    ],
+    contactsAllowed: -1 // Unlimited
   }
 ];
 

@@ -1,11 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Premium Membership & Payments
+ * @fileoverview SubhaLagna v2.3.1 — Premium Membership & Payments
  * @description Dynamic membership selection with Coupon system and Razorpay integration.
- * - v2.3.0 changes:
- *   - Migrated from hardcoded plans to dynamic database-driven MembershipPlan lookups.
- *   - Standardized on plan.planId for checkout and highlighting logic.
- *   - Added dynamic duration labeling (e.g., "1 yr", "Lifetime").
- * @version 2.3.0
+ * - v2.3.1 changes:
+ *   - Removed hardcoded duration strings in favor of plan-driven duration text.
+ *   - Integrated dynamic Razorpay order metadata.
+ *   - Fixed checkout initialization for dynamic plans.
+ * @version 2.3.1
  */
 
 import React, { useState, useEffect, useContext } from 'react';
@@ -117,7 +117,7 @@ const PremiumMembership = () => {
         amount: orderResponse.data.amount,
         currency: orderResponse.data.currency,
         name: "SubhaLagna Premium",
-        description: `${plan.name} Membership (1 Year)`,
+        description: `${plan.name} Membership (${plan.durationInMonths === 0 ? 'Lifetime' : (plan.durationInMonths === 12 ? '1 Year' : `${plan.durationInMonths} Months`)})`,
         image: "/logo.png",
         order_id: orderResponse.data.id,
         handler: async (response) => {
@@ -203,7 +203,7 @@ const PremiumMembership = () => {
           Premium <span className="text-rose-600">Soulmate</span> Access
         </h1>
         <p className="text-gray-500 text-lg">
-          Unlock the full potential of your search with 1 year of unlimited features and priority support.
+          Unlock the full potential of your search with targeted premium features and priority support.
         </p>
       </div>
 

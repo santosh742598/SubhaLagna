@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2026-04-12
+
+### Fixed
+- **🚨 Critical Payment Bug**: Resolved a `ReferenceError` in `paymentController.js` that caused checkout initialization to fail for paid plans.
+- **💨 MongoDB Stability**: Provided guidance for fixing fatal system OOM (Out of Memory) crash by implementing a `cacheSizeGB` limit in `mongod.cfg`.
+
+### Improved
+- **📊 Database-Driven Quotas**: Migrated contact reveal limits from hardcoded logic to dynamic `MembershipPlan` schema fields (`contactsAllowed`).
+- **🔧 Manual Upgrade UX**: Added automatic duration calculation to the Admin Manual Upgrade modal based on selected plan profiles.
+- **✨ UI Clarity**: Removed lingering hardcoded duration strings on the Premium membership page.
+
 ## [2.3.0] - 2026-04-12
 
 ### Added

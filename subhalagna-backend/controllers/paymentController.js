@@ -1,12 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Payment & Subscription Controller
+ * @fileoverview SubhaLagna v2.3.1 — Payment & Subscription Controller
  * @description Handles Razorpay orders, payment verification, and membership logic.
- * - v2.3.0 changes:
- *   - Completely migrated from static config files to dynamic MembershipPlan database lookups.
- *   - Refactored order creation to calculate parameters (price, name, duration) asynchronously.
- *   - Integrated MembershipPlan model for all subscription logic.
+ * - v2.3.1 changes:
+ *   - Fixed critical ReferenceError in createOrder by standardizing on asynchronous model lookups.
+ *   - Standardized usage quotas (contactsAllowed) to be fetched directly from database plans.
  * @author SubhaLagna Team
- * @version 2.3.0
+ * @version 2.3.1
  */
 
 const Razorpay = require('razorpay');
@@ -84,7 +83,7 @@ exports.createOrder = async (req, res) => {
   const { planId, couponCode } = req.body;
 
   try {
-    const plan = plans.find(p => p.id === planId);
+    const plan = await MembershipPlan.findOne({ planId });
     if (!plan) return res.status(404).json({ success: false, message: 'Plan not found' });
 
     let finalAmount = plan.price;
@@ -110,7 +109,7 @@ exports.createOrder = async (req, res) => {
         success: true,
         isFree: true,
         message: 'Plan is free after discount',
-        planId: plan.id
+        planId: plan.planId
       });
     }
 
@@ -228,10 +227,7 @@ const upgradeUserSubscription = async (userId, planId, couponCode, amount, razor
     expiry.setFullYear(expiry.getFullYear() + 100);
   }
 
-  // Set limits based on plan
-  let contactsAllowed = 0;
-  if (planId === 'gold') contactsAllowed = 30;
-  if (planId === 'platinum') contactsAllowed = -1; // Unlimited
+  const contactsAllowed = plan.contactsAllowed || 0;
 
   // 1. Update User
   await User.findByIdAndUpdate(userId, {

@@ -13,7 +13,7 @@ dotenv.config();
 const seedPlans = async () => {
   try {
     console.log('Connecting to DB...');
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/subhalagna');
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/subhalagna');
     console.log('Connected!');
 
     console.log('Cleaning existing plans...');
@@ -27,6 +27,7 @@ const seedPlans = async () => {
       durationInMonths: p.durationInMonths,
       description: p.description,
       features: p.features,
+      contactsAllowed: p.contactsAllowed || 0,
       popular: p.popular || false,
       isActive: true
     }));
