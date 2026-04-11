@@ -7,7 +7,7 @@
  *                  - markAllRead      → PUT mark all as read
  *                  - deleteNotification → DELETE a specific one
  * @author        SubhaLagna Team
- * @version       2.0.0
+ * @version       2.0.2
  */
 
 'use strict';

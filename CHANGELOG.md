@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2026-04-11
+
+### Added
+- **Project Standardization**: Synchronized `@version` headers across all code files (45+ files).
+- **Standards Update**: Updated `AGENTS.md` to mandate version header maintenance.
+
+### Changed
+- **SMTP Refactor**: Improved email configuration to support robust SMTP settings (Gmail, Custom SMTP).
+- **Env Consistency**: Standardized variable names in `.env.example` to match code.
+
 ## [2.0.1] - 2026-04-11
 
 ### Added

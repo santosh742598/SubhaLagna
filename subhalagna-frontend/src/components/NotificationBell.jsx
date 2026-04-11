@@ -5,7 +5,7 @@
  *                for real-time updates.
  *
  * @author        SubhaLagna Team
- * @version       2.0.0
+ * @version       2.0.2
  */
 
 import React, { useState, useRef, useEffect, useContext } from 'react';

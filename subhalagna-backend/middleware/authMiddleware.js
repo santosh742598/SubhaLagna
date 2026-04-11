@@ -5,7 +5,7 @@
  *                - `adminOnly`   → restricts route to users with role=admin
  *                Both are designed to work with the centralized error handler.
  * @author        SubhaLagna Team
- * @version       2.0.0
+ * @version       2.0.2
  */
 
 'use strict';

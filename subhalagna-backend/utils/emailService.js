@@ -6,7 +6,7 @@
  *                - New interest received notification
  *                Gracefully degrades (logs to console) if SMTP is not configured.
  * @author        SubhaLagna Team
- * @version       2.0.0
+ * @version       2.0.2
  */
 
 'use strict';

@@ -3,7 +3,7 @@
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
  * @author        SubhaLagna Team
- * @version       2.0.1
+ * @version       2.0.2
  *
  * Architecture:
  *  ┌──────────────────────────────────────────┐

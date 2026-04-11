@@ -4,7 +4,7 @@
  *                Each message belongs to a conversation and has a sender.
  *                Supports read receipts via the `isRead` flag.
  * @author        SubhaLagna Team
- * @version       2.0.0
+ * @version       2.0.2
  */
 
 'use strict';

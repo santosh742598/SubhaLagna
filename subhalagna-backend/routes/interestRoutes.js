@@ -11,7 +11,7 @@
  *   DELETE /:id                → withdraw a sent interest
  *
  * @author SubhaLagna Team
- * @version 2.0.0
+ * @version       2.0.2
  */
 
 'use strict';

@@ -87,6 +87,7 @@ Respect the guard hierarchy in `App.jsx`:
 - **No Scrollbars**: Respect the global `::-webkit-scrollbar { display: none; }` setting.
 - **Animation First**: Use `animate-fade-in` or `animate-slide-up` for entry transitions.
 - **Responsive**: All layouts must be mobile-first using Tailwind's responsive prefixes.
+- **Versioned Headers**: Every file MUST maintain a standardized JSDoc header with a `@version` tag that matches the current project version (e.g., `package.json`).
 
 ---
 

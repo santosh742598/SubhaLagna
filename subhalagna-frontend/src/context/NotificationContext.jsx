@@ -9,7 +9,7 @@
  *                    useContext(NotificationContext);
  *
  * @author        SubhaLagna Team
- * @version       2.0.0
+ * @version       2.0.2
  */
 
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
