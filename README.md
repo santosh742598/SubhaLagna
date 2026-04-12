@@ -1,10 +1,24 @@
-# 💍 SubhaLagna Matrimony — v2.2.0
+# 💍 SubhaLagna Matrimony — v2.4.0
 
-A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.2.0 focuses on **Cloud-Ready Scalability**, Vedic astrological matching, and premium user experiences.
+A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.4.0 focuses on **Administrative Transparency**, Automated Communication, and structural UI stability.
 
 ---
 
 ## 🚀 Key Features
+
+### 📊 Transaction Ledger (New in v2.4.0)
+Administrators now have a dedicated financial oversight center:
+- **Full Audit Trail**: Track every payment across Razorpay, Manual upgrades, and Bank transfers.
+- **Detailed Reporting**: View transaction dates, amounts, user emails, and plan types in a single, unified ledger.
+- **Revenue Analytics**: Real-time tracking of platform performance with daily and total revenue insights.
+
+### ✉️ Automated Notifications (New in v2.4.0)
+Enhanced user trust through immediate communication:
+- **Payment Confirmation**: Users automatically receive a premium HTML email upon successful membership activation.
+- **Membership Details**: Confirmation emails include the plan name, validity period, and expiry date.
+
+### 💎 UI Stabilization (New in v2.4.0)
+- **Zero-Dependency Icons**: Optimized rendering by switching to theme-consistent inline SVGs, eliminating "ReferenceErrors" and improving dashboard load reliability.
 
 ### ☁️ Cloud-Ready Storage (New in v2.2.0)
 SubhaLagna is now optimized for cloud hosting:
@@ -12,34 +26,25 @@ SubhaLagna is now optimized for cloud hosting:
 - **Lazy Loading**: Zero overhead for cloud libraries when using local storage.
 - **Auto-Cleanup**: The system automatically deletes old assets from storage when profile photos are updated, preventing storage bloat.
 
-### 🔮 Vedic Guna Milan (New in v2.1.0)
+### 🔮 Vedic Guna Milan
 SubhaLagna now implements a **professional-grade Ashta Koota compatibility engine**:
 - **Precise 108 Pada Mapping**: Automatic Moon sign (Rashi) determination based on birth star quarter.
 - **36-Point Scoring**: Factor-by-factor breakdown of Varna, Vashya, Tara, Yoni, Maitri, Gana, Bhakoot, and Nadi.
 - **Dosha Cancellation**: Traditional logic for Nadi and Bhakoot cancellations based on planetary friendship and Pada differences.
 
-### ⚖️ Smart Match Algorithm (Behavioral)
-In addition to astrology, we use a **weighted behavioral scorecard**:
-- **Interest Synergy (25pts)**: Uses Jaccard similarity to find common ground.
-- **Personality Traits (15pts)**: Multi-dimensional overlap scoring.
-- **Hard Filters (30pts)**: Automatic point allocation for Religion and Caste matches.
-- **Demographic Proximity (30pts)**: Weighted scoring for Age, Location, and Education tiers.
-
 ### 🛡️ Privacy Engine & Data Gating
-- **Privacy Frost (New in v2.0.8)**: Interest-aware photo protection. Photos and galleries are blurred with a frosted-glass effect and only unlock after an interest is **Accepted**.
+- **Privacy Frost**: Interest-aware photo protection. Photos and galleries are blurred with a frosted-glass effect and only unlock after an interest is **Accepted**.
 - **Contact Redaction**: Server-side masking of Email/Phone for non-authorized viewers.
-- **Photo Privacy Settings**: Integrated support for `privacySettings` including profile hiding and selective photo visibility.
 - **View Insights**: Premium users can track "Who Viewed My Profile" with a complete audit trail.
-- **Ownership Guard**: Strict middleware checks ensure users only modify their own data.
 
 ### 💰 Premium Monetization
-- **Tiered Plans**: **Gold** (30 reveals) vs. **Platinum** (Unlimited access).
+- **Tiered Plans**: **Gold** vs. **Platinum** tiers with unique quotas.
 - **Automated Billing**: Razorpay integration with secure HMAC signature verification.
-- **Admin Controls**: Manual subscription overrides and day-based duration management.
+- **Admin Overrides**: Manual subscription activation for offline or bank-transfer users.
 
 ### 🛠️ Admin & Moderation
 - **Verification Engine**: Admin approval workflow for the "Verified" trust badge.
-- **Revenue Analytics**: Real-time dashboard for total/daily revenue tracking.
+- **Segmented Management**: Tabs for User Moderation, Pending Payments, Coupons, Membership Plans, and the new **Transaction Ledger**.
 - **Coupon Engine**: Manage dynamic discount codes (Fixed or Percentage).
 
 ### 💬 Engagement
@@ -127,6 +132,9 @@ npm run dev
 | `JWT_SECRET` | Token Encryption Key | System Generated |
 | `RAZORPAY_KEY_ID` | Public Payment Key | Razorpay Dashboard |
 | `RAZORPAY_KEY_SECRET` | Secret Payment Key | Razorpay Dashboard |
+| `SMTP_HOST` | Email Server Host | e.g. smtp.gmail.com |
+| `SMTP_USER` | Email Service Account | Login Email |
+| `SMTP_PASS` | Email App Password | Security > App Passwords |
 | `VITE_API_URL` | Frontend API endpoint | Backend Developer |
 
 ---
