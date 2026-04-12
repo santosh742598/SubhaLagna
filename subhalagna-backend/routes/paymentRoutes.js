@@ -1,7 +1,7 @@
 /**
  * @fileoverview SubhaLagna v2.3.0 — Payment Routes
  * @description   Endpoints for subscription management and payments.
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 const express = require('express');

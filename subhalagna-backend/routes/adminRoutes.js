@@ -1,10 +1,12 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Admin Routes
+ * @fileoverview SubhaLagna v2.4.0 — Admin Routes
  * @description Route definitions for the admin dashboard.
+ * - v2.4.0 changes:
+ *   - Added GET /api/admin/payments/ledger for full transaction oversight. [v2.4.0]
  * - v2.3.0 changes:
  *   - Added GET /api/admin/plans and PUT /api/admin/plans/:id for dynamic membership control.
  *   - Integrated plan management into the administrative API surface.
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';
@@ -24,15 +26,25 @@ const {
   manualUpgradeUser,
   getPendingPayments,
   verifyBankPayment,
+  getAllPayments,
   getAllPlans,
   updatePlan,
-  createPlan
+  createPlan,
+  createUserWithProfile,
+  updateUserAndProfile,
+  uploadUserPhotosAdmin
 } = require('../controllers/adminController');
 
 const { protect, adminOnly } = require('../middleware/authMiddleware');
+const { uploadProfilePhotos } = require('../middleware/uploadMiddleware');
 
 // Apply both guards to every admin route
 router.use(protect, adminOnly);
+
+// USER MANAGEMENT (Super Edit)
+router.put('/users/:id', updateUserAndProfile);
+router.post('/users', createUserWithProfile);
+router.post('/profiles/:id/photos', uploadProfilePhotos, uploadUserPhotosAdmin);
 
 router.get('/stats',                    getDashboardStats);
 router.get('/users',                    getAllUsers);
@@ -50,6 +62,7 @@ router.post('/users/:id/upgrade',       manualUpgradeUser);
 
 // Bank Payment Verification
 router.get('/payments/pending',         getPendingPayments);
+router.get('/payments/ledger',          getAllPayments);
 router.put('/payments/:id/verify',      verifyBankPayment);
 
 // Membership Plans

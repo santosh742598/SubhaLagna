@@ -1,12 +1,13 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Email Service
+ * @fileoverview SubhaLagna v2.4.0 — Email Service
  * @description   Nodemailer-based email service with pre-built templates for:
  *                - Email verification (OTP)
  *                - Password reset link
  *                - New interest received notification
+ *                - Payment Success / Membership activation [v2.4.0]
  *                Gracefully degrades (logs to console) if SMTP is not configured.
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';
@@ -169,8 +170,42 @@ const sendInterestNotificationEmail = async (email, name, senderName) => {
   });
 };
 
+/**
+ * Send a notification email when a user goes premium.
+ *
+ * @param {string} email      - Recipient email
+ * @param {string} name       - Recipient name
+ * @param {string} planName   - Name of the plan (Gold/Platinum)
+ * @param {number} amount     - Amount paid
+ * @param {string} expiryDate - Formatted expiry date
+ * @returns {Promise<void>}
+ */
+const sendPaymentSuccessEmail = async (email, name, planName, amount, expiryDate) => {
+  const html = buildEmailHTML(
+    'Welcome to SubhaLagna Premium! 👑',
+    `<p>Hi <strong>${name}</strong>,</p>
+     <p>Congratulations! Your payment of <strong>₹${amount}</strong> was successful, and your <strong>${planName.toUpperCase()}</strong> membership is now active.</p>
+     <div style="background:#fef2f2; padding: 24px; border-radius: 12px; margin: 24px 0; border: 1px solid #fee2e2;">
+        <p style="margin:0; font-size:12px; font-weight:bold; color:#f43f5e; text-transform:uppercase;">Subscription Details</p>
+        <p style="margin:8px 0 0 0; font-size:18px; color:#1f2937;"><strong>Plan:</strong> ${planName}</p>
+        <p style="margin:4px 0 0 0; font-size:14px; color:#6b7280;"><strong>Expires on:</strong> ${expiryDate}</p>
+     </div>
+     <p>You can now reveal contact details, send unlimited interests, and enjoy priority visibility in search results.</p>
+     <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard" class="btn">Go to Dashboard</a>`
+  );
+
+  await getTransporter().sendMail({
+    from: process.env.EMAIL_FROM || 'SubhaLagna <noreply@subhalagna.com>',
+    to: email,
+    subject: `👑 Your SubhaLagna ${planName} Membership is Active!`,
+    text: `Hi ${name}, your ${planName} membership is now active until ${expiryDate}. Welcome to Premium!`,
+    html,
+  });
+};
+
 module.exports = {
   sendVerificationEmail,
   sendPasswordResetEmail,
   sendInterestNotificationEmail,
+  sendPaymentSuccessEmail,
 };

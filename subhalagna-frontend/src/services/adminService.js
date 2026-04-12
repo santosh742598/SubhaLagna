@@ -1,10 +1,12 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Admin Service
+ * @fileoverview SubhaLagna v2.4.0 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
+ * - v2.4.0 changes:
+ *   - Added getAllTransactions for comprehensive financial oversight. [v2.4.0]
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
  * @author SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -168,6 +170,33 @@ export const getAdminPlans = async () => {
 };
 
 /**
+ * Create a new user with profile data (Admin only).
+ * @param {object} userData 
+ */
+export const adminAddUser = async (userData) => {
+  try {
+    const { data } = await api.post('/admin/users', userData);
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to create user');
+  }
+};
+
+/**
+ * Update an existing user and their profile (Admin only).
+ * @param {string} id 
+ * @param {object} userData 
+ */
+export const adminUpdateUser = async (id, userData) => {
+  try {
+    const { data } = await api.put(`/admin/users/${id}`, userData);
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to update user');
+  }
+};
+
+/**
  * Update a membership plan.
  * @param {string} id - Plan ObjectID
  * @param {object} updateData 
@@ -180,3 +209,30 @@ export const updateAdminPlan = async (id, updateData) => {
     throw getErrorMessage(err, 'Failed to update plan');
   }
 };
+/**
+ * Admin: Upload profile and gallery photos for a user
+ */
+export const adminUploadPhotos = async (profileId, formData) => {
+  try {
+    const { data } = await api.post(`/admin/profiles/${profileId}/photos`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to upload photos');
+  }
+};
+
+/**
+ * Retrieve all transactions (Razorpay & Manual) for the ledger.
+ * @returns {Promise<object[]>}
+ */
+export const getAllTransactions = async () => {
+  try {
+    const { data } = await api.get('/admin/payments/ledger');
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to fetch transactions');
+  }
+};
+

@@ -3,7 +3,7 @@
  * @description Handles Razorpay orders, Bank Transfers, and dynamic plan fetching.
  * - v2.3.0 changes:
  *   - Implemented dynamic plan fetching from the database for checkout selection.
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import api from './api';

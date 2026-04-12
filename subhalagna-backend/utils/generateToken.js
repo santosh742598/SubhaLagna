@@ -4,7 +4,7 @@
  *                and long-lived refresh tokens. Tokens are verified against
  *                their respective secrets for added security.
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';

@@ -7,7 +7,7 @@
  *                  - Provides consistent error message extraction
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import axios from 'axios';

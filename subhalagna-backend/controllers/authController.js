@@ -1,16 +1,21 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Auth Controller
+ * @fileoverview SubhaLagna v2.4.0 — Auth Controller
  * @description   Handles all authentication operations:
  *                - register     → create account + send OTP email
  *                - login        → validate credentials, issue tokens
  *                - verifyEmail  → verify 6-digit OTP
+ *                - resendOTP    → generate new OTP with rate limiting
  *                - refreshToken → issue new access token using refresh token
  *                - forgotPassword, resetPassword → secure password reset flow
  *                - logout       → invalidate refresh token in DB
  *                - getMe        → fetch current user + profile
  *
+ *                v2.4.0 changes:
+ *                  - Implemented resendOTP with persistence-based rate limiting (Max 3/hr)
+ *                  - Added auto-reset of resend counters on successful verification
+ *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';
@@ -121,13 +126,67 @@ const verifyEmail = async (req, res, next) => {
       return sendError(res, 'OTP has expired. Please request a new one.', 400);
     }
 
-    // Mark verified, clear OTP fields
+    // Mark verified, clear OTP fields and resend counters
     user.isEmailVerified        = true;
     user.emailVerifyOtp         = undefined;
     user.emailVerifyOtpExpires  = undefined;
+    user.otpResendCount         = 0;
+    user.otpLastResend          = undefined;
     await user.save({ validateBeforeSave: false });
 
     return sendSuccess(res, null, 'Email verified successfully! You can now log in.');
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Resend verification OTP
+// @route   POST /api/auth/resend-otp
+// @access  Public
+// ─────────────────────────────────────────────────────────────────────────────
+const resendOTP = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) return sendError(res, 'Email is required', 400);
+
+    const user = await User.findOne({ email }).select('+emailVerifyOtp +emailVerifyOtpExpires');
+    if (!user) return sendError(res, 'User not found', 404);
+    if (user.isEmailVerified) return sendError(res, 'Email already verified', 400);
+
+    // ── Rate Limiting Logic ──────────────────────────────────────────────────
+    const now = new Date();
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+    // Reset count if last resend was over an hour ago
+    if (user.otpLastResend && user.otpLastResend < oneHourAgo) {
+      user.otpResendCount = 0;
+    }
+
+    if (user.otpResendCount >= 3) {
+      return sendError(res, 'Too many requests. Please try again after an hour.', 429);
+    }
+
+    // ── Generate and Send New OTP ────────────────────────────────────────────
+    const otp    = generateOTP();
+    const expiry = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes
+
+    user.emailVerifyOtp        = otp;
+    user.emailVerifyOtpExpires = expiry;
+    user.otpResendCount       += 1;
+    user.otpLastResend         = now;
+
+    await user.save({ validateBeforeSave: false });
+
+    try {
+      await sendVerificationEmail(email, user.name, otp);
+    } catch (emailErr) {
+      console.error('Email resend failed:', emailErr.message);
+      return sendError(res, 'Failed to send email. Please try again later.', 500);
+    }
+
+    return sendSuccess(res, null, 'A new OTP has been sent to your email.');
   } catch (err) {
     next(err);
   }
@@ -312,6 +371,7 @@ const getMe = async (req, res, next) => {
 module.exports = {
   registerUser,
   verifyEmail,
+  resendOTP,
   loginUser,
   refreshToken,
   forgotPassword,

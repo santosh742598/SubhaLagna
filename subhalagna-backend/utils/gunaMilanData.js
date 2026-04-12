@@ -6,7 +6,7 @@
  *                  - Updated Lord Friendship and Yoni compatibility constants
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 const RASHIS = [

@@ -1,15 +1,14 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — User Dashboard
- * @description   Central hub for users to manage their profile, view premium status,
- *                and handle incoming interest requests.
- *                v2.1.0 changes:
- *                  - Integrated Guna Milan data management (Nakshatra/Pada editing)
- *                  - Automated Rashi calculation and locking based on Pada mapping
- *                  - birth-details integrity for astrological matching
- *                v2.2.0 changes:
- *                  - Direct "Upgrade to Platinum" CTA for Gold members
- *                  - Enhanced Glassmorphism styling and performance
- * @version 2.3.0
+ * @fileoverview SubhaLagna v2.4.0 — User Dashboard
+ * @description Central hub for users to manage their profile, view premium status,
+ *              and handle incoming interest requests.
+ * - v2.4.0 changes:
+ *   - Stabilized UI rendering with inline SVG icons (Fix ReferenceErrors). [v2.4.0]
+ *   - Synchronized Manglik state with backend enum ('Unknown' default). [v2.4.0]
+ * - v2.2.0 changes:
+ *   - Direct "Upgrade to Platinum" CTA for Gold members.
+ *   - Enhanced Glassmorphism styling and performance.
+ * @version 2.4.0
  */
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -21,6 +20,7 @@ import CaptureModal from './CaptureModal';
 import SearchableDropdown from './SearchableDropdown';
 import { fetchLookupOptions } from '../services/lookupService';
 import { RAZORPAY_KEY_ID } from '../config';
+import { getProfileAvatar } from '../utils/avatarHelper';
 
 const PREDEFINED_INTERESTS = ["Travel", "Music", "Cooking", "Photography", "Fitness", "Reading", "Movies", "Sports", "Art"];
 const PREDEFINED_TRAITS = ["Introvert", "Extrovert", "Ambivert", "Ambitious", "Creative", "Organized", "Spontaneous", "Rational", "Empathetic"];
@@ -99,6 +99,12 @@ const Sparkles = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
   </svg>
 );
+
+const Check = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+  </svg>
+);
 const Trash = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -114,11 +120,7 @@ const Heart = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
   </svg>
 );
-const Check = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-  </svg>
-);
+
 const X = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -143,6 +145,11 @@ const Users = ({ className }) => (
 const ChevronRight = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+  </svg>
+);
+const Bookmark = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
   </svg>
 );
 
@@ -200,7 +207,7 @@ const ProfileDashboard = () => {
         nakshatra:     user.profile.horoscope?.nakshatra || '',
         pada:          user.profile.horoscope?.pada || '',
         gotra:         user.profile.horoscope?.gotra || '',
-        manglik:       user.profile.horoscope?.manglik || false,
+        manglik:       user.profile.horoscope?.manglik || 'Unknown',
         // Privacy
         showPhotoTo:   user.profile.privacySettings?.showPhotoTo || 'everyone',
         showContactTo: user.profile.privacySettings?.showContactTo || 'premium_only',
@@ -526,6 +533,16 @@ const ProfileDashboard = () => {
                </div>
                Received Interests
              </button>
+             <button 
+               onClick={() => window.location.href = '/shortlisted'}
+               className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-sm text-slate-400 hover:bg-rose-50/50 hover:text-slate-600 transition-all group"
+             >
+               <div className="relative">
+                 <Bookmark className="w-5 h-5 transition-transform group-hover:scale-110" />
+                 {user.shortlistedProfiles?.length > 0 && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full" />}
+               </div>
+               Shortlisted Profiles
+             </button>
              <div className="pt-2 border-t border-rose-50/50 mt-2">
                 <button 
                   onClick={() => window.location.href = `/profile/${user.profile._id}`}
@@ -580,7 +597,7 @@ const ProfileDashboard = () => {
                       <div className="lg:col-span-5 border-r border-rose-50/60 pr-0 lg:pr-10">
                         <div className="bg-slate-50/50 p-6 rounded-[2.5rem] border border-slate-100 flex flex-col items-center">
                           <div className="w-full aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl relative group mb-6">
-                             <img src={file ? URL.createObjectURL(file) : user.profile.profilePhoto} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="" />
+                             <img src={file ? URL.createObjectURL(file) : getProfileAvatar(user.profile)} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="" />
                              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <span className="text-white text-xs font-bold bg-black/40 px-4 py-2 rounded-full backdrop-blur-md">Update Photo</span>
                              </div>
@@ -741,10 +758,31 @@ const ProfileDashboard = () => {
                         <input type="text" name="gotra" value={formData.gotra} onChange={handleChange} placeholder="Ancestral Lineage" className="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50/30 text-sm font-medium focus:bg-white transition-all outline-none" />
                       </div>
                       <div className="flex items-end">
-                         <div className={`p-4 rounded-2xl border w-full text-center transition-all ${formData.manglik ? 'bg-rose-50 border-rose-100 text-rose-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
-                            <span className="text-[10px] font-black uppercase tracking-tighter block mb-0.5">MANGLIK STATUS</span>
-                            <span className="font-bold text-sm tracking-wide">{formData.manglik ? 'MANGLIK' : 'NON-MANGLIK'}</span>
-                         </div>
+                         <button 
+                           type="button"
+                           onClick={() => {
+                             const states = ['Unknown', 'No', 'Yes'];
+                             const currentIndex = states.indexOf(formData.manglik || 'Unknown');
+                             const nextIndex = (currentIndex + 1) % states.length;
+                             setFormData(prev => ({ ...prev, manglik: states[nextIndex] }));
+                           }}
+                           className={`p-4 rounded-2xl border w-full text-center transition-all group/manglik relative overflow-hidden 
+                             ${formData.manglik === 'Yes' ? 'bg-rose-50 border-rose-100 text-rose-600 hover:bg-rose-100/60' : 
+                               formData.manglik === 'No' ? 'bg-emerald-50 border-emerald-100 text-emerald-600 hover:bg-emerald-100/60' : 
+                               'bg-slate-50 border-slate-100 text-slate-500 hover:bg-slate-100/60'}`}
+                         >
+                            <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/manglik:opacity-100 transition-opacity flex items-center justify-center">
+                               <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Click to Cycle</span>
+                            </div>
+                            <div className="group-hover/manglik:blur-sm transition-all duration-300">
+                               <span className="text-[10px] font-black uppercase tracking-tighter block mb-0.5 opacity-60">ASTRO STATUS</span>
+                               <span className="font-bold text-sm tracking-wide">
+                                 {formData.manglik === 'Yes' ? 'MANGLIK' : 
+                                  formData.manglik === 'No' ? 'NON-MANGLIK' : 
+                                  'DON\'T KNOW'}
+                               </span>
+                            </div>
+                         </button>
                       </div>
                    </div>
                  </DashboardCard>

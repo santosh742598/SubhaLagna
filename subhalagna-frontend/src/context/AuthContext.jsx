@@ -10,7 +10,7 @@
  *                  - Provides `isPremium` computed getter
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';

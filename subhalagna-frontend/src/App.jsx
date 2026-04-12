@@ -10,16 +10,17 @@
  *                  - ProtectedRoute  → requires full auth + profile
  *                  - AdminRoute      → requires role === 'admin'
  *
+ *                New routes in v2.4.0:
+ *                  - /verify-email     → 6-digit OTP authentication center
+ *
  *                New routes in v2.0.0:
- *                  - /chat             → conversation list
- *                  - /chat/:id         → specific conversation
- *                  - /interests        → interest management (sent & received)
- *                  - /admin            → admin dashboard
- *                  - /forgot-password  → password reset request
- *                  - /reset-password/:token → set new password
+ *
+ *                v2.4.0 changes:
+ *                  - Integrated VerifyEmail route.
+ *                  - Updated ProtectedRoute and OnboardRoute to enforce isEmailVerified gating.
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import React, { useContext } from 'react';
@@ -42,6 +43,8 @@ import ProfileDetail    from './components/ProfileDetail';
 import PremiumMembership from './components/PremiumMembership';
 import Chat              from './components/Chat';
 import AdminDashboard     from './components/AdminDashboard';
+import VerifyEmail       from './components/VerifyEmail';
+import ShortlistedProfiles from './components/ShortlistedProfiles';
 import InterestButton   from './components/InterestButton'; // exported for reference
 
 // ── Route Guards ──────────────────────────────────────────────────────────────
@@ -54,6 +57,10 @@ const GuestRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
   if (loading) return null;
   if (!token) return children;
+
+  // If logged in but not verified, force verification
+  if (user && !user.isEmailVerified) return <Navigate to="/verify-email" replace />;
+
   if (user && !user.hasProfile) return <Navigate to="/create-profile" replace />;
   return <Navigate to="/matches" replace />;
 };
@@ -65,6 +72,10 @@ const OnboardRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
   if (loading) return null;
   if (!token) return <Navigate to="/login" replace />;
+
+  // Force email verification first
+  if (user && !user.isEmailVerified) return <Navigate to="/verify-email" replace />;
+
   if (user && user.hasProfile) return <Navigate to="/matches" replace />;
   return children;
 };
@@ -80,6 +91,10 @@ const ProtectedRoute = ({ children }) => {
     </div>
   );
   if (!token) return <Navigate to="/login" replace />;
+
+  // Must be verified
+  if (user && !user.isEmailVerified) return <Navigate to="/verify-email" replace />;
+
   if (user && !user.hasProfile) return <Navigate to="/create-profile" replace />;
   return children;
 };
@@ -147,7 +162,8 @@ function App() {
                   <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
 
                   {/* Onboarding — create initial profile */}
-                  <Route path="/create-profile" element={<OnboardRoute><CreateProfile /></OnboardRoute>} />
+                  <Route path="/verify-email"    element={<OnboardRoute><VerifyEmail /></OnboardRoute>} />
+                  <Route path="/create-profile"  element={<OnboardRoute><CreateProfile /></OnboardRoute>} />
 
                   {/* ── Protected Dashboard Routes ────────────────────── */}
                   <Route path="/profile"  element={<ProtectedRoute><ProfileDashboard /></ProtectedRoute>} />
@@ -159,6 +175,9 @@ function App() {
 
                   {/* ── Admin Dashboard ───────────────────────────────── */}
                   <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+
+                  {/* ── Shortlisted Profiles ────────────────────────────── */}
+                  <Route path="/shortlisted" element={<ProtectedRoute><ShortlistedProfiles /></ProtectedRoute>} />
 
                 </Route>
 

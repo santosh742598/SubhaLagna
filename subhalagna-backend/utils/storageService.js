@@ -6,7 +6,7 @@
  *                  - Initial implementation with lazy-loaded AWS SDK
  *                  - Support for local filesystem fallback
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 const fs   = require('fs');

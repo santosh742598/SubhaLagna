@@ -61,12 +61,14 @@ const MatchResults = () => {
     // ── Smart Initialization from Partner Preferences ──────────────────
     const prefs = user?.profile?.partnerPreferences || {};
     return {
-      minAge: prefs.ageRange?.min || 18,
-      maxAge: prefs.ageRange?.max || 45,
+      minAge: Number(prefs.ageRange?.min) || Number(prefs.minAge) || 18,
+      maxAge: Number(prefs.ageRange?.max) || Number(prefs.maxAge) || 45,
       location: prefs.location || 'Any',
       education: 'Any',
       religion: prefs.religion || 'Any',
-      caste: prefs.caste || 'Any'
+      caste: prefs.caste || 'Any',
+      motherTongue: 'Any',
+      manglik: 'Any'
     };
   });
   const [sortBy, setSortBy] = useState('compatibility');
@@ -77,11 +79,13 @@ const MatchResults = () => {
   const [cityOptions, setCityOptions] = useState([]);
   const [religionOptions, setReligionOptions] = useState([]);
   const [casteOptions, setCasteOptions] = useState([]);
+  const [motherTongueOptions, setMotherTongueOptions] = useState([]);
 
   useEffect(() => {
     fetchLookupOptions('city').then(setCityOptions);
     fetchLookupOptions('religion').then(setReligionOptions);
     fetchLookupOptions('caste').then(setCasteOptions);
+    fetchLookupOptions('motherTongue').then(setMotherTongueOptions);
   }, []);
 
   /**
@@ -91,15 +95,24 @@ const MatchResults = () => {
     if (!isAuthenticated) return;
     setLoading(true);
     try {
+      // ── Determine Target Gender ──────────────────────────────────────────
+      // Male users search for Females, Female users search for Males.
+      // Resolve user's actual gender from profile if not in account
+      const currentUserGender = user?.gender || user?.profile?.gender;
+      const targetGender = currentUserGender === 'Male' ? 'Female' : 'Male';
+
       const response = await getMatches({
         page,
         limit: 12,
+        gender: targetGender, // Strict enforcement
         minAge: filters.minAge,
         maxAge: filters.maxAge,
         location: filters.location === 'Any' ? undefined : filters.location,
         education: filters.education === 'Any' ? undefined : filters.education,
         religion: filters.religion === 'Any' ? undefined : filters.religion,
         caste: filters.caste === 'Any' ? undefined : filters.caste,
+        motherTongue: filters.motherTongue === 'Any' ? undefined : filters.motherTongue,
+        manglik: filters.manglik === 'Any' ? undefined : filters.manglik,
         sortBy
       });
       
@@ -127,15 +140,15 @@ const MatchResults = () => {
 
   const clearFilter = (name) => {
     if (name === 'age') {
-      setFilters(prev => ({ ...prev, minAge: 18, maxAge: 40 }));
+      setFilters(prev => ({ ...prev, minAge: 18, maxAge: 45 }));
     } else {
       setFilters(prev => ({ ...prev, [name]: 'Any' }));
     }
   };
 
   const activeFilterCount = Object.entries(filters).filter(([k,v]) => {
-    if (k === 'minAge') return v !== 18;
-    if (k === 'maxAge') return v !== 40;
+    if (k === 'minAge') return Number(v) !== 18;
+    if (k === 'maxAge') return Number(v) !== 45;
     return v !== 'Any';
   }).length;
 
@@ -211,6 +224,31 @@ const MatchResults = () => {
                   <SearchableDropdown label="Caste preference" name="caste" value={filters.caste} options={['Any', ...casteOptions]} onChange={handleFilterChange} placeholder="Brahmin, Any etc." />
                 </div>
 
+                {/* Mother Tongue */}
+                <div className="space-y-1.5">
+                  <SearchableDropdown label="Mother Tongue" name="motherTongue" value={filters.motherTongue} options={['Any', ...motherTongueOptions]} onChange={handleFilterChange} />
+                </div>
+
+                {/* Education */}
+                <div className="space-y-1.5">
+                  <SearchableDropdown label="Education" name="education" value={filters.education} options={['Any', "Bachelor's", "Master's", "PhD", "MBA", "Diploma", "High School"]} onChange={handleFilterChange} />
+                </div>
+
+                {/* Manglik Status */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Manglik Status</label>
+                  <select 
+                    name="manglik" 
+                    value={filters.manglik} 
+                    onChange={handleFilterChange}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-lg px-2 py-1.5 text-sm outline-none focus:ring-1 focus:ring-pink-500"
+                  >
+                    <option value="Any">Any</option>
+                    <option value="true">Manglik Only</option>
+                    <option value="false">Non-Manglik Only</option>
+                  </select>
+                </div>
+
                 {/* Submit button (triggers fetch) */}
                 <button 
                   onClick={() => fetchMatches(1)}
@@ -261,6 +299,9 @@ const MatchResults = () => {
                 <FilterTag label="Location" value={filters.location} onClear={() => clearFilter('location')} />
                 <FilterTag label="Religion" value={filters.religion} onClear={() => clearFilter('religion')} />
                 <FilterTag label="Caste" value={filters.caste} onClear={() => clearFilter('caste')} />
+                <FilterTag label="Language" value={filters.motherTongue} onClear={() => clearFilter('motherTongue')} />
+                <FilterTag label="Education" value={filters.education} onClear={() => clearFilter('education')} />
+                <FilterTag label="Manglik" value={filters.manglik === 'true' ? 'Yes' : filters.manglik === 'false' ? 'No' : ''} onClear={() => clearFilter('manglik')} />
               </div>
             )}
 

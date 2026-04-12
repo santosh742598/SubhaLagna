@@ -9,17 +9,21 @@
  * Public:
  *   POST /register         → create account
  *   POST /verify-email     → confirm OTP
+ *   POST /resend-otp       → request new OTP
  *   POST /login            → issue tokens
  *   POST /refresh-token    → rotate tokens
  *   POST /forgot-password  → send reset email
  *   POST /reset-password/:token → set new password
+ *
+ *                v2.4.0 changes:
+ *                  - Added POST /resend-otp endpoint for email verification.
  *
  * Private:
  *   GET  /me               → get current user
  *   POST /logout           → invalidate refresh token
  *
  * @author SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';
@@ -28,7 +32,7 @@ const express = require('express');
 const router  = express.Router();
 
 const {
-  registerUser, verifyEmail, loginUser, refreshToken,
+  registerUser, verifyEmail, resendOTP, loginUser, refreshToken,
   forgotPassword, resetPassword, logoutUser, getMe,
 } = require('../controllers/authController');
 
@@ -41,6 +45,7 @@ const {
 // ── Public Auth Routes ────────────────────────────────────────────────────────
 router.post('/register',           registerRules,        validate, registerUser);
 router.post('/verify-email',                                       verifyEmail);
+router.post('/resend-otp',                                         resendOTP);
 router.post('/login',              loginRules,           validate, loginUser);
 router.post('/refresh-token',                                       refreshToken);
 router.post('/forgot-password',    forgotPasswordRules,  validate, forgotPassword);

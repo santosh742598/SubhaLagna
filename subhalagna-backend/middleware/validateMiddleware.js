@@ -4,7 +4,7 @@
  *                Provides a reusable `validate` runner that collects errors
  *                and returns a standardized 400 response.
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';

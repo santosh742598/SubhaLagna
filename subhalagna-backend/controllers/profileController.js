@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Profile Controller
+ * @fileoverview SubhaLagna v2.4.0 — Profile Controller
  * @description   Manages matrimony profile CRUD operations:
  *                - setupProfile    → create initial profile (onboarding)
  *                - getMatches      → paginated, smart-scored match results
@@ -24,7 +24,7 @@
  *                  - Automatic physical photo cleanup on update/delete
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';
@@ -162,7 +162,7 @@ const setupProfile = async (req, res, next) => {
         nakshatra: nakshatra || '',
         pada: pada ? Number(pada) : null,
         gotra: gotra || '',
-        manglik: manglik === 'true' || manglik === true,
+        manglik: manglik || 'Unknown',
       }
     });
 
@@ -181,18 +181,41 @@ const getMatches = async (req, res, next) => {
   try {
     const {
       gender, location, minAge, maxAge, caste, religion, education,
+      motherTongue, manglik, profession,
       page = 1, limit = 12,
     } = req.query;
 
-    if (!gender) {
-      return sendError(res, 'Target gender is required', 400);
+    // ── Resolve User Gender ───────────────────────────────────────────────
+    // Some users may have gender in User model, others only in Profile.
+    let userGender = req.user.gender;
+    if (!userGender) {
+      const userProfile = await Profile.findOne({ user: req.user._id }).select('gender').lean();
+      userGender = userProfile?.gender;
+    }
+
+    // ── Strict Gender Enforcement ──────────────────────────────────────────
+    let targetGender = gender;
+    // Fallback: If no gender provided OR if non-admin is trying to bypass rules
+    if (!targetGender || (req.user.role !== 'admin' && targetGender === userGender)) {
+      targetGender = userGender === 'Male' ? 'Female' : 'Male';
     }
 
     // ── Build dynamic MongoDB query ────────────────────────────────────────
-    const query = { gender };
+    const query = { 
+      gender: targetGender,
+      completenessScore: { $gte: 20 } // Hide completely blank/test profiles
+    };
 
-    // Exclude the current user's own profile
-    query.user = { $ne: req.user._id };
+    // ── Exclude Admins & Self ──────────────────────────────────────────────
+    // 1. Fetch all admin IDs (for large systems, this should be cached)
+    const adminUsers = await User.find({ role: 'admin' }).select('_id').lean();
+    const adminIds = adminUsers.map(a => a._id);
+
+    // 2. Add exclusion to query
+    query.user = { 
+      $ne: req.user._id, 
+      $nin: adminIds 
+    };
 
     // Exclude hidden profiles
     query['privacySettings.isProfileHidden'] = false;
@@ -202,6 +225,13 @@ const getMatches = async (req, res, next) => {
     if (caste     && caste     !== 'Any') query.caste     = new RegExp(caste,     'i');
     if (religion  && religion  !== 'Any') query.religion  = new RegExp(religion,  'i');
     if (education && education !== 'Any') query.education = new RegExp(education, 'i');
+    if (motherTongue && motherTongue !== 'Any') query.motherTongue = new RegExp(motherTongue, 'i');
+    if (profession   && profession   !== 'Any') query.profession   = new RegExp(profession,   'i');
+
+    // Horoscope: Manglik
+    if (manglik && manglik !== 'Any') {
+      query['horoscope.manglik'] = manglik;
+    }
 
     if (minAge || maxAge) {
       query.age = {};
@@ -259,7 +289,12 @@ const getMatches = async (req, res, next) => {
       }
 
       // ── Guna Milan Integration (v2.1.0) ───────────────────────────────────
-      if (myProfile && myProfile.nakshatra && myProfile.rashi && c.nakshatra && c.rashi) {
+      const cNak = c.horoscope?.nakshatra || c.nakshatra;
+      const cRas = c.horoscope?.rashi || c.rashi;
+      const mNak = myProfile?.horoscope?.nakshatra || myProfile?.nakshatra;
+      const mRas = myProfile?.horoscope?.rashi || myProfile?.rashi;
+
+      if (mNak && mRas && cNak && cRas) {
         c.gunaMilan = calculateGunaMilan(myProfile, c);
       }
     });
@@ -344,7 +379,13 @@ const getProfileById = async (req, res, next) => {
     // ── Guna Milan Integration (v2.1.0) ─────────────────────────────────────
     // Calculate compatibility between viewer and target if both have astrology data
     const myProfile = await Profile.findOne({ user: req.user._id }).lean();
-    if (myProfile && myProfile.nakshatra && myProfile.rashi && result.nakshatra && result.rashi) {
+    
+    const targetNak = result.horoscope?.nakshatra || result.nakshatra;
+    const targetRas = result.horoscope?.rashi || result.rashi;
+    const myNak = myProfile?.horoscope?.nakshatra || myProfile?.nakshatra;
+    const myRas = myProfile?.horoscope?.rashi || myProfile?.rashi;
+
+    if (myNak && myRas && targetNak && targetRas) {
       result.gunaMilan = calculateGunaMilan(myProfile, result);
     }
 
@@ -445,7 +486,6 @@ const updateProfile = async (req, res, next) => {
       updateData.location = `${city}, ${state}`;
     }
 
-    // Handle Horoscope Updates
     if (req.body.dateOfBirth || req.body.rashi || req.body.nakshatra || req.body.pada || req.body.gotra || req.body.manglik !== undefined) {
       updateData.horoscope = {
         ...profile.horoscope,
@@ -454,7 +494,7 @@ const updateProfile = async (req, res, next) => {
         nakshatra:    req.body.nakshatra   !== undefined ? req.body.nakshatra   : profile.horoscope?.nakshatra,
         pada:         req.body.pada        !== undefined ? Number(req.body.pada) : profile.horoscope?.pada,
         gotra:        req.body.gotra       !== undefined ? req.body.gotra       : profile.horoscope?.gotra,
-        manglik:      req.body.manglik     !== undefined ? (req.body.manglik === 'true' || req.body.manglik === true) : profile.horoscope?.manglik,
+        manglik:      req.body.manglik     !== undefined ? req.body.manglik     : profile.horoscope?.manglik,
       };
     }
 
@@ -600,6 +640,58 @@ const unlockContact = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Toggle Shortlist (Add/Remove)
+// @route   POST /api/profiles/shortlist/:id
+// @access  Private
+// ─────────────────────────────────────────────────────────────────────────────
+const toggleShortlist = async (req, res, next) => {
+  try {
+    const profileId = req.params.id;
+    const user = await User.findById(req.user._id);
+
+    if (!user) return sendError(res, 'User not found', 404);
+
+    const isShortlisted = user.shortlistedProfiles.includes(profileId);
+
+    if (isShortlisted) {
+      // Remove
+      user.shortlistedProfiles = user.shortlistedProfiles.filter(
+        (id) => id.toString() !== profileId.toString()
+      );
+      await user.save();
+      return sendSuccess(res, { isShortlisted: false }, 'Removed from shortlist');
+    } else {
+      // Add
+      user.shortlistedProfiles.push(profileId);
+      await user.save();
+      return sendSuccess(res, { isShortlisted: true }, 'Added to shortlist');
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Get all shortlisted profiles
+// @route   GET /api/profiles/shortlisted
+// @access  Private
+// ─────────────────────────────────────────────────────────────────────────────
+const getShortlistedProfiles = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).populate({
+      path: 'shortlistedProfiles',
+      populate: { path: 'user', select: 'name email isPremium premiumPlan' }
+    });
+
+    if (!user) return sendError(res, 'User not found', 404);
+
+    return sendSuccess(res, user.shortlistedProfiles, 'Shortlisted profiles retrieved');
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   setupProfile,
   getMatches,
@@ -608,4 +700,6 @@ module.exports = {
   getMyProfile,
   getProfileViews,
   unlockContact,
+  toggleShortlist,
+  getShortlistedProfiles,
 };

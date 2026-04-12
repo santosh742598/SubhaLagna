@@ -1,11 +1,8 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Global Frontend Configuration
- * @description   Centralizes all environment-dependent configuration values.
- *                In production, VITE_API_URL and VITE_SOCKET_URL should be set
- *                via environment variables in your deployment platform.
- *
- * @author        SubhaLagna Team
- * @version 2.3.0
+ * @fileoverview SubhaLagna v2.4.0 — Global Frontend Configuration
+ * @description Centralizes all environment-dependent configuration values. [v2.4.0]
+ * @author SubhaLagna Team
+ * @version 2.4.0
  */
 
 /**
@@ -26,7 +23,7 @@ export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5
  * Application version.
  * @type {string}
  */
-export const APP_VERSION = '2.1.0';
+export const APP_VERSION = '2.4.0';
 
 /**
  * App name constant (used across the app for branding).
@@ -46,10 +43,10 @@ export const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test
  * @type {object}
  */
 export const BANK_DETAILS = {
-  name:   import.meta.env.VITE_BANK_ACC_NAME || 'SubhaLagna Matrimony',
-  accNo:  import.meta.env.VITE_BANK_ACC_NO   || '1234567890',
-  ifsc:   import.meta.env.VITE_BANK_IFSC     || 'SBIN0001234',
-  upiId:  import.meta.env.VITE_BANK_UPI_ID   || 'subhalagna@upi',
+  name: import.meta.env.VITE_BANK_ACC_NAME || 'SubhaLagna Matrimony',
+  accNo: import.meta.env.VITE_BANK_ACC_NO || '1234567890',
+  ifsc: import.meta.env.VITE_BANK_IFSC || 'SBIN0001234',
+  upiId: import.meta.env.VITE_BANK_UPI_ID || 'subhalagna@upi',
 };
 
 /**
@@ -58,6 +55,6 @@ export const BANK_DETAILS = {
  * @type {Record<string, number>}
  */
 export const PREMIUM_PLANS = {
-  gold:     999,
+  gold: 999,
   platinum: 1999,
 };

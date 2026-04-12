@@ -1,26 +1,25 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Profile Detail Page
+ * @fileoverview SubhaLagna v2.4.0 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
- *                v2.0.0 changes:
- *                  - Unified Header and Footer
- *                  - Integrated InterestButton
- *                  - Automated profile view tracking
- *                  - Premium responsive layout with glassmorphism
- *                  - Contact Information Gating (Unlock Logic)
+ *
+ *                v2.4.0 changes:
+ *                  - Updated Manglik badge to support dynamic 3-state styling (Yes, No, Unknown).
+ *
  *                v2.1.0 changes:
- *                  - Guna Milan compatibility gauge (36-point score)
- *                  - Factor-by-factor Ashta Koota breakdown
- *                  - Dynamic visibility of compatibility section
+...
+ * @version 2.4.0
  */
 
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { getProfileById, unlockContact } from '../services/profileService';
+import { toggleShortlist } from '../services/shortlistService';
 import InterestButton from './InterestButton';
 import Header from './Header';
 import PrivacyShield from './PrivacyShield';
+import { getProfileAvatar } from '../utils/avatarHelper';
 
 // ─── Stat Box Component ───────────────────────────────────────────────────────
 const StatBox = ({ label, value, icon }) => (
@@ -41,6 +40,91 @@ const SectionTitle = ({ title, icon }) => (
   </h2>
 );
 
+// ─── Compatibility Section Component (v2.1.0) ────────────────────────────────
+const CompatibilitySection = ({ data }) => {
+  if (!data) return null;
+  const { total, max, label, breakdown, cancellations } = data;
+  
+  const factors = [
+    { name: 'Varna', score: breakdown.varna, max: 1 },
+    { name: 'Vashya', score: breakdown.vashya, max: 2 },
+    { name: 'Tara', score: breakdown.tara, max: 3 },
+    { name: 'Yoni', score: breakdown.yoni, max: 4 },
+    { name: 'Maitri', score: breakdown.maitri, max: 5 },
+    { name: 'Gana', score: breakdown.gana, max: 6 },
+    { name: 'Bhakoot', score: breakdown.bhakoot, max: 7 },
+    { name: 'Nadi', score: breakdown.nadi, max: 8 },
+  ];
+
+  return (
+    <div className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-rose-100 shadow-sm animate-fade-in mb-8">
+       <SectionTitle title="Guna Milan Compatibility" icon={
+         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-1.734 1.702-2.523 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.789.584-2.822-.196-2.522-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+       } />
+
+       <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+          {/* Circular Gauge */}
+          <div className="md:col-span-4 flex flex-col items-center">
+             <div className="relative w-40 h-40 flex items-center justify-center">
+                <svg className="w-full h-full -rotate-90">
+                   <circle cx="80" cy="80" r="70" className="stroke-rose-50 fill-none" strokeWidth="12" />
+                   <circle 
+                     cx="80" cy="80" r="70" 
+                     className="stroke-rose-500 fill-none transition-all duration-1000" 
+                     strokeWidth="12" 
+                     strokeDasharray={440} 
+                     strokeDashoffset={440 - (440 * total) / max}
+                     strokeLinecap="round"
+                   />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                   <span className="text-4xl font-black text-gray-800">{total}</span>
+                   <span className="text-gray-400 text-xs font-bold uppercase tracking-widest">out of {max}</span>
+                </div>
+             </div>
+             <div className={`mt-4 px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm ${
+               total >= 25 ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 
+               total >= 18 ? 'bg-amber-50 border-amber-100 text-amber-600' : 
+               'bg-rose-50 border-rose-100 text-rose-600'
+             }`}>
+                {label} Match
+             </div>
+          </div>
+
+          {/* Factor Breakdown */}
+          <div className="md:col-span-8">
+             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {factors.map(f => (
+                   <div key={f.name} className="flex flex-col gap-1 p-3 rounded-2xl bg-slate-50 border border-slate-100/50 transition-all hover:bg-white hover:shadow-md">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{f.name}</span>
+                      <div className="flex items-end justify-between">
+                         <span className="text-sm font-black text-slate-700">{f.score}</span>
+                         <span className="text-[10px] text-slate-300">/ {f.max}</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-200 rounded-full mt-1 overflow-hidden">
+                         <div className={`h-full rounded-full transition-all duration-1000 ${f.score === f.max ? 'bg-emerald-400' : (f.score === 0 ? 'bg-rose-300' : 'bg-rose-400')}`} style={{ width: `${(f.score/f.max)*100}%` }} />
+                      </div>
+                   </div>
+                ))}
+             </div>
+             
+             {cancellations?.length > 0 && (
+               <div className="mt-6 p-4 rounded-2xl bg-blue-50/50 border border-blue-100 flex items-start gap-4">
+                  <div className="mt-1 text-blue-500 bg-white p-2 rounded-xl shadow-sm">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
+                  </div>
+                  <div className="space-y-1">
+                     <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">Dosha Cancellations</p>
+                     <p className="text-xs text-blue-700/80 font-bold italic leading-relaxed">{cancellations.join(', ')}</p>
+                  </div>
+               </div>
+             )}
+          </div>
+       </div>
+    </div>
+  );
+};
+
 const ProfileDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -51,6 +135,8 @@ const ProfileDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [unlocking, setUnlocking] = useState(false);
+  const [isShortlisted, setIsShortlisted] = useState(false);
+  const [shortlisting, setShortlisting] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -61,7 +147,12 @@ const ProfileDetail = () => {
       setLoading(true);
       const data = await getProfileById(id);
       setProfile(data);
-      setActivePhoto(data.profilePhoto || data.image || '/placeholder-profile.png');
+      setActivePhoto(getProfileAvatar(data));
+      
+      // Check if already shortlisted (from globally synced user context)
+      if (currentUser?.shortlistedProfiles?.includes(data._id)) {
+        setIsShortlisted(true);
+      }
     } catch (err) {
       setError(err || 'Could not load profile');
     } finally {
@@ -84,6 +175,25 @@ const ProfileDetail = () => {
       alert(err || "Failed to unlock contact. You may have reached your limit.");
     } finally {
       setUnlocking(false);
+    }
+  };
+
+  const handleShortlistToggle = async () => {
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+
+    setShortlisting(true);
+    try {
+      const result = await toggleShortlist(profile._id, currentUser.token || localStorage.getItem('accessToken'));
+      setIsShortlisted(result.isShortlisted);
+      // Optional: Update global context if we want sync across tabs
+      if (refreshUser) refreshUser();
+    } catch (err) {
+      alert(err || "Failed to update shortlist.");
+    } finally {
+      setShortlisting(false);
     }
   };
 
@@ -139,6 +249,16 @@ const ProfileDetail = () => {
                 <div className="absolute bottom-6 left-6 text-white z-10 w-full pr-12">
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
                     <h1 className="text-3xl font-serif font-bold">{profile.name}, {profile.age}</h1>
+                    
+                    {profile.isVerified && (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/80 backdrop-blur-md rounded-full text-white border border-blue-400/30 shadow-lg" title="Verified by SubhaLagna">
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                        </svg>
+                        <span className="text-[10px] font-black tracking-widest uppercase">Verified</span>
+                      </div>
+                    )}
+
                     {profile.user?.isPremium && (
                       <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-[0.2em] flex items-center gap-1.5 shadow-xl backdrop-blur-md border ${
                         profile.user.premiumPlan === 'platinum' 
@@ -176,15 +296,23 @@ const ProfileDetail = () => {
                 </div>
               )}
 
-              {/* Action Buttons */}
-              {!isOwnProfile && (
-                <div className="p-6 bg-rose-50/50 flex flex-col gap-3">
-                  <InterestButton receiverUserId={profile.user?._id || profile.user} />
-                  <button className="w-full py-3 bg-white border border-rose-200 text-rose-600 font-bold rounded-2xl hover:bg-rose-50 transition-all flex items-center justify-center gap-2">
-                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               {/* Action Buttons */}
+               {!isOwnProfile && (
+                 <div className="p-6 bg-rose-50/50 flex flex-col gap-3">
+                   <InterestButton receiverUserId={profile.user?._id || profile.user} />
+                   <button 
+                     onClick={handleShortlistToggle}
+                     disabled={shortlisting}
+                     className={`w-full py-3 border font-bold rounded-2xl transition-all flex items-center justify-center gap-2 ${
+                       isShortlisted 
+                         ? 'bg-rose-50 border-rose-200 text-rose-600' 
+                         : 'bg-white border-rose-200 text-rose-600 hover:bg-rose-50'
+                     }`}
+                   >
+                     <svg className={`w-5 h-5 ${isShortlisted ? 'fill-current' : ''}`} fill={isShortlisted ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                      </svg>
-                     Shortlist Profile
+                     {shortlisting ? 'Updating...' : (isShortlisted ? 'Shortlisted' : 'Shortlist Profile')}
                   </button>
                 </div>
               )}
@@ -309,9 +437,15 @@ const ProfileDetail = () => {
                  <SectionTitle title="Horoscope & Astrology" icon={
                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
                  } />
-                 {profile.horoscope?.manglik !== undefined && (
-                   <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${profile.horoscope.manglik ? 'bg-rose-50 border-rose-100 text-rose-500' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
-                     {profile.horoscope.manglik ? 'Manglik' : 'Non-Manglik'}
+                 {profile.horoscope?.manglik && (
+                   <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                     profile.horoscope.manglik === 'Yes' ? 'bg-rose-50 border-rose-100 text-rose-500' : 
+                     profile.horoscope.manglik === 'No' ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 
+                     'bg-slate-50 border-slate-100 text-slate-400'
+                   }`}>
+                     {profile.horoscope.manglik === 'Yes' ? 'Manglik' : 
+                      profile.horoscope.manglik === 'No' ? 'Non-Manglik' : 
+                      'Astro Unknown'}
                    </span>
                  )}
                </div>
@@ -335,6 +469,11 @@ const ProfileDetail = () => {
                   </div>
                </div>
             </div>
+
+            {/* Compatibility Breakdown (v2.1.0) */}
+            {!isOwnProfile && profile.gunaMilan && (
+              <CompatibilitySection data={profile.gunaMilan} />
+            )}
 
             {/* Interests & Horoscope */}
             <div className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-rose-100 shadow-sm">

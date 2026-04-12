@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-04-12
+
+### Added
+- **🛡️ Mandatory Email Verification**: Integrated a secure gating system that requires all new users to verify their email via OTP before profile creation.
+- **🔄 Resend OTP Logic**: Implemented backend and frontend support for requesting new verification codes with persistent rate limiting (Max 3/hr).
+- **✨ Premium Verification Center**: A new dedicated OTP entry UI with 6-block inputs, clipboard support, and a 60-second cooldown timer.
+- **🛠️ 3-State Manglik System**: Standardized Manglik status across the platform into `Yes`, `No`, and `Unknown` for better data accuracy.
+
+### Improved
+- **📋 Admin User Management**: Synchronized "Add New User" and "Edit User" flows with the new Manglik and Rashi standardization rules.
+- **📍 Rashi Logic**: Hardened the Selective-Lock logic to ensure Rashi is always astronomically correct based on Nakshatra/Pada.
+- **💅 Security Headers**: Updated JWT session management with transparent background refresh for access tokens.
+
 ## [2.3.1] - 2026-04-12
 
 ### Fixed

@@ -13,7 +13,7 @@
  *   PUT   /:id           → update own profile (ownership enforced)
  *
  * @author SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';
@@ -24,7 +24,7 @@ const router  = express.Router();
 const {
   setupProfile, getMatches, getProfileById,
   updateProfile, getMyProfile, getProfileViews,
-  unlockContact,
+  unlockContact, toggleShortlist, getShortlistedProfiles,
 } = require('../controllers/profileController');
 
 const { protect }                 = require('../middleware/authMiddleware');
@@ -35,11 +35,13 @@ const { profileSetupRules, validate } = require('../middleware/validateMiddlewar
 // All profile routes require authentication
 router.use(protect);
 
-// Own profile routes (must come BEFORE /:id to avoid param capture)
-router.get('/me',    getMyProfile);
-router.get('/views', getProfileViews);
+// ── Specific Action Routes (Must come BEFORE generic :id) ────────────────────
+router.get('/me',          getMyProfile);
+router.get('/views',       getProfileViews);
+router.get('/shortlisted', getShortlistedProfiles);
+router.post('/shortlist/:id', toggleShortlist);
 
-// Onboarding — create profile
+// Onboarding
 router.post(
   '/setup',
   uploadLimiter,
@@ -49,16 +51,17 @@ router.post(
   setupProfile
 );
 
-// Match browsing with filters + pagination
+// Match browsing
 router.get('/', getMatches);
 
-// Individual profile by ID — also tracks view
+// ── Generic Parameterized Routes ─────────────────────────────────────────────
+// Get by ID (tracks view)
 router.get('/:id', getProfileById);
 
-// Unlock contact details (Premium)
+// Unlock contact (Premium)
 router.post('/:id/unlock-contact', unlockContact);
 
-// Update own profile — ownership check inside controller
+// Update profile (ownership checked in controller)
 router.put(
   '/:id',
   uploadLimiter,

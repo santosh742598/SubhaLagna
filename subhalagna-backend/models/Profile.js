@@ -11,7 +11,7 @@
  *                  - completenessScore (computed on save)
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';
@@ -52,7 +52,7 @@ const profileSchema = new mongoose.Schema(
     bio:        { type: String, default: '', maxlength: [500, 'Bio cannot exceed 500 characters'] },
 
     // ── Photos ────────────────────────────────────────────────────────────────
-    profilePhoto:     { type: String, default: '/uploads/default-avatar.png' },
+    profilePhoto:     { type: String, default: '' },
     additionalPhotos: [{ type: String }],
 
     // ── Verification ─────────────────────────────────────────────────────────
@@ -89,7 +89,7 @@ const profileSchema = new mongoose.Schema(
       nakshatra:    { type: String, default: '' },
       pada:         { type: Number, enum: [1, 2, 3, 4], default: null }, // Nakshatra quarter
       gotra:        { type: String, default: '' },
-      manglik:      { type: Boolean, default: false },
+      manglik:      { type: String, enum: ['Yes', 'No', 'Unknown'], default: 'Unknown' },
     },
 
     // ── Privacy Settings (v2.0.0) ────────────────────────────────────────────

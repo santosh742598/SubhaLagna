@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SubhaLagna v2.4.0 — Signup Implementation
+ * @description   Handles new user account creation.
+ *                v2.4.0 changes:
+ *                  - Updated successful signup redirect to /verify-email.
+ */
+
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -135,7 +142,7 @@ const Signup = () => {
         email: formData.email,
         password: formData.password,
       });
-      navigate('/create-profile');
+      navigate('/verify-email');
     } catch (err) {
       const specificError = err.response?.data?.errors?.[0]?.message;
       setErrorStr(specificError || err.response?.data?.message || 'Sign up failed');

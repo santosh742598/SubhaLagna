@@ -1,16 +1,7 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Admin Controller
- * @description   Admin-only operations for platform management.
- *                All routes require role=admin (enforced by adminOnly middleware).
- *                Endpoints:
- *                  - getDashboardStats → platform-wide aggregated stats
- *                  - getAllUsers        → paginated user list
- *                  - suspendUser       → toggle user suspension
- *                  - verifyProfile     → manually approve/verify a profile
- *                  - deleteUser        → hard delete a user + profile
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';
@@ -18,11 +9,13 @@
 const User         = require('../models/User');
 const Profile      = require('../models/Profile');
 const Interest     = require('../models/Interest');
+const MembershipPlan = require('../models/MembershipPlan');
+const sharp        = require('sharp');
+const storageService = require('../utils/storageService');
 const Message      = require('../models/Message');
 const Notification = require('../models/Notification');
 const Coupon       = require('../models/Coupon');
 const Payment      = require('../models/Payment');
-const MembershipPlan = require('../models/MembershipPlan');
 const { upgradeUserSubscription } = require('./paymentController');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 
@@ -97,7 +90,7 @@ const getDashboardStats = async (req, res, next) => {
 // ─────────────────────────────────────────────────────────────────────────────
 const getAllUsers = async (req, res, next) => {
   try {
-    const { page = 1, limit = 20, search } = req.query;
+    const { page = 1, limit = 20, search, role } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
     const query = {};
@@ -106,6 +99,10 @@ const getAllUsers = async (req, res, next) => {
         { name:  new RegExp(search, 'i') },
         { email: new RegExp(search, 'i') },
       ];
+    }
+
+    if (role && role !== 'all') {
+      query.role = role;
     }
 
     const [users, total] = await Promise.all([
@@ -119,6 +116,197 @@ const getAllUsers = async (req, res, next) => {
     ]);
 
     return sendPaginated(res, users, total, page, limit);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Create a new user with profile data (Admin only)
+// @route   POST /api/admin/users
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+const createUserWithProfile = async (req, res, next) => {
+  try {
+    const {
+      name, email, password, role = 'user',
+      isPremium = false, premiumPlan = 'none', premiumExpires = null,
+      profileData = {}
+    } = req.body;
+
+    // 1. Validation
+    if (!name || !email || !password) {
+      return sendError(res, 'Name, email, and password are required', 400);
+    }
+
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return sendError(res, 'A user with this email already exists', 409);
+    }
+
+    // 2. Create User (Password hashed by pre-save hook)
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role,
+      isEmailVerified: true, // Admin-created users are pre-verified
+      isPremium,
+      premiumPlan,
+      premiumExpires: premiumExpires ? new Date(premiumExpires) : null,
+      contactsAllowed: premiumPlan === 'platinum' ? -1 : (premiumPlan === 'gold' ? 30 : 0)
+    });
+
+    // 3. Create Profile
+    // Extract profile fields from profileData or use defaults
+    const profile = await Profile.create({
+      user: user._id,
+      name: profileData.name || name,
+      gender: profileData.gender || 'Male',
+      religion: profileData.religion || 'Hindu',
+      caste: profileData.caste || '',
+      motherTongue: profileData.motherTongue || '',
+      location: profileData.location || '',
+      currentState: profileData.currentState || '',
+      currentCity: profileData.currentCity || '',
+      nativeState: profileData.nativeState || '',
+      nativeCity: profileData.nativeCity || '',
+      education: profileData.education || 'Graduate',
+      profession: profileData.profession || 'Professional',
+      height: profileData.height || "5' 5\"",
+      bio: profileData.bio || '',
+      profilePhoto: profileData.profilePhoto || (profileData.gender === 'Female' ? '/uploads/woman.png' : '/uploads/man.png'),
+      family: {
+        fatherName: profileData.family?.fatherName || profileData.fatherName || '',
+        motherName: profileData.family?.motherName || profileData.motherName || '',
+        siblings: profileData.family?.siblings || profileData.siblings || '0',
+        familyType: profileData.family?.familyType || profileData.familyType || 'Nuclear'
+      },
+      horoscope: {
+        dateOfBirth: profileData.horoscope?.dateOfBirth ? new Date(profileData.horoscope.dateOfBirth) : (profileData.dateOfBirth ? new Date(profileData.dateOfBirth) : null),
+        timeOfBirth: profileData.horoscope?.timeOfBirth || profileData.timeOfBirth || '',
+        placeOfBirth: profileData.horoscope?.placeOfBirth || profileData.placeOfBirth || '',
+        rashi: profileData.horoscope?.rashi || profileData.rashi || '',
+        nakshatra: profileData.horoscope?.nakshatra || profileData.nakshatra || '',
+        pada: profileData.horoscope?.pada || profileData.pada || null,
+        gotra: profileData.horoscope?.gotra || profileData.gotra || '',
+        manglik: profileData.horoscope?.manglik || profileData.manglik || 'Unknown'
+      }
+    });
+
+    return sendSuccess(res, { user, profile }, 'User and profile created successfully', 201);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Update any user and their profile (Admin only)
+// @route   PUT /api/admin/users/:id
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+const updateUserAndProfile = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const {
+      name, email, password, role,
+      isPremium, premiumPlan, premiumExpires,
+      profileData
+    } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) return sendError(res, 'User not found', 404);
+
+    let profile = await Profile.findOne({ user: id });
+    const isNewProfile = !profile;
+    
+    // 1. Update User Document
+    if (name)     user.name     = name;
+    if (email)    user.email    = email;
+    if (password) user.password = password; // Pre-save hook hashes it
+    if (role)     user.role     = role;
+
+    if (isPremium !== undefined)     user.isPremium     = isPremium;
+    if (premiumPlan) { 
+      user.premiumPlan     = premiumPlan;
+      user.contactsAllowed = premiumPlan === 'platinum' ? -1 : (premiumPlan === 'gold' ? 30 : 0);
+    }
+    if (premiumExpires !== undefined) {
+      user.premiumExpires = premiumExpires ? new Date(premiumExpires) : null;
+    }
+
+    await user.save();
+
+    // 2. Update/Create Profile Document
+    if (profileData) {
+      // If profile doesn't exist, initialize it
+      if (isNewProfile) {
+        profile = new Profile({ 
+          user: user._id, 
+          name: profileData.name || user.name,
+          gender: profileData.gender || 'Male' // Default gender if missing
+        });
+      }
+
+      // Basic Fields
+      if (profileData.name !== undefined)     profile.name     = profileData.name;
+      if (profileData.gender !== undefined)   profile.gender   = profileData.gender;
+      if (profileData.religion !== undefined) profile.religion = profileData.religion;
+      if (profileData.caste !== undefined)    profile.caste    = profileData.caste;
+      
+      // Location
+      if (profileData.currentState !== undefined) profile.currentState = profileData.currentState;
+      if (profileData.currentCity !== undefined)  profile.currentCity  = profileData.currentCity;
+      if (profileData.nativeState !== undefined)  profile.nativeState  = profileData.nativeState;
+      if (profileData.nativeCity !== undefined)   profile.nativeCity   = profileData.nativeCity;
+      
+      if (profileData.currentState !== undefined || profileData.currentCity !== undefined) {
+        profile.location = `${profileData.currentCity || profile.currentCity}, ${profileData.currentState || profile.currentState}`;
+      }
+
+      // Bio & Professional
+      if (profileData.education !== undefined)    profile.education    = profileData.education;
+      if (profileData.profession !== undefined)   profile.profession   = profileData.profession;
+      if (profileData.height !== undefined)       profile.height       = profileData.height;
+      if (profileData.motherTongue !== undefined) profile.motherTongue = profileData.motherTongue;
+      if (profileData.bio !== undefined)          profile.bio          = profileData.bio;
+      if (profileData.profilePhoto !== undefined) profile.profilePhoto = profileData.profilePhoto;
+
+      // Family Settings
+      if (profileData.family) {
+        profile.family = {
+          ...(profile.family?.toObject() || {}),
+          ...profileData.family
+        };
+      }
+
+      // Horoscope
+      if (profileData.horoscope) {
+        profile.horoscope = {
+          ...(profile.horoscope?.toObject() || {}),
+          ...profileData.horoscope,
+          dateOfBirth: profileData.horoscope.dateOfBirth ? new Date(profileData.horoscope.dateOfBirth) : profile.horoscope?.dateOfBirth
+        };
+      }
+
+      // Privacy Settings
+      if (profileData.privacySettings) {
+        profile.privacySettings = {
+          ...(profile.privacySettings?.toObject() || {}),
+          ...profileData.privacySettings
+        };
+      }
+
+      await profile.save();
+
+      // If we just created the profile, link it to the user
+      if (isNewProfile) {
+        user.profile = profile._id;
+        await user.save({ validateBeforeSave: false }); // Skip password validation if already saved
+      }
+    }
+
+    return sendSuccess(res, { user, profile }, 'User and profile updated successfully');
   } catch (err) {
     next(err);
   }
@@ -434,9 +622,97 @@ const createPlan = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Upload profile photo or gallery photos for any user (Admin only)
+// @route   POST /api/admin/profiles/:id/photos
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+const uploadUserPhotosAdmin = async (req, res, next) => {
+  try {
+    const profile = await Profile.findById(req.params.id);
+    if (!profile) return sendError(res, 'Profile not found', 404);
+
+    const updateData = {};
+
+    // 1. Handle Main Profile Photo
+    if (req.files?.['profilePhoto']?.[0]) {
+      const file = req.files['profilePhoto'][0];
+      const filename = `profile-${Date.now()}.webp`;
+
+      const buffer = await sharp(file.buffer)
+        .resize(800, 800, { fit: 'cover' })
+        .webp({ quality: 80 })
+        .toBuffer();
+
+      // Cleanup old photo
+      if (profile.profilePhoto && !profile.profilePhoto.includes('man.png') && !profile.profilePhoto.includes('woman.png')) {
+        await storageService.deleteFile(profile.profilePhoto);
+      }
+
+      updateData.profilePhoto = await storageService.uploadBuffer(buffer, filename);
+    }
+
+    // 2. Handle Additional Photos (Gallery)
+    if (req.files?.['additionalPhotos']) {
+      const newPhotos = [];
+      for (const file of req.files['additionalPhotos']) {
+        const filename = `gallery-${Date.now()}-${Math.round(Math.random() * 1e6)}.webp`;
+        const buffer = await sharp(file.buffer)
+          .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 80 })
+          .toBuffer();
+
+        const photoUrl = await storageService.uploadBuffer(buffer, filename);
+        newPhotos.push(photoUrl);
+      }
+      const existing = profile.additionalPhotos || [];
+      updateData.additionalPhotos = [...existing, ...newPhotos].slice(0, 6);
+    }
+
+    // 3. Handle Deletions if requested
+    if (req.body.removePhotos) {
+      const toRemove = JSON.parse(req.body.removePhotos);
+      for (const photoUrl of toRemove) {
+        await storageService.deleteFile(photoUrl);
+      }
+      const remaining = (updateData.additionalPhotos || profile.additionalPhotos || [])
+        .filter((p) => !toRemove.includes(p));
+      updateData.additionalPhotos = remaining;
+    }
+
+    Object.assign(profile, updateData);
+    await profile.save();
+
+    return sendSuccess(res, profile, 'Photos updated successfully');
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Get all payments (Transaction Ledger)
+// @route   GET /api/admin/payments/ledger
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+const getAllPayments = async (req, res, next) => {
+  try {
+    const payments = await Payment.find({})
+      .populate('user', 'name email phone')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return sendSuccess(res, payments, 'Transaction ledger retrieved successfully');
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllUsers,
+  createUserWithProfile,
+  updateUserAndProfile,
+  uploadUserPhotosAdmin,
   toggleSuspendUser,
   toggleVerifyProfile,
   deleteUser,
@@ -446,6 +722,7 @@ module.exports = {
   manualUpgradeUser,
   getPendingPayments,
   verifyBankPayment,
+  getAllPayments,
   getAllPlans,
   updatePlan,
   createPlan

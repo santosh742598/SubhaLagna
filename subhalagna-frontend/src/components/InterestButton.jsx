@@ -11,7 +11,7 @@
  *                Fetches current status on mount. Handles all transitions.
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import React, { useState, useEffect, useContext } from 'react';
@@ -58,6 +58,9 @@ const CheckIcon = ({ className }) => (
 const InterestButton = ({ receiverUserId, compact = false }) => {
   const navigate = useNavigate();
 
+  // Normalize ID: handle both string IDs and populated user objects
+  const targetUserId = typeof receiverUserId === 'object' ? receiverUserId._id : receiverUserId;
+
   const [status,         setStatus]         = useState(null);   // 'pending'|'accepted'|'rejected'|null
   const [isMe,           setIsMe]           = useState(false);  // Did I send it?
   const [interestId,     setInterestId]     = useState(null);
@@ -69,11 +72,11 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
 
   // ── Fetch current interest status on mount ────────────────────────────────
   useEffect(() => {
-    if (!receiverUserId) return;
+    if (!targetUserId) return;
 
     const fetchStatus = async () => {
       try {
-        const data = await getInterestStatus(receiverUserId);
+        const data = await getInterestStatus(targetUserId);
         setStatus(data.status);
         setIsMe(data.isMe);
         setInterestId(data.interest?._id || null);
@@ -92,7 +95,7 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
   const handleSendInterest = async () => {
     setActionLoading(true);
     try {
-      const interest = await sendInterest(receiverUserId, message);
+      const interest = await sendInterest(targetUserId, message);
       setStatus('pending');
       setIsMe(true);
       setInterestId(interest._id);

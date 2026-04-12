@@ -3,15 +3,14 @@
  * @description   Core user account schema. Stores authentication credentials
  *                and account-level metadata. Profile details are in Profile.js.
  *
+ *                Fields added in v2.4.0:
+ *                  - otpResendCount, otpLastResend (OTP rate limiting)
+ *
  *                Fields added in v2.0.0:
  *                  - isEmailVerified, emailVerifyOtp, emailVerifyOtpExpires
- *                  - refreshToken (for secure token rotation)
- *                  - resetPasswordToken, resetPasswordExpires (for forgot password)
- *                  - isPremium, premiumPlan, premiumExpires (subscription)
- *                  - isSuspended, role (for admin controls)
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 'use strict';
@@ -68,6 +67,13 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    otpResendCount: {
+      type: Number,
+      default: 0,
+    },
+    otpLastResend: {
+      type: Date,
+    },
 
     // ── Token Management ──────────────────────────────────────────────────────
     /** Stored hashed refresh token for rotation strategy */
@@ -111,7 +117,12 @@ const userSchema = new mongoose.Schema(
     contactsAllowed: {
       type: Number,
       default: 0 // Will be set to 30 for Gold, -1 for Platinum
-    }
+    },
+    // ── Shortlist Management (v2.3.2) ───────────────────────────────────────
+    shortlistedProfiles: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Profile'
+    }]
   },
   {
     timestamps: true, // createdAt, updatedAt

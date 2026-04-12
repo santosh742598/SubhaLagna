@@ -8,7 +8,7 @@
  *                  - Dynamic results with factor breakdown and labels
  *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 const { NAKSHATRAS, RASHIS, YONI_COMPATIBILITY, LORD_FRIENDSHIP } = require('./gunaMilanData');
@@ -24,19 +24,31 @@ const resolveRashi = (nakshatra, pada, providedRashi) => {
   return providedRashi;
 };
 
-const calculateGunaMilan = (partner1, partner2) => {
-  // Resolve accurate Rashis based on Padas
-  const r1 = resolveRashi(partner1.nakshatra, partner1.pada, partner1.rashi);
-  const r2 = resolveRashi(partner2.nakshatra, partner2.pada, partner2.rashi);
+const calculateGunaMilan = (p1, p2) => {
+  // Support both nested horoscope structure (v2.0+) and top-level fields (legacy/internal)
+  const par1 = {
+    nakshatra: p1.horoscope?.nakshatra || p1.nakshatra,
+    rashi: p1.horoscope?.rashi || p1.rashi,
+    pada: p1.horoscope?.pada || p1.pada
+  };
+  const par2 = {
+    nakshatra: p2.horoscope?.nakshatra || p2.nakshatra,
+    rashi: p2.horoscope?.rashi || p2.rashi,
+    pada: p2.horoscope?.pada || p2.pada
+  };
 
-  if (!r1 || !partner1.nakshatra || !r2 || !partner2.nakshatra) {
+  // Resolve accurate Rashis based on Padas
+  const r1 = resolveRashi(par1.nakshatra, par1.pada, par1.rashi);
+  const r2 = resolveRashi(par2.nakshatra, par2.pada, par2.rashi);
+
+  if (!r1 || !par1.nakshatra || !r2 || !par2.nakshatra) {
     return null;
   }
 
   const p1Rashi = RASHIS.find(r => r.name === r1);
   const p2Rashi = RASHIS.find(r => r.name === r2);
-  const p1Nak = NAKSHATRAS.find(n => n.name === partner1.nakshatra);
-  const p2Nak = NAKSHATRAS.find(n => n.name === partner2.nakshatra);
+  const p1Nak = NAKSHATRAS.find(n => n.name === par1.nakshatra);
+  const p2Nak = NAKSHATRAS.find(n => n.name === par2.nakshatra);
 
   if (!p1Rashi || !p2Rashi || !p1Nak || !p2Nak) return null;
 

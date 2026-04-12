@@ -119,7 +119,7 @@ const CreateProfile = () => {
 
   const [formData, setFormData] = useState({
     name: user?.name || '', gender: 'Male', dateOfBirth: '', religion: 'Hindu', caste: '', motherTongue: '',
-    rashi: '', nakshatra: '', pada: '', gotra: '',
+    rashi: '', nakshatra: '', pada: '', gotra: '', manglik: 'Unknown',
     location: '', currentState: '', currentCity: '', nativeState: '', nativeCity: '',
     education: '', profession: '', height: "5' 5\"", fatherName: '', motherName: '',
     siblings: '0', familyType: 'Nuclear', bio: '', partnerInterests: ''
@@ -372,7 +372,7 @@ const CreateProfile = () => {
 
                     <div className="pt-5 border-t border-rose-100/60">
                       <p className="text-xs font-bold text-rose-500 uppercase tracking-widest mb-4 ml-1">✨ Horoscope Details (Guna Milan)</p>
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
                         <select name="rashi" value={formData.rashi} onChange={handleChange} 
                           className={`${inputClasses} cursor-pointer ${formData.nakshatra && formData.pada ? 'bg-gray-100/50' : ''}`}
                           disabled={!!(formData.nakshatra && formData.pada)}>
@@ -392,6 +392,11 @@ const CreateProfile = () => {
                         </select>
                         <input type="text" name="gotra" value={formData.gotra} onChange={handleChange}
                           placeholder="Gotra (Optional)" className={inputClasses} style={{ outline: 'none' }} />
+                        <select name="manglik" value={formData.manglik} onChange={handleChange} className={`${inputClasses} cursor-pointer`}>
+                          <option value="Unknown">Manglik? (Don't Know)</option>
+                          <option value="No">Non-Manglik</option>
+                          <option value="Yes">Manglik</option>
+                        </select>
                       </div>
                     </div>
 

@@ -1,11 +1,14 @@
 /**
- * @fileoverview SubhaLagna v2.3.1 — Payment & Subscription Controller
+ * @fileoverview SubhaLagna v2.4.0 — Payment & Subscription Controller
  * @description Handles Razorpay orders, payment verification, and membership logic.
+ * - v2.4.0 changes:
+ *   - Integrated automated email notifications on successful subscription activation. [v2.4.0]
+ *   - Finalized Manglik logic stabilization. [v2.4.0]
  * - v2.3.1 changes:
  *   - Fixed critical ReferenceError in createOrder by standardizing on asynchronous model lookups.
  *   - Standardized usage quotas (contactsAllowed) to be fetched directly from database plans.
  * @author SubhaLagna Team
- * @version 2.3.1
+ * @version 2.4.0
  */
 
 const Razorpay = require('razorpay');
@@ -14,6 +17,7 @@ const User     = require('../models/User');
 const Coupon   = require('../models/Coupon');
 const Payment  = require('../models/Payment');
 const MembershipPlan = require('../models/MembershipPlan');
+const { sendPaymentSuccessEmail } = require('../utils/emailService');
 
 // Initialize Razorpay
 // Note: In a real app, these would come from process.env
@@ -253,6 +257,23 @@ const upgradeUserSubscription = async (userId, planId, couponCode, amount, razor
     expiryDate: expiry,
     type: razorData.orderId ? 'razorpay' : 'manual'
   });
+
+  // 4. Send Confirmation Email (v2.4.0)
+  try {
+    const user = await User.findById(userId);
+    if (user && user.email) {
+      await sendPaymentSuccessEmail(
+        user.email,
+        user.name,
+        plan.name,
+        amount,
+        expiry.toLocaleDateString()
+      );
+    }
+  } catch (emailErr) {
+    console.error("Failed to send payment success email:", emailErr);
+    // Non-blocking error
+  }
 }
 
 /**

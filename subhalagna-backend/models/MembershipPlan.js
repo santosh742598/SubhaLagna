@@ -2,7 +2,7 @@
  * @fileoverview SubhaLagna v2.3.1 — Membership Plan Model
  * @description   Dynamic schema for subscription tiers. 
  *                Allows admins to customize names, prices, and durations.
- * @version 2.3.1
+ * @version 2.4.0
  */
 
 const mongoose = require('mongoose');

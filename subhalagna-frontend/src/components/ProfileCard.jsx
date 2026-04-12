@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import InterestButton from './InterestButton';
 
 import PrivacyShield from './PrivacyShield';
+import { getProfileAvatar } from '../utils/avatarHelper';
 
 const ProfileCard = ({ profile, index }) => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const ProfileCard = ({ profile, index }) => {
   };
 
   const isBlurred = profile.isPhotoBlurred;
-  const profileImage = profile.profilePhoto || profile.image || '/placeholder-profile.png';
+  const profileImage = getProfileAvatar(profile);
   const age = profile.age || '—';
   const location = profile.location || '—';
   const profession = profile.profession || '—';
@@ -88,9 +89,18 @@ const ProfileCard = ({ profile, index }) => {
 
         {/* Name & Basic Info Overlay */}
         <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-          <h3 className="text-xl font-serif font-bold text-white drop-shadow-md">
-            {profile.name}, <span className="text-pink-300">{age}</span>
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-serif font-bold text-white drop-shadow-md">
+              {profile.name}, <span className="text-pink-300">{age}</span>
+            </h3>
+            {profile.isVerified && (
+              <div className="bg-blue-500 text-white p-0.5 rounded-full shadow-lg" title="Verified Profile">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                </svg>
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-2 text-white/80 text-xs mt-1">
             <svg className="w-3 h-3 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />

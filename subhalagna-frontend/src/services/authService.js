@@ -3,8 +3,11 @@
  * @description   All authentication-related API calls. Components should call
  *                these service functions instead of calling fetch/axios directly.
  *
+ *                v2.4.0 changes:
+ *                  - Added resendOTP service method.
+ *
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -35,6 +38,20 @@ export const verifyEmail = async (params) => {
     return data;
   } catch (err) {
     throw getErrorMessage(err, 'Verification failed');
+  }
+};
+
+/**
+ * Resend verification OTP.
+ * @param {string} email
+ * @returns {Promise<object>}
+ */
+export const resendOTP = async (email) => {
+  try {
+    const { data } = await api.post('/auth/resend-otp', { email });
+    return data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to resend OTP');
   }
 };
 

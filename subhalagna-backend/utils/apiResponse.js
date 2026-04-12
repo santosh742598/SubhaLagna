@@ -4,7 +4,7 @@
  *                Every successful response follows { success, data } and
  *                every error follows { success, message } format.
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  *
  * Usage:
  *   const { sendSuccess, sendError } = require('../utils/apiResponse');

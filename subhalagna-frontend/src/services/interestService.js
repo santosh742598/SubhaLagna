@@ -2,7 +2,7 @@
  * @fileoverview SubhaLagna v2.3.0 — Interest Service
  * @description   API calls for the interest/connection request system.
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -17,7 +17,9 @@ import api, { getErrorMessage } from './api';
  */
 export const sendInterest = async (receiverId, message = '') => {
   try {
-    const { data } = await api.post('/interests', { receiverId, message });
+    // Safety check: Ensure receiverId is a string ID, not a full user object
+    const finalId = typeof receiverId === 'object' ? receiverId._id : receiverId;
+    const { data } = await api.post('/interests', { receiverId: finalId, message });
     return data.data;
   } catch (err) {
     throw getErrorMessage(err, 'Failed to send interest');

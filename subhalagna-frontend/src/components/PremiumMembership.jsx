@@ -5,7 +5,7 @@
  *   - Removed hardcoded duration strings in favor of plan-driven duration text.
  *   - Integrated dynamic Razorpay order metadata.
  *   - Fixed checkout initialization for dynamic plans.
- * @version 2.3.1
+ * @version 2.4.0
  */
 
 import React, { useState, useEffect, useContext } from 'react';
@@ -20,7 +20,7 @@ import {
   confirmFreeSubscription,
   requestBankTransfer
 } from '../services/razorpayService';
-import { BANK_DETAILS } from '../config';
+import { BANK_DETAILS, RAZORPAY_KEY_ID } from '../config';
 
 const PremiumMembership = () => {
   const { user, token, refreshUser } = useContext(AuthContext);
@@ -113,7 +113,7 @@ const PremiumMembership = () => {
 
       // 3. Open Razorpay Modal
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder',
+        key: RAZORPAY_KEY_ID,
         amount: orderResponse.data.amount,
         currency: orderResponse.data.currency,
         name: "SubhaLagna Premium",

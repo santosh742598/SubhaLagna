@@ -6,7 +6,7 @@
  *                  - Dynamic server domain logging based on NODE_ENV
  *                  - Middleware stabilization for Express 5 compatibility
  * @author        SubhaLagna Team
- * @version 2.3.0
+ * @version 2.4.0
  *
  * Architecture:
  *  ┌──────────────────────────────────────────┐
@@ -128,11 +128,11 @@ app.get('/api/health', (req, res) => {
 // Auth routes get a stricter rate limiter (brute-force protection)
 app.use('/api/auth',          authLimiter, require('./routes/authRoutes'));
 app.use('/api/profiles', require('./routes/profileRoutes'));
+app.use('/api/interests', require('./routes/interestRoutes'));
 app.use('/api/lookup',   require('./routes/lookupRoutes'));
 app.use('/api/admin',    require('./routes/adminRoutes'));
 app.use('/api/chat',          require('./routes/chatRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
-app.use('/api/admin',         require('./routes/adminRoutes'));
 app.use('/api/payments',      require('./routes/paymentRoutes'));
 
 // ── Root Route ────────────────────────────────────────────────────────────────
