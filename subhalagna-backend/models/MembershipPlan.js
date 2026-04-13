@@ -1,8 +1,8 @@
 /**
- * @fileoverview SubhaLagna v2.3.1 — Membership Plan Model
- * @description   Dynamic schema for subscription tiers. 
+ * @file SubhaLagna v3.0.0 — Membership Plan Model
+ * @description   Dynamic schema for subscription tiers.
  *                Allows admins to customize names, prices, and durations.
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 const mongoose = require('mongoose');
@@ -14,50 +14,50 @@ const membershipPlanSchema = new mongoose.Schema(
       required: true,
       unique: true, // e.g., 'gold', 'platinum'
       lowercase: true,
-      trim: true
+      trim: true,
     },
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     price: {
       type: Number,
       required: true,
-      min: [0, 'Price cannot be negative']
+      min: [0, 'Price cannot be negative'],
     },
     durationInMonths: {
       type: Number,
       required: true,
-      min: [0, 'Duration cannot be negative']
+      min: [0, 'Duration cannot be negative'],
     },
     description: {
       type: String,
-      default: ''
+      default: '',
     },
     features: [
       {
         text: String,
-        included: { type: Boolean, default: true }
-      }
+        included: { type: Boolean, default: true },
+      },
     ],
     popular: {
       type: Boolean,
-      default: false
+      default: false,
     },
     contactsAllowed: {
       type: Number,
       required: true,
-      default: 0 // 0 for Free, 30 for Gold, -1 for Unlimited
+      default: 0, // 0 for Free, 30 for Gold, -1 for Unlimited
     },
     isActive: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
 module.exports = mongoose.model('MembershipPlan', membershipPlanSchema);

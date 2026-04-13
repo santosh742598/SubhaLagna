@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Interest (Connection Request) Model
+ * @file SubhaLagna v3.0.0 — Interest (Connection Request) Model
  * @description   Tracks interest requests sent between users (like Shaadi.com's
  *                "Send Interest" feature). One interest document per sender-receiver pair.
  *                Status transitions: pending → accepted | rejected | withdrawn.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -55,7 +55,7 @@ const interestSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // createdAt = when interest was sent
-  }
+  },
 );
 
 // ── Compound unique index: prevent duplicate interests between same pair ───────
@@ -63,6 +63,6 @@ interestSchema.index({ sender: 1, receiver: 1 }, { unique: true });
 
 // ── Additional indexes for fast lookups ───────────────────────────────────────
 interestSchema.index({ receiver: 1, status: 1 }); // "get my received pending interests"
-interestSchema.index({ sender: 1, status: 1 });    // "get my sent interests"
+interestSchema.index({ sender: 1, status: 1 }); // "get my sent interests"
 
 module.exports = mongoose.model('Interest', interestSchema);

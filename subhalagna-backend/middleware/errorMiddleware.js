@@ -1,11 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Centralized Error Handling Middleware
+ * @file SubhaLagna v3.0.0 — Centralized Error Handling Middleware
  * @description   Two middleware functions:
  *                1. `notFound` — catches 404 for unregistered routes
  *                2. `errorHandler` — global error handler for all thrown errors,
  *                   including Mongoose validation errors and JWT errors.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -13,7 +13,6 @@
 /**
  * 404 Not Found Middleware.
  * Converts any request that reaches this point into a proper JSON 404.
- *
  * @param {import('express').Request}  req
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
@@ -28,20 +27,20 @@ const notFound = (req, res, next) => {
  * Global Error Handler Middleware.
  * Must have 4 parameters so Express recognizes it as error middleware.
  * Handles specific error types (Mongoose, JWT) with user-friendly messages.
- *
  * @param {Error}  err
  * @param {import('express').Request}  req
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
  */
-const errorHandler = (err, req, res, next) => { // eslint-disable-line no-unused-vars
+const errorHandler = (err, req, res, next) => {
+   
   let statusCode = err.statusCode || err.status || 500;
-  let message    = err.message || 'Internal Server Error';
+  let message = err.message || 'Internal Server Error';
 
   // ── Mongoose: Document not found ──────────────────────────────────────────
   if (err.name === 'CastError' && err.kind === 'ObjectId') {
     statusCode = 404;
-    message    = 'Resource not found (invalid ID format)';
+    message = 'Resource not found (invalid ID format)';
   }
 
   // ── Mongoose: Duplicate key (e.g. unique email) ───────────────────────────
@@ -54,19 +53,21 @@ const errorHandler = (err, req, res, next) => { // eslint-disable-line no-unused
   // ── Mongoose: Validation error ────────────────────────────────────────────
   if (err.name === 'ValidationError') {
     statusCode = 400;
-    message    = Object.values(err.errors).map((e) => e.message).join('. ');
+    message = Object.values(err.errors)
+      .map((e) => e.message)
+      .join('. ');
   }
 
   // ── JWT: Token expired ────────────────────────────────────────────────────
   if (err.name === 'TokenExpiredError') {
     statusCode = 401;
-    message    = 'Session expired. Please log in again.';
+    message = 'Session expired. Please log in again.';
   }
 
   // ── JWT: Invalid token ────────────────────────────────────────────────────
   if (err.name === 'JsonWebTokenError') {
     statusCode = 401;
-    message    = 'Invalid authentication token.';
+    message = 'Invalid authentication token.';
   }
 
   // ── Log in development ────────────────────────────────────────────────────

@@ -1,15 +1,3 @@
-# Dependencies
-node_modules/
-subhalagna-frontend/node_modules/
-subhalagna-backend/node_modules/
-
-# Production / Build
-dist/
-subhalagna-frontend/dist/
-subhalagna-frontend/dist-ssr/
-build/
-coverage/
-
 # Environment Files
 .env
 .env.local
@@ -17,13 +5,26 @@ coverage/
 .env.test.local
 .env.production.local
 subhalagna-backend/.env
+subhalagna-frontend/.env
 
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+# Dependencies
+node_modules/
+subhalagna-frontend/node_modules/
+subhalagna-backend/node_modules/
+
+# Production / Build
+dist/
+build/
+subhalagna-frontend/dist/
+subhalagna-frontend/dist-ssr/
+coverage/
+
+# Tools & Linting
+.eslintcache
+.stylelintcache
+eslint-debug.log*
+.prettiercache
+.parcel-cache
 
 # OS specific files
 .DS_Store

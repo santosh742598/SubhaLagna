@@ -34,13 +34,13 @@ const patch = async () => {
     console.log('Current Profile Data:', {
       age: profile.age,
       dob: profile.horoscope?.dateOfBirth,
-      completeness: profile.completenessScore
+      completeness: profile.completenessScore,
     });
 
     // Update DOB
     profile.horoscope = {
       ...profile.horoscope,
-      dateOfBirth: new Date('1995-01-01')
+      dateOfBirth: new Date('1995-01-01'),
     };
 
     // Trigger pre-save hooks (age and completeness calculation)
@@ -50,7 +50,7 @@ const patch = async () => {
     console.log('New Profile Data:', {
       age: profile.age,
       dob: profile.horoscope.dateOfBirth,
-      completeness: profile.completenessScore
+      completeness: profile.completenessScore,
     });
 
     process.exit(0);

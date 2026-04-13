@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Notification Context
+ * @fileoverview SubhaLagna v3.0.0 — Notification Context
  * @description   Provides real-time notification state to all components.
  *                Combines REST API polling with Socket.io push events for
  *                instant notification delivery.
@@ -9,7 +9,7 @@
  *                    useContext(NotificationContext);
  *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
@@ -33,16 +33,18 @@ import {
  * @property {Function} addRealtime    - Add a real-time notification (from socket)
  */
 
-export const NotificationContext = createContext(/** @type {NotificationContextValue} */({
-  notifications: [],
-  unreadCount:   0,
-  loading:       false,
-  fetchNotifications: () => {},
-  markRead:      () => {},
-  markAllRead:   () => {},
-  remove:        () => {},
-  addRealtime:   () => {},
-}));
+export const NotificationContext = createContext(
+  /** @type {NotificationContextValue} */ ({
+    notifications: [],
+    unreadCount: 0,
+    loading: false,
+    fetchNotifications: () => {},
+    markRead: () => {},
+    markAllRead: () => {},
+    remove: () => {},
+    addRealtime: () => {},
+  }),
+);
 
 /**
  * NotificationProvider — provides notification state globally.
@@ -51,8 +53,8 @@ export const NotificationContext = createContext(/** @type {NotificationContextV
 export const NotificationProvider = ({ children }) => {
   const { isAuthenticated } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount,   setUnreadCount]   = useState(0);
-  const [loading,       setLoading]       = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   /**
    * Fetch notifications from the API.
@@ -90,9 +92,7 @@ export const NotificationProvider = ({ children }) => {
    * @param {string} id - Notification MongoDB ObjectId
    */
   const markRead = useCallback(async (id) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
-    );
+    setNotifications((prev) => prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)));
     setUnreadCount((c) => Math.max(0, c - 1));
     await markOneRead(id);
   }, []);
@@ -111,12 +111,15 @@ export const NotificationProvider = ({ children }) => {
    *
    * @param {string} id
    */
-  const remove = useCallback(async (id) => {
-    const wasUnread = notifications.find((n) => n._id === id && !n.isRead);
-    setNotifications((prev) => prev.filter((n) => n._id !== id));
-    if (wasUnread) setUnreadCount((c) => Math.max(0, c - 1));
-    await deleteNotification(id);
-  }, [notifications]);
+  const remove = useCallback(
+    async (id) => {
+      const wasUnread = notifications.find((n) => n._id === id && !n.isRead);
+      setNotifications((prev) => prev.filter((n) => n._id !== id));
+      if (wasUnread) setUnreadCount((c) => Math.max(0, c - 1));
+      await deleteNotification(id);
+    },
+    [notifications],
+  );
 
   /**
    * Add a real-time notification received from Socket.io.
@@ -140,9 +143,5 @@ export const NotificationProvider = ({ children }) => {
     addRealtime,
   };
 
-  return (
-    <NotificationContext.Provider value={value}>
-      {children}
-    </NotificationContext.Provider>
-  );
+  return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 };

@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Axios API Base Instance
+ * @fileoverview SubhaLagna v3.0.0 — Axios API Base Instance
  * @description   Configures a single axios instance used by all service modules.
  *                Features:
  *                  - Attaches JWT Bearer token from localStorage automatically
@@ -7,7 +7,7 @@
  *                  - Provides consistent error message extraction
  *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 import axios from 'axios';
@@ -34,7 +34,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // ── Response Interceptor: Handle 401 (token expired) ─────────────────────────
@@ -55,7 +55,7 @@ api.interceptors.response.use(
           });
 
           // Store new tokens
-          localStorage.setItem('accessToken',  data.data.accessToken);
+          localStorage.setItem('accessToken', data.data.accessToken);
           localStorage.setItem('refreshToken', data.data.refreshToken);
 
           // Retry the failed request with new token
@@ -73,7 +73,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 /**

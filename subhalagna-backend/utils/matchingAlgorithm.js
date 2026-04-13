@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Smart Matching Algorithm
+ * @file SubhaLagna v3.0.0 — Smart Matching Algorithm
  * @description   Computes a weighted compatibility score (0–100) between the
  *                logged-in user's profile and each candidate profile.
  *
@@ -12,9 +12,8 @@
  *                  - Location match     → 10 pts
  *                  - Education level    →  5 pts
  *                  Total possible       → 100 pts
- *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -25,12 +24,12 @@
  */
 const EDUCATION_TIERS = {
   'High School': 1,
-  'Diploma': 2,
+  Diploma: 2,
   "Bachelor's": 3,
-  'Graduate': 3,
+  Graduate: 3,
   "Master's": 4,
-  'MBA': 4,
-  'PhD': 5,
+  MBA: 4,
+  PhD: 5,
 };
 
 /**
@@ -39,15 +38,14 @@ const EDUCATION_TIERS = {
  * Age difference of 3-5  → 10 pts
  * Age difference of 6-10 → 5 pts
  * Otherwise              → 0 pts
- *
  * @param {number} myAge
  * @param {number} theirAge
  * @returns {number} Score 0–15
  */
 const getAgeScore = (myAge, theirAge) => {
   const diff = Math.abs(Number(myAge) - Number(theirAge));
-  if (diff <= 2)  return 15;
-  if (diff <= 5)  return 10;
+  if (diff <= 2) return 15;
+  if (diff <= 5) return 10;
   if (diff <= 10) return 5;
   return 0;
 };
@@ -55,7 +53,6 @@ const getAgeScore = (myAge, theirAge) => {
 /**
  * Compute the interest overlap score.
  * Based on Jaccard similarity to ensure fairness regardless of total count.
- *
  * @param {string[]} myInterests
  * @param {string[]} theirInterests
  * @returns {number} Score 0–25
@@ -71,7 +68,6 @@ const getInterestScore = (myInterests = [], theirInterests = []) => {
 
 /**
  * Compute the trait overlap score.
- *
  * @param {string[]} myTraits
  * @param {string[]} theirTraits
  * @returns {number} Score 0–15
@@ -87,7 +83,6 @@ const getTraitScore = (myTraits = [], theirTraits = []) => {
 
 /**
  * Compute education tier proximity score.
- *
  * @param {string} myEdu
  * @param {string} theirEdu
  * @returns {number} Score 0–5
@@ -103,7 +98,6 @@ const getEducationScore = (myEdu, theirEdu) => {
 
 /**
  * Compute a full compatibility score for a single candidate profile.
- *
  * @param {object} myProfile       - The logged-in user's profile document
  * @param {object} candidateProfile - A candidate profile document from DB
  * @returns {{
@@ -115,25 +109,44 @@ const getEducationScore = (myEdu, theirEdu) => {
  */
 const computeMatchScore = (myProfile, candidateProfile) => {
   // ── Individual dimension scores ───────────────────────────────────────────
-  const interestScore  = getInterestScore(myProfile.interests, candidateProfile.interests);
-  const traitScore     = getTraitScore(myProfile.traits, candidateProfile.traits);
-  const religionScore  = (myProfile.religion || '').toLowerCase() === (candidateProfile.religion || '').toLowerCase() ? 20 : 0;
-  const casteScore     = (myProfile.caste || '').toLowerCase() === (candidateProfile.caste || '').toLowerCase() ? 10 : 0;
-  const ageScore       = getAgeScore(myProfile.age, candidateProfile.age);
-  const locationScore  = (myProfile.currentState || '').toLowerCase() === (candidateProfile.currentState || '').toLowerCase() ? 10 : 0;
+  const interestScore = getInterestScore(myProfile.interests, candidateProfile.interests);
+  const traitScore = getTraitScore(myProfile.traits, candidateProfile.traits);
+  const religionScore =
+    (myProfile.religion || '').toLowerCase() === (candidateProfile.religion || '').toLowerCase()
+      ? 20
+      : 0;
+  const casteScore =
+    (myProfile.caste || '').toLowerCase() === (candidateProfile.caste || '').toLowerCase() ? 10 : 0;
+  const ageScore = getAgeScore(myProfile.age, candidateProfile.age);
+  const locationScore =
+    (myProfile.currentState || '').toLowerCase() ===
+    (candidateProfile.currentState || '').toLowerCase()
+      ? 10
+      : 0;
   const educationScore = getEducationScore(myProfile.education, candidateProfile.education);
 
-  const total = interestScore + traitScore + religionScore + casteScore + ageScore + locationScore + educationScore;
+  const total =
+    interestScore +
+    traitScore +
+    religionScore +
+    casteScore +
+    ageScore +
+    locationScore +
+    educationScore;
 
   // ── Shared items (for UI display) ────────────────────────────────────────
   const myInterestSet = new Set((myProfile.interests || []).map((i) => i.toLowerCase()));
-  const myTraitSet    = new Set((myProfile.traits || []).map((t) => t.toLowerCase()));
+  const myTraitSet = new Set((myProfile.traits || []).map((t) => t.toLowerCase()));
 
-  const sharedInterests = (candidateProfile.interests || []).filter((i) => myInterestSet.has(i.toLowerCase()));
-  const sharedTraits    = (candidateProfile.traits || []).filter((t) => myTraitSet.has(t.toLowerCase()));
+  const sharedInterests = (candidateProfile.interests || []).filter((i) =>
+    myInterestSet.has(i.toLowerCase()),
+  );
+  const sharedTraits = (candidateProfile.traits || []).filter((t) =>
+    myTraitSet.has(t.toLowerCase()),
+  );
 
   return {
-    compatibilityScore: Math.min(total, 100),  // cap at 100
+    compatibilityScore: Math.min(total, 100), // cap at 100
     sharedInterests,
     sharedTraits,
     breakdown: {
@@ -150,7 +163,6 @@ const computeMatchScore = (myProfile, candidateProfile) => {
 
 /**
  * Enrich an array of candidate profiles with compatibility scores.
- *
  * @param {object}   myProfile    - The current user's profile
  * @param {object[]} candidates   - Array of candidate profiles from DB
  * @returns {object[]} Sorted (desc by score) array of enriched profiles
@@ -159,8 +171,11 @@ const enrichWithMatchScores = (myProfile, candidates) => {
   if (!myProfile) return candidates; // No enrichment if user has no profile yet
 
   const enriched = candidates.map((candidate) => {
-    const matchData = computeMatchScore(myProfile, candidate.toObject ? candidate.toObject() : candidate);
-    return { ...( candidate.toObject ? candidate.toObject() : candidate ), ...matchData };
+    const matchData = computeMatchScore(
+      myProfile,
+      candidate.toObject ? candidate.toObject() : candidate,
+    );
+    return { ...(candidate.toObject ? candidate.toObject() : candidate), ...matchData };
   });
 
   // Sort by compatibility score descending (best match first)

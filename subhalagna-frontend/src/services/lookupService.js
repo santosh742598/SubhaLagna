@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Lookup Service
+ * @fileoverview SubhaLagna v3.0.0 — Lookup Service
  * @description   Handles API calls for dynamic master data (Caste, City, etc.)
  */
 
@@ -18,9 +18,9 @@ export const fetchLookupOptions = async (type, group = '') => {
 
     const res = await fetch(url.toString());
     const data = await res.json();
-    
+
     if (res.ok) {
-      return data.data.map(item => item.value);
+      return data.data.map((item) => item.value);
     }
     return [];
   } catch (err) {

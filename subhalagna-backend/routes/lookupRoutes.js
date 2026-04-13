@@ -1,18 +1,18 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — MasterData Routes
+ * @file SubhaLagna v3.0.0 — MasterData Routes
  * @description   Public endpoints for fetching dynamic dropdown options.
  */
 
 'use strict';
 
 const express = require('express');
-const router  = express.Router();
+const router = express.Router();
 const { getOptions } = require('../services/masterDataService');
 const { sendSuccess } = require('../utils/apiResponse');
 
 /**
  * @route   GET /api/lookup?type=caste
- * @desc    Get unique options for a master data type
+ * @description    Get unique options for a master data type
  * @access  Public
  */
 router.get('/', async (req, res, next) => {

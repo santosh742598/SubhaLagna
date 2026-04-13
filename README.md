@@ -1,152 +1,134 @@
-# 💍 SubhaLagna Matrimony — v2.4.0
+# 💍 SubhaLagna Matrimony — v3.0.0
 
-A high-fidelity, secure matrimony platform built on the **MERN Stack** (MongoDB, Express, React, Node.js). SubhaLagna v2.4.0 focuses on **Administrative Transparency**, Automated Communication, and structural UI stability.
+[![Project Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+[![Stack](https://img.shields.io/badge/stack-MERN-green.svg)](#technology-stack)
+
+SubhaLagna is a high-fidelity, enterprise-grade matrimony platform designed for security, scalability, and cultural precision. Built on the modern **MERN stack**, v3.0.0 introduces a robust automated quality foundation, ensuring long-term maintainability and high-performance matching.
 
 ---
 
-## 🚀 Key Features
+## 📽️ Platform Capabilities
 
-### 📊 Transaction Ledger (New in v2.4.0)
-Administrators now have a dedicated financial oversight center:
-- **Full Audit Trail**: Track every payment across Razorpay, Manual upgrades, and Bank transfers.
-- **Detailed Reporting**: View transaction dates, amounts, user emails, and plan types in a single, unified ledger.
-- **Revenue Analytics**: Real-time tracking of platform performance with daily and total revenue insights.
-
-### ✉️ Automated Notifications (New in v2.4.0)
-Enhanced user trust through immediate communication:
-- **Payment Confirmation**: Users automatically receive a premium HTML email upon successful membership activation.
-- **Membership Details**: Confirmation emails include the plan name, validity period, and expiry date.
-
-### 💎 UI Stabilization (New in v2.4.0)
-- **Zero-Dependency Icons**: Optimized rendering by switching to theme-consistent inline SVGs, eliminating "ReferenceErrors" and improving dashboard load reliability.
-
-### ☁️ Cloud-Ready Storage (New in v2.2.0)
-SubhaLagna is now optimized for cloud hosting:
-- **Unified Abstraction**: Seamlessly switch between **Local Disk** and **AWS S3** via a single `.env` toggle.
-- **Lazy Loading**: Zero overhead for cloud libraries when using local storage.
-- **Auto-Cleanup**: The system automatically deletes old assets from storage when profile photos are updated, preventing storage bloat.
-
-### 🔮 Vedic Guna Milan
-SubhaLagna now implements a **professional-grade Ashta Koota compatibility engine**:
-- **Precise 108 Pada Mapping**: Automatic Moon sign (Rashi) determination based on birth star quarter.
+### 🔮 Matchmaking Intelligence (Guna Milan)
+SubhaLagna implements a **professional-grade Ashta Koota compatibility engine** for precise partner matching:
+- **108 Pada Mapping**: Automated Moon sign (Rashi) determination based on birth star quarters.
 - **36-Point Scoring**: Factor-by-factor breakdown of Varna, Vashya, Tara, Yoni, Maitri, Gana, Bhakoot, and Nadi.
-- **Dosha Cancellation**: Traditional logic for Nadi and Bhakoot cancellations based on planetary friendship and Pada differences.
+- **Dosha Cancellation**: Traditional Vedic logic for Nadi and Bhakoot cancellations based on planetary friendship.
 
-### 🛡️ Privacy Engine & Data Gating
-- **Privacy Frost**: Interest-aware photo protection. Photos and galleries are blurred with a frosted-glass effect and only unlock after an interest is **Accepted**.
-- **Contact Redaction**: Server-side masking of Email/Phone for non-authorized viewers.
-- **View Insights**: Premium users can track "Who Viewed My Profile" with a complete audit trail.
+### 📊 Secure Financial Oversight
+A dedicated transparency hub for platform administrators:
+- **Unified Transaction Ledger**: Audit every payment across Razorpay, Bank transfers, and Coupons.
+- **Revenue Analytics**: Real-time insights into daily peak performance and lifetime revenue.
+- **Automated Invoicing**: Immediate premium HTML documentation sent to users upon payment.
 
-### 💰 Premium Monetization
-- **Tiered Plans**: **Gold** vs. **Platinum** tiers with unique quotas.
-- **Automated Billing**: Razorpay integration with secure HMAC signature verification.
-- **Admin Overrides**: Manual subscription activation for offline or bank-transfer users.
+### 🛡️ Privacy & Trust Infrastructure
+Advanced gating mechanisms to protect user identity and data:
+- **Privacy Frost**: Photos remain blurred with a frosted-glass effect until an interest is **Accepted**.
+- **Contact Masking**: Multi-layer redaction of phone and email for unauthorized viewers.
+- **Email Verification**: Identity verification via OTP (One-Time Password) before profile activation.
 
-### 🛠️ Admin & Moderation
-- **Verification Engine**: Admin approval workflow for the "Verified" trust badge.
-- **Segmented Management**: Tabs for User Moderation, Pending Payments, Coupons, Membership Plans, and the new **Transaction Ledger**.
-- **Coupon Engine**: Manage dynamic discount codes (Fixed or Percentage).
-
-### 💬 Engagement
-- **Interest System**: Unified inbox for sending/receiving connection requests.
-- **Real-time Chat**: Integrated messaging via Socket.io for connected matches.
+- **Structured Documentation**: Strict JSDoc enforcement for all critical controllers, models, and UI components.
 
 ---
 
-## 🏗️ Technical Architecture
+## 📂 Project Architecture
 
-### **Backend (`/subhalagna-backend`)**
-- **Runtime**: Node.js & Express.
-- **Database**: MongoDB (Mongoose ODM).
-- **Security**: JWT Authentication, HMAC signature verification for payments.
-- **API Documentation**: RESTful endpoints with status-coded responses.
+SubhaLagna follows a **Modular Clean Architecture** to separate concerns and ensure scalability:
 
-### **Frontend (`/subhalagna-frontend`)**
-- **Library**: React 18+ with Vite as the build tool.
-- **Styling**: Vanilla CSS with a focus on Glassmorphism and modern UI/UX.
-- **State Management**: Context API for Global Auth and Subscription state.
-
----
-
-## 📂 Folder Structure
-
-### **Backend**
 ```text
-subhalagna-backend/
-├── config/             # DB connection and app configuration
-├── controllers/        # Business logic for API endpoints
-├── middleware/         # JWT Auth and Admin check logic
-├── models/             # Mongoose schemas (User, Profile, Interest, etc.)
-├── routes/             # API endpoint definitions
-├── socket/             # Socket.io implementation for real-time features
-├── uploads/            # Storage for profile images (ignored by git)
-└── utils/              # Shared helper functions
-```
-
-### **Frontend**
-```text
-subhalagna-frontend/
-├── public/             # Static assets (icons, manifest)
-└── src/                # Source code
-    ├── assets/         # Global styles and images
-    ├── components/     # Core UI components (Login, Profile, Dashboards, etc.)
-    ├── context/        # AuthContext and state providers
-    ├── data/           # Static constants (Caste, Religion, State lists)
-    ├── services/       # Axios API integration layer
-    └── App.jsx         # Main routing and layout
+📦 SubhaLagna-main
+├── 📂 subhalagna-backend       # Node.js / Express Core
+│   ├── 📂 config               # DB & App Configurations
+│   ├── 📂 controllers          # Request Handlers (Business Logic)
+│   ├── 📂 middleware           # Auth Gating & Security Layers
+│   ├── 📂 models               # Mongoose Data Schemas
+│   ├── 📂 routes               # API Endpoint Definitions
+│   ├── 📂 scripts              # Database & Maintenance Scripts
+│   ├── 📂 services             # External Integrations (Email/SMS)
+│   ├── 📂 socket               # Real-Time Communications (Socket.io)
+│   ├── 📂 uploads              # Local Multi-media Storage
+│   ├── 📂 utils                # Helpers (Matching/Logic)
+│   └── 📄 index.js             # Server Entry Point
+├── 📂 subhalagna-frontend      # React / Vite Client
+│   ├── 📂 src
+│   │   ├── 📂 assets           # Global Media & Static Files
+│   │   ├── 📂 components       # UI Components (Glassmorphism)
+│   │   ├── 📂 context          # State Management (Auth/Chat)
+│   │   ├── 📂 data             # Static Constants & Master Data
+│   │   ├── 📂 services         # API Communication Layer
+│   │   └── 📂 utils            # Frontend Helpers & Constants
+│   └── 📄 vite.config.js       # Build Pipeline Config
+└── 📄 AGENTS.md                # Project Coding Standards (Master Truth)
 ```
 
 ---
 
+## 🛠️ Technology Stack
 
-## 🛠️ Installation & Setup
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React 18, Vite, Tailwind CSS v4, Context API |
+| **Backend** | Node.js, Express 5, Socket.io |
+| **Database** | MongoDB (Mongoose ODM) |
+| **Payments** | Razorpay Gateway (Signature Verification) |
+| **Storage** | Hybrid (Local Disk / AWS S3 Abstraction) |
+| **Quality** | ESLint (Flat Config), Prettier, JSDoc |
+
+---
+
+## 🚀 Installation & Deployment
 
 ### 1. Prerequisites
-- Node.js (v16+)
-- MongoDB Atlas account
-- Razorpay developer account
+- **Node.js**: v18.0.0 or higher
+- **MongoDB**: v6.0+ (Local or Atlas)
+- **Email**: SMTP access (for OTP and notifications)
 
-### 2. Backend Setup
+### 2. Database Initialization
+Before starting the backend, ensure your MongoDB instance is running:
+- **Windows**: Run `net start MongoDB` in an Administrator terminal.
+- **macOS**: Run `brew services start mongodb-community`.
+- **Linux**: Run `sudo systemctl start mongod`.
+- **Cloud**: Verify your [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) cluster is active and your IP is whitelisted.
+
+### 3. Environment Configuration
+Create a `.env` file in the `subhalagna-backend/` directory based on the following template:
+
+| Key | Description |
+| :--- | :--- |
+| `MONGO_URI` | Your MongoDB connection string |
+| `JWT_SECRET` | Secret key for token generation |
+| `RAZORPAY_KEY_ID` | Razorpay public key |
+| `RAZORPAY_KEY_SECRET` | Razorpay secret key |
+| `SMTP_HOST` | Outgoing mail server (e.g., smtp.gmail.com) |
+| `SMTP_USER` | Email account username |
+| `SMTP_PASS` | Email app password |
+
+### 3. Backend Setup
 ```bash
 cd subhalagna-backend
 npm install
-# Configure .env using .env.example
 npm run dev
 ```
 
-### 3. Frontend Setup
+### 4. Frontend Setup
 ```bash
 cd subhalagna-frontend
 npm install
-# Configure .env using .env.example
 npm run dev
 ```
 
 ---
 
-## 🔑 Environment Variables
+## 👔 Development Workflow
 
-| Variable | Description | Source |
-| :--- | :--- | :--- |
-| `MONGO_URI` | Database Connection String | MongoDB Atlas |
-| `JWT_SECRET` | Token Encryption Key | System Generated |
-| `RAZORPAY_KEY_ID` | Public Payment Key | Razorpay Dashboard |
-| `RAZORPAY_KEY_SECRET` | Secret Payment Key | Razorpay Dashboard |
-| `SMTP_HOST` | Email Server Host | e.g. smtp.gmail.com |
-| `SMTP_USER` | Email Service Account | Login Email |
-| `SMTP_PASS` | Email App Password | Security > App Passwords |
-| `VITE_API_URL` | Frontend API endpoint | Backend Developer |
+Maintain the platform's v3.0.0 standards using the following commands:
+
+- **Linting**: `npm run lint` (Checks for documentation and security violations)
+- **Formatting**: `npm run format` (Global code alignment via Prettier)
+- **Dev Mode**: `npm run dev` (Hot-reloading development server)
 
 ---
 
-## 👔 Admin Quick Start
-To grant Admin access to an account:
-1. Register a normal user.
-2. Go to your MongoDB database.
-3. Change the `role` field from `"user"` to `"admin"`.
-4. Log in again. The **Admin Dashboard** will appear in the top navigation.
-
----
-
-## 📄 License
-Custom Proprietary License — Developed by SubhaLagna Team.
+## 🛡️ License
+Proprietary Intellectual Property of the **SubhaLagna Team**. Unauthorized distribution or modification is strictly prohibited.

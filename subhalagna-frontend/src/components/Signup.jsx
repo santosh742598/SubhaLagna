@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.4.0 — Signup Implementation
+ * @fileoverview SubhaLagna v3.0.0 — Signup Implementation
  * @description   Handles new user account creation.
  *                v2.4.0 changes:
  *                  - Updated successful signup redirect to /verify-email.
@@ -130,7 +130,9 @@ const Signup = () => {
       return;
     }
     if (!validatePassword(formData.password)) {
-      setErrorStr('Password must be at least 8 characters and include at least one uppercase letter and one number.');
+      setErrorStr(
+        'Password must be at least 8 characters and include at least one uppercase letter and one number.',
+      );
       return;
     }
 
@@ -151,8 +153,7 @@ const Signup = () => {
     }
   };
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const inputClasses =
     'w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition-all font-sans text-sm text-gray-800';
@@ -194,173 +195,218 @@ const Signup = () => {
 
       {/* ── Page Layout ────────────────────────────────────────────────────── */}
       <div className="min-h-screen flex flex-col" style={{ margin: 0, padding: 0 }}>
+        {/* ── Main Content ────────────────────────────────────────────────────── */}
+        <main className="flex-1 flex flex-col items-center justify-start px-4 relative z-10 pt-2 pb-12">
+          {/* Heading moved outside card for consistency */}
+          <div className="text-center mb-4 max-w-md w-full">
+            <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">
+              Step 1: Account Setup
+            </h2>
+            <p className="text-gray-400 text-sm">Create your login credentials 💕</p>
+          </div>
 
+          <div
+            className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-xl shadow-rose-100/40 border border-rose-100/60"
+            style={{ animation: 'fade-in-up 0.6s ease-out forwards' }}
+          >
+            {/* Error */}
+            {errorStr && (
+              <div className="mb-4 text-center text-sm font-semibold text-rose-600 bg-rose-50 p-3 rounded-lg border border-rose-200">
+                {errorStr}
+              </div>
+            )}
 
-      {/* ── Main Content ────────────────────────────────────────────────────── */}
-      <main className="flex-1 flex flex-col items-center justify-start px-4 relative z-10 pt-2 pb-12">
-        
-        {/* Heading moved outside card for consistency */}
-        <div className="text-center mb-4 max-w-md w-full">
-          <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">
-            Step 1: Account Setup
-          </h2>
-          <p className="text-gray-400 text-sm">
-            Create your login credentials 💕
-          </p>
-        </div>
-
-        <div
-          className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-xl shadow-rose-100/40 border border-rose-100/60"
-          style={{ animation: 'fade-in-up 0.6s ease-out forwards' }}
-        >
-
-          {/* Error */}
-          {errorStr && (
-            <div className="mb-4 text-center text-sm font-semibold text-rose-600 bg-rose-50 p-3 rounded-lg border border-rose-200">
-              {errorStr}
-            </div>
-          )}
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder="John Doe"
-                className={inputClasses}
-                style={{ outline: 'none' }}
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="you@example.com"
-                className={inputClasses}
-                style={{ outline: 'none' }}
-              />
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
-                Secure Password
-              </label>
-              <div className="relative">
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
+                  Full Name
+                </label>
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
+                  type="text"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
-                  minLength={8}
                   required
-                  placeholder="••••••••"
+                  placeholder="John Doe"
                   className={inputClasses}
                   style={{ outline: 'none' }}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className={toggleBtnClasses}
-                >
-                  {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
-                </button>
               </div>
-              <p className="text-xs text-gray-400 mt-1 ml-1">
-                Must contain letters, numbers, and special characters.
-              </p>
-            </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
-                Confirm Password
-              </label>
-              <div className="relative">
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
+                  Email Address
+                </label>
                 <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  minLength={8}
                   required
-                  placeholder="••••••••"
+                  placeholder="you@example.com"
                   className={inputClasses}
                   style={{ outline: 'none' }}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className={toggleBtnClasses}
-                >
-                  {showConfirmPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
-                </button>
               </div>
-            </div>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full mt-4 py-3.5 px-4 rounded-xl text-white font-semibold flex justify-center items-center shadow-lg transition-all focus:outline-none focus:ring-0 ${isSubmitting
-                ? 'bg-rose-400'
-                : 'bg-rose-600 hover:bg-rose-700 hover:-translate-y-0.5'
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
+                  Secure Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    minLength={8}
+                    required
+                    placeholder="••••••••"
+                    className={inputClasses}
+                    style={{ outline: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={toggleBtnClasses}
+                  >
+                    {showPassword ? (
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400 mt-1 ml-1">
+                  Must contain letters, numbers, and special characters.
+                </p>
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    minLength={8}
+                    required
+                    placeholder="••••••••"
+                    className={inputClasses}
+                    style={{ outline: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className={toggleBtnClasses}
+                  >
+                    {showConfirmPassword ? (
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full mt-4 py-3.5 px-4 rounded-xl text-white font-semibold flex justify-center items-center shadow-lg transition-all focus:outline-none focus:ring-0 ${
+                  isSubmitting
+                    ? 'bg-rose-400'
+                    : 'bg-rose-600 hover:bg-rose-700 hover:-translate-y-0.5'
                 }`}
-            >
-              {isSubmitting ? 'Creating...' : 'Continue to Profile Details'}
-            </button>
-          </form>
+              >
+                {isSubmitting ? 'Creating...' : 'Continue to Profile Details'}
+              </button>
+            </form>
 
-          <p className="text-center text-sm text-gray-500 mt-5">
-            Already have an account?{' '}
-            <Link to="/login" className="text-rose-600 font-semibold hover:underline">
-              Log in here
-            </Link>
-          </p>
-        </div>
+            <p className="text-center text-sm text-gray-500 mt-5">
+              Already have an account?{' '}
+              <Link to="/login" className="text-rose-600 font-semibold hover:underline">
+                Log in here
+              </Link>
+            </p>
+          </div>
 
-        {/* ── Footer ─────────────────────────────────────────────────────────── */}
-        <footer className="shrink-0 py-6 text-center">
-          <p className="text-xs text-gray-400 font-medium tracking-wide">
-            © 2026 <span className="text-rose-400">Subhalagna</span>. All rights reserved.
-          </p>
-        </footer>
-      </main>
-    </div>
+          {/* ── Footer ─────────────────────────────────────────────────────────── */}
+          <footer className="shrink-0 py-6 text-center">
+            <p className="text-xs text-gray-400 font-medium tracking-wide">
+              © 2026 <span className="text-rose-400">Subhalagna</span>. All rights reserved.
+            </p>
+          </footer>
+        </main>
+      </div>
     </>
   );
 };

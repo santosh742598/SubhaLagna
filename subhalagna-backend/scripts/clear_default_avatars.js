@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.2 — Migration Script
+ * @file SubhaLagna v3.0.0 — Migration Script
  * @description Clears existing "/uploads/default-avatar.png" strings from Profile records
  * to allow the new gender-specific placeholder logic to work correctly.
  */
@@ -14,7 +14,7 @@ const clearLegacyAvatars = async () => {
 
     const result = await Profile.updateMany(
       { profilePhoto: '/uploads/default-avatar.png' },
-      { $set: { profilePhoto: '' } }
+      { $set: { profilePhoto: '' } },
     );
 
     console.log(`Success: Cleared legacy avatars from ${result.modifiedCount} profiles.`);

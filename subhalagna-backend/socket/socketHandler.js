@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Socket.io Real-Time Handler
+ * @file SubhaLagna v3.0.0 — Socket.io Real-Time Handler
  * @description   Manages all WebSocket connections for the live chat feature.
  *                Architecture:
  *                  - Each authenticated user joins a private room named by their userId
@@ -19,36 +19,34 @@
  *                  typing             : other user is typing
  *                  stop_typing        : other user stopped typing
  *                  notification       : real-time notification push
- *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
 
 const { verifyAccessToken } = require('../utils/generateToken');
-const User                  = require('../models/User');
-const Message               = require('../models/Message');
-const Conversation          = require('../models/Conversation');
+const User = require('../models/User');
+const Message = require('../models/Message');
+const Conversation = require('../models/Conversation');
 
 /**
  * Initialize all Socket.io event handlers.
- *
  * @param {import('socket.io').Server} io - The Socket.io server instance
  */
 const socketHandler = (io) => {
   // ── Middleware: Authenticate socket connection via JWT ──────────────────────
   io.use(async (socket, next) => {
     try {
-      const token = socket.handshake.auth?.token ||
-                    socket.handshake.headers?.authorization?.split(' ')[1];
+      const token =
+        socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(' ')[1];
 
       if (!token) {
         return next(new Error('Authentication required'));
       }
 
       const decoded = verifyAccessToken(token);
-      const user    = await User.findById(decoded.id).select('name email role isSuspended');
+      const user = await User.findById(decoded.id).select('name email role isSuspended');
 
       if (!user || user.isSuspended) {
         return next(new Error('Not authorized'));
@@ -76,8 +74,9 @@ const socketHandler = (io) => {
         const conv = await Conversation.findById(conversationId);
         if (!conv) return;
 
-        const isParticipant = conv.participants
-          .some((p) => p.toString() === socket.user._id.toString());
+        const isParticipant = conv.participants.some(
+          (p) => p.toString() === socket.user._id.toString(),
+        );
 
         if (isParticipant) {
           socket.join(`conversation:${conversationId}`);
@@ -96,13 +95,13 @@ const socketHandler = (io) => {
         // Save to DB
         const message = await Message.create({
           conversation: conversationId,
-          sender:       socket.user._id,
-          content:      content.trim(),
+          sender: socket.user._id,
+          content: content.trim(),
         });
 
         // Update conversation preview
         await Conversation.findByIdAndUpdate(conversationId, {
-          lastMessage:   content.substring(0, 100),
+          lastMessage: content.substring(0, 100),
           lastMessageAt: new Date(),
         });
 
@@ -110,7 +109,6 @@ const socketHandler = (io) => {
 
         // Broadcast to everyone in the conversation room (including sender for confirmation)
         io.to(`conversation:${conversationId}`).emit('new_message', message);
-
       } catch (err) {
         console.error('send_message error:', err.message);
         socket.emit('error', { message: 'Failed to send message' });
@@ -122,7 +120,7 @@ const socketHandler = (io) => {
       // Broadcast to everyone in the room EXCEPT the sender
       socket.to(`conversation:${conversationId}`).emit('typing', {
         userId: socket.user._id,
-        name:   socket.user.name,
+        name: socket.user.name,
       });
     });
 
@@ -148,7 +146,6 @@ const socketHandler = (io) => {
 /**
  * Emit a real-time notification to a specific user (called from controllers).
  * The user must be connected for this to deliver; otherwise it's a no-op.
- *
  * @param {import('socket.io').Server} io
  * @param {string} userId
  * @param {object} notification

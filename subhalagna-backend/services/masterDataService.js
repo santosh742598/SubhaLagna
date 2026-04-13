@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — MasterData Service
+ * @file SubhaLagna v3.0.0 — MasterData Service
  * @description   Handles logic for registering and retrieving master data entries.
  */
 
@@ -10,6 +10,7 @@ const MasterData = require('../models/MasterData');
 /**
  * Normalizes a string for deduplication logic.
  * E.g., " Brahmin  " -> "brahmin"
+ * @param val
  */
 const normalize = (val) => {
   if (!val) return '';
@@ -19,18 +20,19 @@ const normalize = (val) => {
 /**
  * Formats a string to Title Case for better display.
  * E.g., "brahmin" -> "Brahmin"
+ * @param str
  */
 const toTitleCase = (str) => {
   if (!str) return '';
-  return str.split(' ').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-  ).join(' ');
+  return str
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 };
 
 /**
  * Registers a value in the MasterData collection if it doesn't exist.
  * Updates the usage count if it does.
- * 
  * @param {string} type - 'caste', 'city', 'state', 'religion', 'motherTongue'
  * @param {string} value - The raw input value
  * @param {string} group - Optional group (e.g. State name for a City)
@@ -61,7 +63,7 @@ const registerValue = async (type, value, group = '') => {
       lookupKey: normalized,
       group: group || '',
       count: 1,
-      isApproved: true
+      isApproved: true,
     });
 
     return newEntry.value;
@@ -73,19 +75,18 @@ const registerValue = async (type, value, group = '') => {
 
 /**
  * Fetches unique values for a given type.
+ * @param type
+ * @param group
  */
 const getOptions = async (type, group = null) => {
   const query = { type };
   if (group) query.group = group;
 
-  return MasterData.find(query)
-    .sort({ value: 1 })
-    .select('value group -_id')
-    .lean();
+  return MasterData.find(query).sort({ value: 1 }).select('value group -_id').lean();
 };
 
 module.exports = {
   registerValue,
   getOptions,
-  normalize
+  normalize,
 };

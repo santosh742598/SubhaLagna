@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — MasterData Model
+ * @file SubhaLagna v3.0.0 — MasterData Model
  * @description   Stores unique, normalized values for common dropdown fields:
  *                - Caste
  *                - City/State
@@ -49,7 +49,7 @@ const masterDataSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Compound index to ensure uniqueness per type

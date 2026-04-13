@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Notification Model
+ * @file SubhaLagna v3.0.0 — Notification Model
  * @description   In-app notifications for user activity events such as
  *                new interests received, messages, profile views, and system alerts.
  *                Powers the notification bell in the UI header.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -13,14 +13,14 @@ const mongoose = require('mongoose');
 
 /** Supported notification types with their display icons (consumed by frontend) */
 const NOTIFICATION_TYPES = [
-  'new_interest',        // Someone sent you an interest
-  'interest_accepted',   // Your interest was accepted
-  'interest_rejected',   // Your interest was declined
-  'new_message',         // New chat message received
-  'profile_view',        // Someone viewed your profile
-  'profile_verified',    // Admin verified your profile
-  'premium_expiry',      // Premium subscription expiring soon
-  'system',              // General system/admin announcement
+  'new_interest', // Someone sent you an interest
+  'interest_accepted', // Your interest was accepted
+  'interest_rejected', // Your interest was declined
+  'new_message', // New chat message received
+  'profile_view', // Someone viewed your profile
+  'profile_verified', // Admin verified your profile
+  'premium_expiry', // Premium subscription expiring soon
+  'system', // General system/admin announcement
 ];
 
 const notificationSchema = new mongoose.Schema(
@@ -73,7 +73,7 @@ const notificationSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // createdAt = when notification was created
-  }
+  },
 );
 
 // ── Indexes ───────────────────────────────────────────────────────────────────

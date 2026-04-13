@@ -1,8 +1,8 @@
 /**
- * @fileoverview SubhaLagna v2.4.0 — Auth & Role Middleware
+ * @file SubhaLagna v3.0.0 — Auth & Role Middleware
  * @description JWT-based route protection middleware. [v2.4.0]
  * @author SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -14,7 +14,6 @@ const { verifyAccessToken } = require('../utils/generateToken');
  * Protect middleware — verifies the Bearer JWT access token.
  * If valid, attaches the User document to `req.user` and calls next().
  * If invalid or missing, passes a 401 error to the error handler.
- *
  * @param {import('express').Request}  req
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
@@ -36,7 +35,9 @@ const protect = async (req, res, next) => {
     const decoded = verifyAccessToken(token);
 
     // Fetch user (excluding password) — ensures the user still exists
-    const user = await User.findById(decoded.id).select('-password -refreshToken -resetPasswordToken -resetPasswordExpires');
+    const user = await User.findById(decoded.id).select(
+      '-password -refreshToken -resetPasswordToken -resetPasswordExpires',
+    );
     if (!user) {
       const error = new Error('Not authorized — user account not found');
       error.statusCode = 401;
@@ -61,7 +62,6 @@ const protect = async (req, res, next) => {
 /**
  * Admin-only middleware — must be used AFTER `protect`.
  * Rejects non-admin users with 403 Forbidden.
- *
  * @param {import('express').Request}  req
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next

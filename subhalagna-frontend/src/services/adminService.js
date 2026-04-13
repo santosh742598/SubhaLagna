@@ -1,12 +1,12 @@
 /**
- * @fileoverview SubhaLagna v2.4.0 — Admin Service
+ * @fileoverview SubhaLagna v3.0.0 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
  * - v2.4.0 changes:
  *   - Added getAllTransactions for comprehensive financial oversight. [v2.4.0]
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
  * @author SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -93,7 +93,7 @@ export const getAllCoupons = async () => {
 
 /**
  * Create a new discount coupon.
- * @param {object} couponData 
+ * @param {object} couponData
  * @returns {Promise<object>}
  */
 export const createCoupon = async (couponData) => {
@@ -107,7 +107,7 @@ export const createCoupon = async (couponData) => {
 
 /**
  * Delete a coupon.
- * @param {string} id 
+ * @param {string} id
  */
 export const deleteCoupon = async (id) => {
   try {
@@ -119,7 +119,7 @@ export const deleteCoupon = async (id) => {
 
 /**
  * Manually upgrade a user to premium.
- * @param {string} userId 
+ * @param {string} userId
  * @param {object} upgradeData - { planId, durationDays }
  */
 export const manualUpgradeUser = async (userId, upgradeData) => {
@@ -171,7 +171,7 @@ export const getAdminPlans = async () => {
 
 /**
  * Create a new user with profile data (Admin only).
- * @param {object} userData 
+ * @param {object} userData
  */
 export const adminAddUser = async (userData) => {
   try {
@@ -184,8 +184,8 @@ export const adminAddUser = async (userData) => {
 
 /**
  * Update an existing user and their profile (Admin only).
- * @param {string} id 
- * @param {object} userData 
+ * @param {string} id
+ * @param {object} userData
  */
 export const adminUpdateUser = async (id, userData) => {
   try {
@@ -199,7 +199,7 @@ export const adminUpdateUser = async (id, userData) => {
 /**
  * Update a membership plan.
  * @param {string} id - Plan ObjectID
- * @param {object} updateData 
+ * @param {object} updateData
  */
 export const updateAdminPlan = async (id, updateData) => {
   try {
@@ -215,7 +215,7 @@ export const updateAdminPlan = async (id, updateData) => {
 export const adminUploadPhotos = async (profileId, formData) => {
   try {
     const { data } = await api.post(`/admin/profiles/${profileId}/photos`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'multipart/form-data' },
     });
     return data.data;
   } catch (err) {
@@ -235,4 +235,3 @@ export const getAllTransactions = async () => {
     throw getErrorMessage(err, 'Failed to fetch transactions');
   }
 };
-

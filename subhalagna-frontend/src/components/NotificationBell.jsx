@@ -1,11 +1,11 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Notification Bell Component
+ * @fileoverview SubhaLagna v3.0.0 — Notification Bell Component
  * @description   Header notification icon with unread badge. Shows a dropdown
  *                with the latest notifications. Integrates with NotificationContext
  *                for real-time updates.
  *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 import React, { useState, useRef, useEffect, useContext } from 'react';
@@ -17,21 +17,25 @@ import { NotificationContext } from '../context/NotificationContext';
 /** Bell icon SVG */
 const BellIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+    />
   </svg>
 );
 
 /** Notification type to icon + color mapping */
 const TYPE_CONFIG = {
-  new_interest:      { emoji: '💌', color: 'bg-rose-100 text-rose-600' },
+  new_interest: { emoji: '💌', color: 'bg-rose-100 text-rose-600' },
   interest_accepted: { emoji: '🎉', color: 'bg-emerald-100 text-emerald-600' },
   interest_rejected: { emoji: '😔', color: 'bg-gray-100 text-gray-500' },
-  new_message:       { emoji: '💬', color: 'bg-blue-100 text-blue-600' },
-  profile_view:      { emoji: '👁️', color: 'bg-amber-100 text-amber-600' },
-  profile_verified:  { emoji: '✅', color: 'bg-emerald-100 text-emerald-600' },
-  premium_expiry:    { emoji: '⚠️', color: 'bg-orange-100 text-orange-600' },
-  system:            { emoji: '📢', color: 'bg-purple-100 text-purple-600' },
+  new_message: { emoji: '💬', color: 'bg-blue-100 text-blue-600' },
+  profile_view: { emoji: '👁️', color: 'bg-amber-100 text-amber-600' },
+  profile_verified: { emoji: '✅', color: 'bg-emerald-100 text-emerald-600' },
+  premium_expiry: { emoji: '⚠️', color: 'bg-orange-100 text-orange-600' },
+  system: { emoji: '📢', color: 'bg-purple-100 text-purple-600' },
 };
 
 /**
@@ -43,9 +47,9 @@ const NotificationBell = () => {
   const { notifications, unreadCount, markRead, markAllRead, remove } =
     useContext(NotificationContext);
 
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const dropdownRef     = useRef(null);
+  const dropdownRef = useRef(null);
 
   // ── Close dropdown when clicking outside ──────────────────────────────────
   useEffect(() => {
@@ -79,7 +83,7 @@ const NotificationBell = () => {
    */
   const formatRelativeTime = (dateStr) => {
     const seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-    if (seconds < 60)   return 'Just now';
+    if (seconds < 60) return 'Just now';
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
     return `${Math.floor(seconds / 86400)}d ago`;
@@ -110,9 +114,7 @@ const NotificationBell = () => {
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
             <div>
               <h3 className="font-bold text-gray-800 text-sm">Notifications</h3>
-              {unreadCount > 0 && (
-                <p className="text-xs text-gray-400">{unreadCount} unread</p>
-              )}
+              {unreadCount > 0 && <p className="text-xs text-gray-400">{unreadCount} unread</p>}
             </div>
             {unreadCount > 0 && (
               <button
@@ -143,13 +145,17 @@ const NotificationBell = () => {
                     }`}
                   >
                     {/* Icon */}
-                    <div className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base ${config.color}`}>
+                    <div
+                      className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base ${config.color}`}
+                    >
                       {config.emoji}
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm leading-snug ${!notification.isRead ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
+                      <p
+                        className={`text-sm leading-snug ${!notification.isRead ? 'font-semibold text-gray-800' : 'text-gray-600'}`}
+                      >
                         {notification.message}
                       </p>
                       <p className="text-[11px] text-gray-400 mt-0.5">
@@ -170,7 +176,10 @@ const NotificationBell = () => {
           {/* Footer */}
           <div className="px-4 py-2.5 border-t border-gray-100 text-center">
             <button
-              onClick={() => { navigate('/notifications'); setOpen(false); }}
+              onClick={() => {
+                navigate('/notifications');
+                setOpen(false);
+              }}
               className="text-xs text-rose-500 font-semibold hover:underline"
             >
               View all notifications

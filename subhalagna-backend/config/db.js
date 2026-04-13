@@ -1,9 +1,9 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — MongoDB Connection Configuration
+ * @file SubhaLagna v3.0.0 — MongoDB Connection Configuration
  * @description   Connects to MongoDB via Mongoose with retry logic and
  *                connection event logging.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -13,7 +13,6 @@ const mongoose = require('mongoose');
 /**
  * Connect to MongoDB.
  * Exits the process on critical connection failure (fail-fast strategy).
- *
  * @async
  * @returns {Promise<void>}
  */

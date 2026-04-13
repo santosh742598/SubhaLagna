@@ -1,19 +1,30 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Searchable Dropdown
+ * @fileoverview SubhaLagna v3.0.0 — Searchable Dropdown
  * @description   A reusable interactive dropdown with search filtering and manual entry support.
  */
 
 import React, { useState, useRef, useEffect } from 'react';
 
-const SearchableDropdown = ({ label, name, value, options, onChange, placeholder, disabled, minChars = 0 }) => {
+const SearchableDropdown = ({
+  label,
+  name,
+  value,
+  options,
+  onChange,
+  placeholder,
+  disabled,
+  minChars = 0,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(value || '');
   const wrapperRef = useRef(null);
 
-  useEffect(() => { setSearchTerm(value || ''); }, [value]);
+  useEffect(() => {
+    setSearchTerm(value || '');
+  }, [value]);
 
-  const filteredOptions = (options || []).filter(opt =>
-    opt?.toString().toLowerCase().includes(searchTerm.toString().toLowerCase())
+  const filteredOptions = (options || []).filter((opt) =>
+    opt?.toString().toLowerCase().includes(searchTerm.toString().toLowerCase()),
   );
 
   const handleSelect = (opt) => {
@@ -32,8 +43,8 @@ const SearchableDropdown = ({ label, name, value, options, onChange, placeholder
     const handler = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setIsOpen(false);
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   return (
@@ -53,23 +64,21 @@ const SearchableDropdown = ({ label, name, value, options, onChange, placeholder
       />
       {isOpen && searchTerm.length >= minChars && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-rose-100 rounded-xl shadow-xl shadow-rose-100/30 max-h-44 overflow-y-auto">
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((opt, i) => (
-              <div
-                key={i}
-                onClick={() => handleSelect(opt)}
-                className="px-4 py-2.5 hover:bg-rose-50 cursor-pointer text-sm text-gray-700 transition-colors border-b last:border-0 border-gray-50"
-              >
-                {opt}
-              </div>
-            ))
-          ) : (
-            searchTerm.length > 0 && (
-              <div className="px-4 py-2.5 text-xs text-gray-400 italic">
-                "{searchTerm}" not in list — using as manual entry.
-              </div>
-            )
-          )}
+          {filteredOptions.length > 0
+            ? filteredOptions.map((opt, i) => (
+                <div
+                  key={i}
+                  onClick={() => handleSelect(opt)}
+                  className="px-4 py-2.5 hover:bg-rose-50 cursor-pointer text-sm text-gray-700 transition-colors border-b last:border-0 border-gray-50"
+                >
+                  {opt}
+                </div>
+              ))
+            : searchTerm.length > 0 && (
+                <div className="px-4 py-2.5 text-xs text-gray-400 italic">
+                  "{searchTerm}" not in list — using as manual entry.
+                </div>
+              )}
         </div>
       )}
     </div>

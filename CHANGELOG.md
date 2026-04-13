@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-04-13
+
+### Added
+- **🛠️ Infrastructure Modernization**: Upgraded the entire project architecture to support automated quality guardrails.
+- **🎛️ ESLint Flat Config**: Implemented modern ESLint configurations across Backend and Frontend for real-time error detection.
+- **🛡️ Security Linting**: Integrated `eslint-plugin-security` (Backend) to pro-actively catch insecure coding patterns.
+- **📖 JSDoc Enforcement**: Standardized code documentation with strict JSDoc header requirements for all core files.
+- **💅 Global Prettier**: Established a unified root Prettier configuration to ensure perfect code formatting project-wide.
+- **📦 Tailwind CSS v4 Stability**: Implemented specialized `.npmrc` configurations to resolve complex dependency conflicts during the v4 transition.
+
+### Changed
+- **🚀 Version Bump**: Universal upgrade to version `3.0.0` for all core modules and packages.
+- **🛠️ Documentation**: Updated `AGENTS.md` and `README.md` to reflect the new automated standards as the project's Source of Truth.
+
 ## [2.4.0] - 2026-04-12
 
 ### Added

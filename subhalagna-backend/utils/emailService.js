@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.4.0 — Email Service
+ * @file SubhaLagna v3.0.0 — Email Service
  * @description   Nodemailer-based email service with pre-built templates for:
  *                - Email verification (OTP)
  *                - Password reset link
@@ -7,7 +7,7 @@
  *                - Payment Success / Membership activation [v2.4.0]
  *                Gracefully degrades (logs to console) if SMTP is not configured.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -20,7 +20,6 @@ let transporter = null;
 /**
  * Initialize the Nodemailer transporter.
  * Falls back to Ethereal test account in development if no SMTP config found.
- *
  * @returns {import('nodemailer').Transporter}
  */
 const getTransporter = () => {
@@ -94,7 +93,6 @@ const buildEmailHTML = (title, body) => `
 
 /**
  * Send email verification OTP to a newly registered user.
- *
  * @param {string} email      - Recipient email
  * @param {string} name       - Recipient name
  * @param {string} otp        - 6-digit OTP code
@@ -106,7 +104,7 @@ const sendVerificationEmail = async (email, name, otp) => {
     `<p>Hi <strong>${name}</strong>,</p>
      <p>Welcome to SubhaLagna! Use the OTP below to verify your email address. It expires in <strong>15 minutes</strong>.</p>
      <div class="otp">${otp}</div>
-     <p>If you didn't create an account, please ignore this email.</p>`
+     <p>If you didn't create an account, please ignore this email.</p>`,
   );
 
   await getTransporter().sendMail({
@@ -120,7 +118,6 @@ const sendVerificationEmail = async (email, name, otp) => {
 
 /**
  * Send a password reset link to the user.
- *
  * @param {string} email      - Recipient email
  * @param {string} name       - Recipient name
  * @param {string} resetUrl   - Full reset URL with token
@@ -133,7 +130,7 @@ const sendPasswordResetEmail = async (email, name, resetUrl) => {
      <p>We received a request to reset your SubhaLagna password. Click the button below to set a new password. This link expires in <strong>1 hour</strong>.</p>
      <a href="${resetUrl}" class="btn">Reset My Password</a>
      <p>If you didn't request this, please ignore this email. Your password will remain unchanged.</p>
-     <p style="font-size:12px;color:#9ca3af;">Or copy this link: ${resetUrl}</p>`
+     <p style="font-size:12px;color:#9ca3af;">Or copy this link: ${resetUrl}</p>`,
   );
 
   await getTransporter().sendMail({
@@ -147,7 +144,6 @@ const sendPasswordResetEmail = async (email, name, resetUrl) => {
 
 /**
  * Send a notification email when someone sends an interest.
- *
  * @param {string} email        - Recipient email
  * @param {string} name         - Recipient name
  * @param {string} senderName   - Name of the person who sent interest
@@ -158,7 +154,7 @@ const sendInterestNotificationEmail = async (email, name, senderName) => {
     `${senderName} is interested in you! 💌`,
     `<p>Hi <strong>${name}</strong>,</p>
      <p><strong>${senderName}</strong> has sent you an interest on SubhaLagna. Log in to view their full profile and respond.</p>
-     <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/matches" class="btn">View Profile</a>`
+     <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/matches" class="btn">View Profile</a>`,
   );
 
   await getTransporter().sendMail({
@@ -172,7 +168,6 @@ const sendInterestNotificationEmail = async (email, name, senderName) => {
 
 /**
  * Send a notification email when a user goes premium.
- *
  * @param {string} email      - Recipient email
  * @param {string} name       - Recipient name
  * @param {string} planName   - Name of the plan (Gold/Platinum)
@@ -191,7 +186,7 @@ const sendPaymentSuccessEmail = async (email, name, planName, amount, expiryDate
         <p style="margin:4px 0 0 0; font-size:14px; color:#6b7280;"><strong>Expires on:</strong> ${expiryDate}</p>
      </div>
      <p>You can now reveal contact details, send unlimited interests, and enjoy priority visibility in search results.</p>
-     <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard" class="btn">Go to Dashboard</a>`
+     <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard" class="btn">Go to Dashboard</a>`,
   );
 
   await getTransporter().sendMail({

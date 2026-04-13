@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Chat Controller
+ * @file SubhaLagna v3.0.0 — Chat Controller
  * @description   REST endpoints for the messaging system.
  *                Real-time delivery is handled separately by Socket.io
  *                (see socket/socketHandler.js). These REST endpoints handle:
@@ -7,17 +7,16 @@
  *                  - getMessages      → paginated messages in a conversation
  *                  - sendMessage      → save message to DB (socket emits in real-time)
  *                  - markAsRead       → mark all messages in a conversation as read
- *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
 
 const Conversation = require('../models/Conversation');
-const Message      = require('../models/Message');
+const Message = require('../models/Message');
 const Notification = require('../models/Notification');
-const Profile      = require('../models/Profile');
+const Profile = require('../models/Profile');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -25,6 +24,12 @@ const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse'
 // @route   GET /api/chat/conversations
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getConversations = async (req, res, next) => {
   try {
     const conversations = await Conversation.find({
@@ -37,7 +42,7 @@ const getConversations = async (req, res, next) => {
     const enriched = await Promise.all(
       conversations.map(async (conv) => {
         const otherUser = conv.participants.find(
-          (p) => p._id.toString() !== req.user._id.toString()
+          (p) => p._id.toString() !== req.user._id.toString(),
         );
         const otherProfile = otherUser
           ? await Profile.findOne({ user: otherUser._id }).select('profilePhoto name location')
@@ -51,7 +56,7 @@ const getConversations = async (req, res, next) => {
         });
 
         return { ...conv.toObject(), otherProfile, unreadCount };
-      })
+      }),
     );
 
     return sendSuccess(res, enriched);
@@ -65,6 +70,12 @@ const getConversations = async (req, res, next) => {
 // @route   GET /api/chat/conversations/:conversationId/messages
 // @access  Private (participant only)
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getMessages = async (req, res, next) => {
   try {
     const { conversationId } = req.params;
@@ -74,15 +85,16 @@ const getMessages = async (req, res, next) => {
     const conversation = await Conversation.findById(conversationId);
     if (!conversation) return sendError(res, 'Conversation not found', 404);
 
-    const isParticipant = conversation.participants
-      .some((p) => p.toString() === req.user._id.toString());
+    const isParticipant = conversation.participants.some(
+      (p) => p.toString() === req.user._id.toString(),
+    );
     if (!isParticipant) {
       return sendError(res, 'Not authorized to view this conversation', 403);
     }
 
-    const pageNum  = Math.max(1, Number(page));
+    const pageNum = Math.max(1, Number(page));
     const limitNum = Math.min(100, Number(limit));
-    const skip     = (pageNum - 1) * limitNum;
+    const skip = (pageNum - 1) * limitNum;
 
     const [messages, total] = await Promise.all([
       Message.find({ conversation: conversationId })
@@ -104,18 +116,25 @@ const getMessages = async (req, res, next) => {
 // @route   POST /api/chat/conversations/:conversationId/messages
 // @access  Private (participant only)
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const sendMessage = async (req, res, next) => {
   try {
     const { conversationId } = req.params;
-    const { content }        = req.body;
+    const { content } = req.body;
 
     if (!content?.trim()) return sendError(res, 'Message content cannot be empty', 400);
 
     const conversation = await Conversation.findById(conversationId);
     if (!conversation) return sendError(res, 'Conversation not found', 404);
 
-    const isParticipant = conversation.participants
-      .some((p) => p.toString() === req.user._id.toString());
+    const isParticipant = conversation.participants.some(
+      (p) => p.toString() === req.user._id.toString(),
+    );
     if (!isParticipant) {
       return sendError(res, 'Not authorized to send messages here', 403);
     }
@@ -123,13 +142,13 @@ const sendMessage = async (req, res, next) => {
     // Save the message
     const message = await Message.create({
       conversation: conversationId,
-      sender:       req.user._id,
-      content:      content.trim(),
+      sender: req.user._id,
+      content: content.trim(),
     });
 
     // Update conversation preview
     await Conversation.findByIdAndUpdate(conversationId, {
-      lastMessage:   content.substring(0, 100),
+      lastMessage: content.substring(0, 100),
       lastMessageAt: new Date(),
     });
 
@@ -137,16 +156,17 @@ const sendMessage = async (req, res, next) => {
     await message.populate('sender', 'name');
 
     // Create notification for the other participant
-    const otherUserId = conversation.participants
-      .find((p) => p.toString() !== req.user._id.toString());
+    const otherUserId = conversation.participants.find(
+      (p) => p.toString() !== req.user._id.toString(),
+    );
 
     if (otherUserId) {
       await Notification.create({
         recipient: otherUserId,
-        sender:    req.user._id,
-        type:      'new_message',
-        message:   `${req.user.name}: ${content.substring(0, 60)}${content.length > 60 ? '...' : ''}`,
-        link:      `/chat/${conversationId}`,
+        sender: req.user._id,
+        type: 'new_message',
+        message: `${req.user.name}: ${content.substring(0, 60)}${content.length > 60 ? '...' : ''}`,
+        link: `/chat/${conversationId}`,
       });
     }
 
@@ -161,6 +181,12 @@ const sendMessage = async (req, res, next) => {
 // @route   PUT /api/chat/conversations/:conversationId/read
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const markAsRead = async (req, res, next) => {
   try {
     const { conversationId } = req.params;
@@ -174,7 +200,7 @@ const markAsRead = async (req, res, next) => {
       {
         isRead: true,
         readAt: new Date(),
-      }
+      },
     );
 
     return sendSuccess(res, null, 'Messages marked as read');

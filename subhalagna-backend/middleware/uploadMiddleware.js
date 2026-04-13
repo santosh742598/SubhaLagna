@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — File Upload Middleware (Multer)
+ * @file SubhaLagna v3.0.0 — File Upload Middleware (Multer)
  * @description   Configures Multer for local disk storage with:
  *                - Image-only file filter (jpg, jpeg, png, webp)
  *                - 5MB size limit per file
@@ -8,16 +8,15 @@
  *
  *                For production, replace diskStorage with a Cloudinary
  *                or S3 storage engine (CloudinaryStorage from multer-storage-cloudinary).
- *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
 
 const multer = require('multer');
-const path   = require('path');
-const fs     = require('fs');
+const path = require('path');
+const fs = require('fs');
 
 // ── Ensure uploads directory exists ──────────────────────────────────────────
 const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
@@ -35,14 +34,13 @@ const ALLOWED_EXTENSIONS = /\.(jpeg|jpg|png|webp)$/i;
 
 /**
  * Validate file type — rejects non-image files with a descriptive error.
- *
  * @param {import('express').Request} req
  * @param {Express.Multer.File}       file
  * @param {Function}                  cb
  */
 const fileFilter = (req, file, cb) => {
   const isValidMime = ALLOWED_MIME_TYPES.test(file.mimetype);
-  const isValidExt  = ALLOWED_EXTENSIONS.test(path.extname(file.originalname));
+  const isValidExt = ALLOWED_EXTENSIONS.test(path.extname(file.originalname));
 
   if (isValidMime && isValidExt) {
     cb(null, true);
@@ -57,7 +55,7 @@ const upload = multer({
   fileFilter,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB per file
-    files: 6,                   // max 6 files in a single request
+    files: 6, // max 6 files in a single request
   },
 });
 
@@ -67,7 +65,7 @@ const upload = multer({
  *  - additionalPhotos → up to 5 images
  */
 const uploadProfilePhotos = upload.fields([
-  { name: 'profilePhoto',    maxCount: 1 },
+  { name: 'profilePhoto', maxCount: 1 },
   { name: 'additionalPhotos', maxCount: 5 },
 ]);
 

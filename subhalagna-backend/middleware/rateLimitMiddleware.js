@@ -1,12 +1,12 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Rate Limiting Middleware
+ * @file SubhaLagna v3.0.0 — Rate Limiting Middleware
  * @description   Defines multiple rate limiters:
  *                - `globalLimiter`  → applied to all routes (100 req / 15 min)
  *                - `authLimiter`    → applied to /api/auth/* (10 req / 15 min)
  *                - `uploadLimiter`  → applied to photo upload routes
  *                All limits are configurable via environment variables.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -23,8 +23,8 @@ const WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10);
 const globalLimiter = rateLimit({
   windowMs: WINDOW_MS,
   max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
-  standardHeaders: true,   // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false,    // Disable the `X-RateLimit-*` headers
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
     success: false,
     message: 'Too many requests. Please try again later.',

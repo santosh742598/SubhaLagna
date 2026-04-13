@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Auth Context
+ * @fileoverview SubhaLagna v3.0.0 — Auth Context
  * @description   Global authentication state provider. Supplies `user`, `token`,
  *                and auth actions to all child components via React Context API.
  *
@@ -10,11 +10,16 @@
  *                  - Provides `isPremium` computed getter
  *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';
-import { login as loginService, register as registerService, logout as logoutService, getMe } from '../services/authService';
+import {
+  login as loginService,
+  register as registerService,
+  logout as logoutService,
+  getMe,
+} from '../services/authService';
 
 /**
  * AuthContext shape:
@@ -31,18 +36,20 @@ import { login as loginService, register as registerService, logout as logoutSer
  * @property {Function}      refreshUser         - Re-fetch user from server
  */
 
-export const AuthContext = createContext(/** @type {AuthContextValue} */({
-  user:                 null,
-  token:                null,
-  loading:              true,
-  isAuthenticated:      false,
-  isPremium:            false,
-  loginContext:         () => {},
-  registerContext:      () => {},
-  logoutContext:        () => {},
-  updateProfileContext: () => {},
-  refreshUser:          () => {},
-}));
+export const AuthContext = createContext(
+  /** @type {AuthContextValue} */ ({
+    user: null,
+    token: null,
+    loading: true,
+    isAuthenticated: false,
+    isPremium: false,
+    loginContext: () => {},
+    registerContext: () => {},
+    logoutContext: () => {},
+    updateProfileContext: () => {},
+    refreshUser: () => {},
+  }),
+);
 
 /**
  * AuthProvider — wrap the entire app with this to provide auth state globally.
@@ -51,8 +58,8 @@ export const AuthContext = createContext(/** @type {AuthContextValue} */({
  * @param {React.ReactNode} props.children
  */
 export const AuthProvider = ({ children }) => {
-  const [user,    setUser]    = useState(null);
-  const [token,   setToken]   = useState(null);
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // ── Rehydrate auth state on app boot ─────────────────────────────────────
@@ -93,20 +100,20 @@ export const AuthProvider = ({ children }) => {
     const data = await loginService({ email, password });
 
     // Persist tokens
-    localStorage.setItem('accessToken',  data.accessToken);
+    localStorage.setItem('accessToken', data.accessToken);
     localStorage.setItem('refreshToken', data.refreshToken);
 
     setToken(data.accessToken);
     setUser({
-      _id:             data._id,
-      name:            data.name,
-      email:           data.email,
-      role:            data.role,
-      isPremium:       data.isPremium,
-      premiumPlan:     data.premiumPlan,
+      _id: data._id,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      isPremium: data.isPremium,
+      premiumPlan: data.premiumPlan,
       isEmailVerified: data.isEmailVerified,
-      hasProfile:      data.hasProfile,
-      profile:         data.profile,
+      hasProfile: data.hasProfile,
+      profile: data.profile,
     });
 
     return data;
@@ -122,20 +129,20 @@ export const AuthProvider = ({ children }) => {
     const data = await registerService(userData);
 
     // Persist tokens
-    localStorage.setItem('accessToken',  data.accessToken);
+    localStorage.setItem('accessToken', data.accessToken);
     localStorage.setItem('refreshToken', data.refreshToken);
 
     setToken(data.accessToken);
     setUser({
-      _id:             data._id,
-      name:            data.name,
-      email:           data.email,
-      role:            data.role,
-      isPremium:       data.isPremium,
-      premiumPlan:     data.premiumPlan,
+      _id: data._id,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      isPremium: data.isPremium,
+      premiumPlan: data.premiumPlan,
       isEmailVerified: data.isEmailVerified,
-      hasProfile:      data.hasProfile,
-      profile:         data.profile,
+      hasProfile: data.hasProfile,
+      profile: data.profile,
     });
 
     return data;
@@ -173,7 +180,7 @@ export const AuthProvider = ({ children }) => {
 
   // Derived values
   const isAuthenticated = !!user;
-  const isPremium       = !!(user?.isPremium && user?.premiumPlan !== 'none');
+  const isPremium = !!(user?.isPremium && user?.premiumPlan !== 'none');
 
   const value = {
     user,
@@ -188,9 +195,5 @@ export const AuthProvider = ({ children }) => {
     refreshUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

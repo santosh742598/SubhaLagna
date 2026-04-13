@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Notification Controller
+ * @file SubhaLagna v3.0.0 — Notification Controller
  * @description   Handles in-app notifications for the bell icon in the header.
  *                Endpoints:
  *                  - getNotifications → GET paginated list
@@ -7,7 +7,7 @@
  *                  - markAllRead      → PUT mark all as read
  *                  - deleteNotification → DELETE a specific one
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -20,6 +20,12 @@ const { sendSuccess, sendError } = require('../utils/apiResponse');
 // @route   GET /api/notifications
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getNotifications = async (req, res, next) => {
   try {
     const { page = 1, limit = 20 } = req.query;
@@ -46,6 +52,12 @@ const getNotifications = async (req, res, next) => {
 // @route   PUT /api/notifications/:id/read
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const markOneRead = async (req, res, next) => {
   try {
     const notification = await Notification.findById(req.params.id);
@@ -71,11 +83,17 @@ const markOneRead = async (req, res, next) => {
 // @route   PUT /api/notifications/read-all
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const markAllRead = async (req, res, next) => {
   try {
     await Notification.updateMany(
       { recipient: req.user._id, isRead: false },
-      { isRead: true, readAt: new Date() }
+      { isRead: true, readAt: new Date() },
     );
     return sendSuccess(res, null, 'All notifications marked as read');
   } catch (err) {
@@ -88,6 +106,12 @@ const markAllRead = async (req, res, next) => {
 // @route   DELETE /api/notifications/:id
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const deleteNotification = async (req, res, next) => {
   try {
     const notification = await Notification.findById(req.params.id);

@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Email Verification Component
- * @description   Handles 6-digit OTP entry and resend logic. 
+ * @fileoverview SubhaLagna v3.0.0 — Email Verification Component
+ * @description   Handles 6-digit OTP entry and resend logic.
  *                Gates user progression until account is activated.
- * 
+ *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 import React, { useState, useEffect, useContext, useRef } from 'react';
@@ -61,7 +61,7 @@ const VerifyEmail = () => {
   const handlePaste = (e) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').slice(0, 6).split('');
-    if (pastedData.every(char => /^\d$/.test(char))) {
+    if (pastedData.every((char) => /^\d$/.test(char))) {
       const newOtp = [...otp];
       pastedData.forEach((char, i) => {
         if (i < 6) newOtp[i] = char;
@@ -101,7 +101,7 @@ const VerifyEmail = () => {
 
   const handleResend = async () => {
     if (timer > 0) return;
-    
+
     setErrorStr(null);
     setSuccessStr(null);
     try {
@@ -119,16 +119,25 @@ const VerifyEmail = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-br from-rose-50 to-pink-50">
-      <div className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-xl shadow-rose-100/40 border border-rose-100" style={containerStyle}>
+      <div
+        className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-xl shadow-rose-100/40 border border-rose-100"
+        style={containerStyle}
+      >
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-rose-500">
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
             </svg>
           </div>
           <h2 className="text-2xl font-serif font-bold text-gray-800">Verify Your Email</h2>
           <p className="text-gray-500 text-sm mt-2">
-            We've sent a 6-digit code to <span className="font-semibold text-gray-700">{user?.email}</span>
+            We've sent a 6-digit code to{' '}
+            <span className="font-semibold text-gray-700">{user?.email}</span>
           </p>
         </div>
 
@@ -187,7 +196,7 @@ const VerifyEmail = () => {
         </div>
 
         <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-          <button 
+          <button
             onClick={() => navigate('/login')}
             className="text-gray-400 text-xs hover:text-gray-600 transition-colors"
           >

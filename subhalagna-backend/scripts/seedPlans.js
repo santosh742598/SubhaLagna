@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Membership Plan Seeder
+ * @file SubhaLagna v3.0.0 — Membership Plan Seeder
  * @description   Initializes the database with standard Gold and Platinum plans.
  */
 
@@ -20,7 +20,7 @@ const seedPlans = async () => {
     await MembershipPlan.deleteMany({});
 
     console.log('Seeding plans from config...');
-    const plansToInsert = hardcodedPlans.map(p => ({
+    const plansToInsert = hardcodedPlans.map((p) => ({
       planId: p.id,
       name: p.name,
       price: p.price,
@@ -29,12 +29,12 @@ const seedPlans = async () => {
       features: p.features,
       contactsAllowed: p.contactsAllowed || 0,
       popular: p.popular || false,
-      isActive: true
+      isActive: true,
     }));
 
     await MembershipPlan.insertMany(plansToInsert);
     console.log('Seeding Complete! 🎉');
-    
+
     process.exit(0);
   } catch (err) {
     console.error('Seeding Failed:', err);

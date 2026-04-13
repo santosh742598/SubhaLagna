@@ -1,21 +1,30 @@
 /**
- *
+ * @fileoverview SubhaLagna v3.0.0 — Admin Controller
+ * @description   Administrative tools for platform management:
+ *                - User and Profile moderation (suspend, delete).
+ *                - System-wide statistics and matchmaking analytics.
+ *                - Dynamic membership plan management (pricing/features).
+ *                - [v3.0.0 changes]
+ *                - Upgraded to Version 3.0.0 with automated coding standards.
+ *                - Integrated strict JSDoc validation.
+ *                - Standardized security checks for admin-only routes.
+ *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
 
-const User         = require('../models/User');
-const Profile      = require('../models/Profile');
-const Interest     = require('../models/Interest');
+const User = require('../models/User');
+const Profile = require('../models/Profile');
+const Interest = require('../models/Interest');
 const MembershipPlan = require('../models/MembershipPlan');
-const sharp        = require('sharp');
+const sharp = require('sharp');
 const storageService = require('../utils/storageService');
-const Message      = require('../models/Message');
+const Message = require('../models/Message');
 const Notification = require('../models/Notification');
-const Coupon       = require('../models/Coupon');
-const Payment      = require('../models/Payment');
+const Coupon = require('../models/Coupon');
+const Payment = require('../models/Payment');
 const { upgradeUserSubscription } = require('./paymentController');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 
@@ -24,6 +33,12 @@ const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse'
 // @route   GET /api/admin/stats
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getDashboardStats = async (req, res, next) => {
   try {
     const [
@@ -45,23 +60,20 @@ const getDashboardStats = async (req, res, next) => {
       Message.countDocuments({}),
       User.countDocuments({ isPremium: true }),
       Profile.countDocuments({ isVerified: true }),
-      User.find({})
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .select('name email role createdAt isPremium'),
+      User.find({}).sort({ createdAt: -1 }).limit(5).select('name email role createdAt isPremium'),
       Payment.aggregate([
         { $match: { status: { $in: ['captured', 'manual'] } } },
-        { $group: { _id: null, total: { $sum: "$amount" } } }
+        { $group: { _id: null, total: { $sum: '$amount' } } },
       ]),
       Payment.aggregate([
-        { 
-          $match: { 
+        {
+          $match: {
             status: { $in: ['captured', 'manual'] },
-            createdAt: { $gte: new Date(new Date().setHours(0,0,0,0)) }
-          } 
+            createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
+          },
         },
-        { $group: { _id: null, total: { $sum: "$amount" } } }
-      ])
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]),
     ]);
 
     return sendSuccess(res, {
@@ -69,10 +81,11 @@ const getDashboardStats = async (req, res, next) => {
       totalProfiles,
       totalInterests,
       acceptedInterests,
-      connectionRate:    totalInterests > 0 ? Math.round((acceptedInterests / totalInterests) * 100) : 0,
+      connectionRate:
+        totalInterests > 0 ? Math.round((acceptedInterests / totalInterests) * 100) : 0,
       totalMessages,
       premiumUsers,
-      freeUsers:         totalUsers - premiumUsers,
+      freeUsers: totalUsers - premiumUsers,
       verifiedProfiles,
       recentUsers,
       totalRevenue: totalRevenue[0]?.total || 0,
@@ -88,6 +101,12 @@ const getDashboardStats = async (req, res, next) => {
 // @route   GET /api/admin/users?page=1&limit=20&search=name
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getAllUsers = async (req, res, next) => {
   try {
     const { page = 1, limit = 20, search, role } = req.query;
@@ -95,10 +114,7 @@ const getAllUsers = async (req, res, next) => {
 
     const query = {};
     if (search) {
-      query.$or = [
-        { name:  new RegExp(search, 'i') },
-        { email: new RegExp(search, 'i') },
-      ];
+      query.$or = [{ name: new RegExp(search, 'i') }, { email: new RegExp(search, 'i') }];
     }
 
     if (role && role !== 'all') {
@@ -126,12 +142,23 @@ const getAllUsers = async (req, res, next) => {
 // @route   POST /api/admin/users
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const createUserWithProfile = async (req, res, next) => {
   try {
     const {
-      name, email, password, role = 'user',
-      isPremium = false, premiumPlan = 'none', premiumExpires = null,
-      profileData = {}
+      name,
+      email,
+      password,
+      role = 'user',
+      isPremium = false,
+      premiumPlan = 'none',
+      premiumExpires = null,
+      profileData = {},
     } = req.body;
 
     // 1. Validation
@@ -154,7 +181,7 @@ const createUserWithProfile = async (req, res, next) => {
       isPremium,
       premiumPlan,
       premiumExpires: premiumExpires ? new Date(premiumExpires) : null,
-      contactsAllowed: premiumPlan === 'platinum' ? -1 : (premiumPlan === 'gold' ? 30 : 0)
+      contactsAllowed: premiumPlan === 'platinum' ? -1 : premiumPlan === 'gold' ? 30 : 0,
     });
 
     // 3. Create Profile
@@ -173,25 +200,31 @@ const createUserWithProfile = async (req, res, next) => {
       nativeCity: profileData.nativeCity || '',
       education: profileData.education || 'Graduate',
       profession: profileData.profession || 'Professional',
-      height: profileData.height || "5' 5\"",
+      height: profileData.height || '5\' 5"',
       bio: profileData.bio || '',
-      profilePhoto: profileData.profilePhoto || (profileData.gender === 'Female' ? '/uploads/woman.png' : '/uploads/man.png'),
+      profilePhoto:
+        profileData.profilePhoto ||
+        (profileData.gender === 'Female' ? '/uploads/woman.png' : '/uploads/man.png'),
       family: {
         fatherName: profileData.family?.fatherName || profileData.fatherName || '',
         motherName: profileData.family?.motherName || profileData.motherName || '',
         siblings: profileData.family?.siblings || profileData.siblings || '0',
-        familyType: profileData.family?.familyType || profileData.familyType || 'Nuclear'
+        familyType: profileData.family?.familyType || profileData.familyType || 'Nuclear',
       },
       horoscope: {
-        dateOfBirth: profileData.horoscope?.dateOfBirth ? new Date(profileData.horoscope.dateOfBirth) : (profileData.dateOfBirth ? new Date(profileData.dateOfBirth) : null),
+        dateOfBirth: profileData.horoscope?.dateOfBirth
+          ? new Date(profileData.horoscope.dateOfBirth)
+          : profileData.dateOfBirth
+            ? new Date(profileData.dateOfBirth)
+            : null,
         timeOfBirth: profileData.horoscope?.timeOfBirth || profileData.timeOfBirth || '',
         placeOfBirth: profileData.horoscope?.placeOfBirth || profileData.placeOfBirth || '',
         rashi: profileData.horoscope?.rashi || profileData.rashi || '',
         nakshatra: profileData.horoscope?.nakshatra || profileData.nakshatra || '',
         pada: profileData.horoscope?.pada || profileData.pada || null,
         gotra: profileData.horoscope?.gotra || profileData.gotra || '',
-        manglik: profileData.horoscope?.manglik || profileData.manglik || 'Unknown'
-      }
+        manglik: profileData.horoscope?.manglik || profileData.manglik || 'Unknown',
+      },
     });
 
     return sendSuccess(res, { user, profile }, 'User and profile created successfully', 201);
@@ -205,31 +238,34 @@ const createUserWithProfile = async (req, res, next) => {
 // @route   PUT /api/admin/users/:id
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const updateUserAndProfile = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const {
-      name, email, password, role,
-      isPremium, premiumPlan, premiumExpires,
-      profileData
-    } = req.body;
+    const { name, email, password, role, isPremium, premiumPlan, premiumExpires, profileData } =
+      req.body;
 
     const user = await User.findById(id);
     if (!user) return sendError(res, 'User not found', 404);
 
     let profile = await Profile.findOne({ user: id });
     const isNewProfile = !profile;
-    
-    // 1. Update User Document
-    if (name)     user.name     = name;
-    if (email)    user.email    = email;
-    if (password) user.password = password; // Pre-save hook hashes it
-    if (role)     user.role     = role;
 
-    if (isPremium !== undefined)     user.isPremium     = isPremium;
-    if (premiumPlan) { 
-      user.premiumPlan     = premiumPlan;
-      user.contactsAllowed = premiumPlan === 'platinum' ? -1 : (premiumPlan === 'gold' ? 30 : 0);
+    // 1. Update User Document
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (password) user.password = password; // Pre-save hook hashes it
+    if (role) user.role = role;
+
+    if (isPremium !== undefined) user.isPremium = isPremium;
+    if (premiumPlan) {
+      user.premiumPlan = premiumPlan;
+      user.contactsAllowed = premiumPlan === 'platinum' ? -1 : premiumPlan === 'gold' ? 30 : 0;
     }
     if (premiumExpires !== undefined) {
       user.premiumExpires = premiumExpires ? new Date(premiumExpires) : null;
@@ -241,42 +277,42 @@ const updateUserAndProfile = async (req, res, next) => {
     if (profileData) {
       // If profile doesn't exist, initialize it
       if (isNewProfile) {
-        profile = new Profile({ 
-          user: user._id, 
+        profile = new Profile({
+          user: user._id,
           name: profileData.name || user.name,
-          gender: profileData.gender || 'Male' // Default gender if missing
+          gender: profileData.gender || 'Male', // Default gender if missing
         });
       }
 
       // Basic Fields
-      if (profileData.name !== undefined)     profile.name     = profileData.name;
-      if (profileData.gender !== undefined)   profile.gender   = profileData.gender;
+      if (profileData.name !== undefined) profile.name = profileData.name;
+      if (profileData.gender !== undefined) profile.gender = profileData.gender;
       if (profileData.religion !== undefined) profile.religion = profileData.religion;
-      if (profileData.caste !== undefined)    profile.caste    = profileData.caste;
-      
+      if (profileData.caste !== undefined) profile.caste = profileData.caste;
+
       // Location
       if (profileData.currentState !== undefined) profile.currentState = profileData.currentState;
-      if (profileData.currentCity !== undefined)  profile.currentCity  = profileData.currentCity;
-      if (profileData.nativeState !== undefined)  profile.nativeState  = profileData.nativeState;
-      if (profileData.nativeCity !== undefined)   profile.nativeCity   = profileData.nativeCity;
-      
+      if (profileData.currentCity !== undefined) profile.currentCity = profileData.currentCity;
+      if (profileData.nativeState !== undefined) profile.nativeState = profileData.nativeState;
+      if (profileData.nativeCity !== undefined) profile.nativeCity = profileData.nativeCity;
+
       if (profileData.currentState !== undefined || profileData.currentCity !== undefined) {
         profile.location = `${profileData.currentCity || profile.currentCity}, ${profileData.currentState || profile.currentState}`;
       }
 
       // Bio & Professional
-      if (profileData.education !== undefined)    profile.education    = profileData.education;
-      if (profileData.profession !== undefined)   profile.profession   = profileData.profession;
-      if (profileData.height !== undefined)       profile.height       = profileData.height;
+      if (profileData.education !== undefined) profile.education = profileData.education;
+      if (profileData.profession !== undefined) profile.profession = profileData.profession;
+      if (profileData.height !== undefined) profile.height = profileData.height;
       if (profileData.motherTongue !== undefined) profile.motherTongue = profileData.motherTongue;
-      if (profileData.bio !== undefined)          profile.bio          = profileData.bio;
+      if (profileData.bio !== undefined) profile.bio = profileData.bio;
       if (profileData.profilePhoto !== undefined) profile.profilePhoto = profileData.profilePhoto;
 
       // Family Settings
       if (profileData.family) {
         profile.family = {
           ...(profile.family?.toObject() || {}),
-          ...profileData.family
+          ...profileData.family,
         };
       }
 
@@ -285,7 +321,9 @@ const updateUserAndProfile = async (req, res, next) => {
         profile.horoscope = {
           ...(profile.horoscope?.toObject() || {}),
           ...profileData.horoscope,
-          dateOfBirth: profileData.horoscope.dateOfBirth ? new Date(profileData.horoscope.dateOfBirth) : profile.horoscope?.dateOfBirth
+          dateOfBirth: profileData.horoscope.dateOfBirth
+            ? new Date(profileData.horoscope.dateOfBirth)
+            : profile.horoscope?.dateOfBirth,
         };
       }
 
@@ -293,7 +331,7 @@ const updateUserAndProfile = async (req, res, next) => {
       if (profileData.privacySettings) {
         profile.privacySettings = {
           ...(profile.privacySettings?.toObject() || {}),
-          ...profileData.privacySettings
+          ...profileData.privacySettings,
         };
       }
 
@@ -317,6 +355,12 @@ const updateUserAndProfile = async (req, res, next) => {
 // @route   PUT /api/admin/users/:id/suspend
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const toggleSuspendUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -333,8 +377,8 @@ const toggleSuspendUser = async (req, res, next) => {
     // Notify the user
     await Notification.create({
       recipient: user._id,
-      type:      'system',
-      message:   user.isSuspended
+      type: 'system',
+      message: user.isSuspended
         ? 'Your account has been suspended. Contact support for assistance.'
         : 'Your account suspension has been lifted. Welcome back!',
     });
@@ -342,7 +386,7 @@ const toggleSuspendUser = async (req, res, next) => {
     return sendSuccess(
       res,
       { userId: user._id, isSuspended: user.isSuspended },
-      `User ${user.isSuspended ? 'suspended' : 'unsuspended'} successfully`
+      `User ${user.isSuspended ? 'suspended' : 'unsuspended'} successfully`,
     );
   } catch (err) {
     next(err);
@@ -354,6 +398,12 @@ const toggleSuspendUser = async (req, res, next) => {
 // @route   PUT /api/admin/profiles/:id/verify
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const toggleVerifyProfile = async (req, res, next) => {
   try {
     const profile = await Profile.findById(req.params.id).populate('user', 'name');
@@ -365,16 +415,17 @@ const toggleVerifyProfile = async (req, res, next) => {
     if (profile.isVerified) {
       await Notification.create({
         recipient: profile.user._id,
-        type:      'profile_verified',
-        message:   '🎉 Your profile has been verified by SubhaLagna! Your profile now shows a verified badge.',
-        link:      '/profile',
+        type: 'profile_verified',
+        message:
+          '🎉 Your profile has been verified by SubhaLagna! Your profile now shows a verified badge.',
+        link: '/profile',
       });
     }
 
     return sendSuccess(
       res,
       { profileId: profile._id, isVerified: profile.isVerified },
-      `Profile ${profile.isVerified ? 'verified' : 'unverified'} successfully`
+      `Profile ${profile.isVerified ? 'verified' : 'unverified'} successfully`,
     );
   } catch (err) {
     next(err);
@@ -386,6 +437,12 @@ const toggleVerifyProfile = async (req, res, next) => {
 // @route   DELETE /api/admin/users/:id
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -414,6 +471,12 @@ const deleteUser = async (req, res, next) => {
 // @route   GET /api/admin/coupons
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getAllCoupons = async (req, res, next) => {
   try {
     const coupons = await Coupon.find({}).sort({ createdAt: -1 }).lean();
@@ -428,9 +491,16 @@ const getAllCoupons = async (req, res, next) => {
 // @route   POST /api/admin/coupons
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const createCoupon = async (req, res, next) => {
   try {
-    const { code, discountType, discountValue, expiryDate, minPurchase, maxDiscount, usageLimit } = req.body;
+    const { code, discountType, discountValue, expiryDate, minPurchase, maxDiscount, usageLimit } =
+      req.body;
 
     const existing = await Coupon.findOne({ code: code.toUpperCase() });
     if (existing) return sendError(res, 'Coupon code already exists', 400);
@@ -442,7 +512,7 @@ const createCoupon = async (req, res, next) => {
       expiryDate,
       minPurchase,
       maxDiscount,
-      usageLimit
+      usageLimit,
     });
 
     return sendSuccess(res, coupon, 'Coupon created successfully', 201);
@@ -456,6 +526,12 @@ const createCoupon = async (req, res, next) => {
 // @route   DELETE /api/admin/coupons/:id
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const deleteCoupon = async (req, res, next) => {
   try {
     await Coupon.findByIdAndDelete(req.params.id);
@@ -470,6 +546,12 @@ const deleteCoupon = async (req, res, next) => {
 // @route   POST /api/admin/users/:id/upgrade
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const manualUpgradeUser = async (req, res, next) => {
   try {
     const { planId, durationDays } = req.body;
@@ -494,7 +576,7 @@ const manualUpgradeUser = async (req, res, next) => {
       amount: 0,
       status: 'manual',
       expiryDate: expiry,
-      type: 'manual'
+      type: 'manual',
     });
 
     await Notification.create({
@@ -514,6 +596,12 @@ const manualUpgradeUser = async (req, res, next) => {
 // @route   GET /api/admin/payments/pending
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getPendingPayments = async (req, res, next) => {
   try {
     const payments = await Payment.find({ status: 'pending' })
@@ -532,10 +620,16 @@ const getPendingPayments = async (req, res, next) => {
 // @route   PUT /api/admin/payments/:id/verify
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const verifyBankPayment = async (req, res, next) => {
   try {
     const { status, adminRemarks } = req.body; // status: 'captured' or 'failed'
-    
+
     if (!['captured', 'failed'].includes(status)) {
       return sendError(res, 'Invalid status. Use captured or failed.', 400);
     }
@@ -565,7 +659,11 @@ const verifyBankPayment = async (req, res, next) => {
       });
     }
 
-    return sendSuccess(res, payment, `Payment ${status === 'captured' ? 'approved' : 'rejected'} successfully`);
+    return sendSuccess(
+      res,
+      payment,
+      `Payment ${status === 'captured' ? 'approved' : 'rejected'} successfully`,
+    );
   } catch (err) {
     next(err);
   }
@@ -576,6 +674,12 @@ const verifyBankPayment = async (req, res, next) => {
 // @route   GET /api/admin/plans
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getAllPlans = async (req, res, next) => {
   try {
     const plans = await MembershipPlan.find({}).sort({ price: 1 });
@@ -590,14 +694,20 @@ const getAllPlans = async (req, res, next) => {
 // @route   PUT /api/admin/plans/:id
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const updatePlan = async (req, res, next) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
 
-    const plan = await MembershipPlan.findByIdAndUpdate(id, updateData, { 
-      new: true, 
-      runValidators: true 
+    const plan = await MembershipPlan.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
     });
 
     if (!plan) return sendError(res, 'Plan not found', 404);
@@ -613,6 +723,12 @@ const updatePlan = async (req, res, next) => {
 // @route   POST /api/admin/plans
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const createPlan = async (req, res, next) => {
   try {
     const plan = await MembershipPlan.create(req.body);
@@ -627,6 +743,12 @@ const createPlan = async (req, res, next) => {
 // @route   POST /api/admin/profiles/:id/photos
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const uploadUserPhotosAdmin = async (req, res, next) => {
   try {
     const profile = await Profile.findById(req.params.id);
@@ -645,7 +767,11 @@ const uploadUserPhotosAdmin = async (req, res, next) => {
         .toBuffer();
 
       // Cleanup old photo
-      if (profile.profilePhoto && !profile.profilePhoto.includes('man.png') && !profile.profilePhoto.includes('woman.png')) {
+      if (
+        profile.profilePhoto &&
+        !profile.profilePhoto.includes('man.png') &&
+        !profile.profilePhoto.includes('woman.png')
+      ) {
         await storageService.deleteFile(profile.profilePhoto);
       }
 
@@ -675,8 +801,9 @@ const uploadUserPhotosAdmin = async (req, res, next) => {
       for (const photoUrl of toRemove) {
         await storageService.deleteFile(photoUrl);
       }
-      const remaining = (updateData.additionalPhotos || profile.additionalPhotos || [])
-        .filter((p) => !toRemove.includes(p));
+      const remaining = (updateData.additionalPhotos || profile.additionalPhotos || []).filter(
+        (p) => !toRemove.includes(p),
+      );
       updateData.additionalPhotos = remaining;
     }
 
@@ -694,6 +821,12 @@ const uploadUserPhotosAdmin = async (req, res, next) => {
 // @route   GET /api/admin/payments/ledger
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getAllPayments = async (req, res, next) => {
   try {
     const payments = await Payment.find({})
@@ -725,5 +858,5 @@ module.exports = {
   getAllPayments,
   getAllPlans,
   updatePlan,
-  createPlan
+  createPlan,
 };

@@ -1,12 +1,14 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Main Server Entry Point
+ * @fileoverview SubhaLagna v3.0.0 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
- *                v2.2.0 changes:
- *                  - Dynamic server domain logging based on NODE_ENV
- *                  - Middleware stabilization for Express 5 compatibility
+ *                - [v3.0.0 changes]
+ *                - Upgraded to Version 3.0.0 architecture.
+ *                - Standardized ESLint & Prettier configuration across the project.
+ *                - Enhanced JSDoc documentation requirements.
+ *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  *
  * Architecture:
  *  ┌──────────────────────────────────────────┐
@@ -23,33 +25,30 @@
 
 require('dotenv').config();
 
-const express    = require('express');
-const http       = require('http');
-const cors       = require('cors');
-const helmet     = require('helmet');
-const morgan     = require('morgan');
+const express = require('express');
+const http = require('http');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
 const { Server } = require('socket.io');
 
-const connectDB       = require('./config/db');
-const socketHandler   = require('./socket/socketHandler');
+const connectDB = require('./config/db');
+const socketHandler = require('./socket/socketHandler');
 const mongoSanitize = require('express-mongo-sanitize');
-const { version }     = require('./package.json');
+const { version } = require('./package.json');
 
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
-const {
-  globalLimiter,
-  authLimiter,
-} = require('./middleware/rateLimitMiddleware');
+const { globalLimiter, authLimiter } = require('./middleware/rateLimitMiddleware');
 
 // ── Validate critical env vars on startup ────────────────────────────────────
 // Including Razorpay and SMTP secrets to prevent silent security failures
 const REQUIRED_ENV = [
-  'MONGO_URI', 
-  'JWT_SECRET', 
+  'MONGO_URI',
+  'JWT_SECRET',
   'JWT_REFRESH_SECRET',
   'RAZORPAY_KEY_ID',
   'RAZORPAY_KEY_SECRET',
-  'SMTP_PASS'
+  'SMTP_PASS',
 ];
 REQUIRED_ENV.forEach((key) => {
   if (!process.env[key]) {
@@ -83,17 +82,15 @@ socketHandler(io);
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow images from /uploads
-  })
+  }),
 );
-
-
 
 // Strict CORS — only allow the configured frontend origin
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true,
-  })
+  }),
 );
 
 // ── Global Rate Limiter ───────────────────────────────────────────────────────
@@ -105,7 +102,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // ── Body Parsers ──────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10kb' }));       // reject oversized JSON payloads
+app.use(express.json({ limit: '10kb' })); // reject oversized JSON payloads
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // NoSQL Injection Protection
@@ -126,14 +123,14 @@ app.get('/api/health', (req, res) => {
 
 // ── API Routes ────────────────────────────────────────────────────────────────
 // Auth routes get a stricter rate limiter (brute-force protection)
-app.use('/api/auth',          authLimiter, require('./routes/authRoutes'));
+app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
 app.use('/api/profiles', require('./routes/profileRoutes'));
 app.use('/api/interests', require('./routes/interestRoutes'));
-app.use('/api/lookup',   require('./routes/lookupRoutes'));
-app.use('/api/admin',    require('./routes/adminRoutes'));
-app.use('/api/chat',          require('./routes/chatRoutes'));
+app.use('/api/lookup', require('./routes/lookupRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
-app.use('/api/payments',      require('./routes/paymentRoutes'));
+app.use('/api/payments', require('./routes/paymentRoutes'));
 
 // ── Root Route ────────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
@@ -151,8 +148,14 @@ const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
   const isProd = process.env.NODE_ENV === 'production';
-  const domain = isProd ? (process.env.BACKEND_URL || `http://<YOUR_PRODUCTION_DOMAIN>:${PORT}`) : `http://localhost:${PORT}`;
-  const wsDomain = isProd ? (process.env.BACKEND_URL ? process.env.BACKEND_URL.replace('http', 'ws') : `ws://<YOUR_PRODUCTION_DOMAIN>:${PORT}`) : `ws://localhost:${PORT}`;
+  const domain = isProd
+    ? process.env.BACKEND_URL || `http://<YOUR_PRODUCTION_DOMAIN>:${PORT}`
+    : `http://localhost:${PORT}`;
+  const wsDomain = isProd
+    ? process.env.BACKEND_URL
+      ? process.env.BACKEND_URL.replace('http', 'ws')
+      : `ws://<YOUR_PRODUCTION_DOMAIN>:${PORT}`
+    : `ws://localhost:${PORT}`;
 
   console.log(`\n🚀 SubhaLagna v${version} Server`);
   console.log(`   ✅ HTTP  → ${domain}`);

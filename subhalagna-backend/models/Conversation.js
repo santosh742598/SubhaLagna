@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Conversation Model
+ * @file SubhaLagna v3.0.0 — Conversation Model
  * @description   Represents a one-to-one chat conversation between two users.
  *                Only created after a mutual interest is accepted.
  *                Tracks both participants and the last message for preview.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -46,7 +46,7 @@ const conversationSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // ── Indexes ───────────────────────────────────────────────────────────────────

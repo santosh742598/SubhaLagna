@@ -64,8 +64,7 @@ const Login = () => {
     }
   };
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const bgHearts = [
     { left: '3%', top: '8%', size: 'xs', delay: '0s', duration: '5s' },
@@ -120,8 +119,7 @@ const Login = () => {
         <div
           className="absolute inset-0 opacity-20"
           style={{
-            backgroundImage:
-              'radial-gradient(circle at 2px 2px, #fecdd3 1px, transparent 0)',
+            backgroundImage: 'radial-gradient(circle at 2px 2px, #fecdd3 1px, transparent 0)',
             backgroundSize: '32px 32px',
           }}
         />
@@ -135,12 +133,8 @@ const Login = () => {
         <div className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-xl shadow-rose-100/40 border border-rose-100/60 relative z-10 animate-fade-in">
           {/* Welcome Heading & Tagline */}
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">
-              Welcome Back
-            </h2>
-            <p className="text-gray-400 text-sm">
-              Your journey to finding love continues here 💕
-            </p>
+            <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">Welcome Back</h2>
+            <p className="text-gray-400 text-sm">Your journey to finding love continues here 💕</p>
           </div>
 
           {/* Error */}
@@ -153,9 +147,7 @@ const Login = () => {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
-                Email
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">Email</label>
               <input
                 type="email"
                 name="email"
@@ -188,12 +180,27 @@ const Login = () => {
                 >
                   {showPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"
+                      />
                     </svg>
                   ) : (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
                     </svg>
                   )}
                 </button>
@@ -203,10 +210,11 @@ const Login = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full mt-4 py-3.5 px-4 rounded-xl text-white font-semibold flex justify-center items-center shadow-lg transition-all ${isSubmitting
-                ? 'bg-rose-400'
-                : 'bg-rose-600 hover:bg-rose-700 hover:-translate-y-0.5'
-                }`}
+              className={`w-full mt-4 py-3.5 px-4 rounded-xl text-white font-semibold flex justify-center items-center shadow-lg transition-all ${
+                isSubmitting
+                  ? 'bg-rose-400'
+                  : 'bg-rose-600 hover:bg-rose-700 hover:-translate-y-0.5'
+              }`}
             >
               {isSubmitting ? 'Verifying...' : 'Log In'}
             </button>

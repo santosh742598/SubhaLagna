@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Chat Context
+ * @fileoverview SubhaLagna v3.0.0 — Chat Context
  * @description   Manages the Socket.io connection and real-time chat state.
  *                Provides the socket instance and active message streams to
  *                all chat-related components.
@@ -9,12 +9,10 @@
  *                    useContext(ChatContext);
  *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
-import React, {
-  createContext, useState, useEffect, useContext, useRef, useCallback
-} from 'react';
+import React, { createContext, useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import { AuthContext } from './AuthContext';
 import { NotificationContext } from './NotificationContext';
@@ -33,29 +31,31 @@ import { SOCKET_URL } from '../config';
  * @property {Function} setMessages - Directly set messages (for initial load)
  */
 
-export const ChatContext = createContext(/** @type {ChatContextValue} */({
-  socket:              null,
-  isConnected:         false,
-  messages:            [],
-  typingUser:          null,
-  joinConversation:    () => {},
-  sendSocketMessage:   () => {},
-  sendTyping:          () => {},
-  stopTyping:          () => {},
-  setMessages:         () => {},
-}));
+export const ChatContext = createContext(
+  /** @type {ChatContextValue} */ ({
+    socket: null,
+    isConnected: false,
+    messages: [],
+    typingUser: null,
+    joinConversation: () => {},
+    sendSocketMessage: () => {},
+    sendTyping: () => {},
+    stopTyping: () => {},
+    setMessages: () => {},
+  }),
+);
 
 /**
  * ChatProvider — must be inside both AuthProvider and NotificationProvider.
  */
 export const ChatProvider = ({ children }) => {
   const { user, token, isAuthenticated } = useContext(AuthContext);
-  const { addRealtime }                  = useContext(NotificationContext);
+  const { addRealtime } = useContext(NotificationContext);
 
-  const socketRef           = useRef(null);
-  const [isConnected,  setIsConnected]  = useState(false);
-  const [messages,     setMessages]     = useState([]);
-  const [typingUser,   setTypingUser]   = useState(null);
+  const socketRef = useRef(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [typingUser, setTypingUser] = useState(null);
   const typingTimeoutRef = useRef(null);
 
   // ── Initialize Socket.io connection when user logs in ──────────────────────
@@ -65,10 +65,10 @@ export const ChatProvider = ({ children }) => {
     const socket = io(SOCKET_URL, {
       auth: { token },
       reconnectionAttempts: 5,
-      reconnectionDelay:    2000,
+      reconnectionDelay: 2000,
     });
 
-    socket.on('connect',    () => setIsConnected(true));
+    socket.on('connect', () => setIsConnected(true));
     socket.on('disconnect', () => setIsConnected(false));
 
     // New message received via socket
@@ -139,7 +139,7 @@ export const ChatProvider = ({ children }) => {
   }, []);
 
   const value = {
-    socket:           socketRef.current,
+    socket: socketRef.current,
     isConnected,
     messages,
     typingUser,
@@ -150,9 +150,5 @@ export const ChatProvider = ({ children }) => {
     setMessages,
   };
 
-  return (
-    <ChatContext.Provider value={value}>
-      {children}
-    </ChatContext.Provider>
-  );
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

@@ -1,42 +1,28 @@
 /**
- * @fileoverview SubhaLagna v2.4.0 — Profile Controller
- * @description   Manages matrimony profile CRUD operations:
- *                - setupProfile    → create initial profile (onboarding)
- *                - getMatches      → paginated, smart-scored match results
- *                - getProfileById  → single profile with view tracking
- *                - updateProfile   → update own profile (ownership enforced)
- *                - getMyProfile    → convenience route for own profile
- *                - getProfileViews → who viewed my profile (premium feature)
- *
- *                Security fixes in v2.0.0:
- *                  - Ownership check on update (prevents cross-user edits)
- *                  - Photo visibility rules based on privacySettings
- *                  - Smart matching score using matchingAlgorithm.js
- *                  - Pagination on getMatches (prevents full-table scan)
- *
- *                v2.1.0 changes:
- *                  - Guna Milan (Ashta Koota) matchmaking integration
- *                  - Data guards for missing horoscope details
- *                  - Precise Pada-to-Rashi resolution
- *
- *                v2.2.0 changes:
- *                  - Unified StorageService integration (Local/S3 toggle)
- *                  - Automatic physical photo cleanup on update/delete
- *
+ * @fileoverview SubhaLagna v3.0.0 — Profile Controller
+ * @description   Manages matrimony profile CRUD operations including:
+ *                - Comprehensive profile setup (onboarding).
+ *                - Paginated matches with Guna Milan scoring.
+ *                - Privacy-first photo and contact visibility.
+ *                - [v3.0.0 changes]
+ *                - Upgraded to Version 3.0.0.
+ *                - Standardized security-first coding patterns.
+ *                - Implemented strict JSDoc validation and formatting.
+ *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
 
-const Profile      = require('../models/Profile');
-const User         = require('../models/User');
+const Profile = require('../models/Profile');
+const User = require('../models/User');
 const ProfileView = require('../models/ProfileView');
-const Interest      = require('../models/Interest');
+const Interest = require('../models/Interest');
 const Notification = require('../models/Notification');
-const sharp        = require('sharp');
-const path         = require('path');
-const fs           = require('fs');
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs');
 const storageService = require('../utils/storageService');
 const { enrichWithMatchScores } = require('../utils/matchingAlgorithm');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
@@ -48,16 +34,43 @@ const { registerValue } = require('../services/masterDataService');
 // @route   POST /api/profiles/setup
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const setupProfile = async (req, res, next) => {
   try {
     const {
-      name, gender, age, location, caste, religion, height,
-      education, profession, bio, traits, interests,
-      fatherName, motherName, siblings, familyType,
-      currentState, currentCity, nativeState, nativeCity,
+      name,
+      gender,
+      age,
+      location,
+      caste,
+      religion,
+      height,
+      education,
+      profession,
+      bio,
+      traits,
+      interests,
+      fatherName,
+      motherName,
+      siblings,
+      familyType,
+      currentState,
+      currentCity,
+      nativeState,
+      nativeCity,
       motherTongue,
       partnerInterests,
-      dateOfBirth, rashi, nakshatra, pada, gotra, manglik
+      dateOfBirth,
+      rashi,
+      nakshatra,
+      pada,
+      gotra,
+      manglik,
     } = req.body;
 
     // ── Age validation (server-side double-check) ─────────────────────────
@@ -79,7 +92,7 @@ const setupProfile = async (req, res, next) => {
 
     // ── Handle uploaded photos with Sharp Optimization ───────────────────
     const defaultPhoto = gender === 'Male' ? '/uploads/man.png' : '/uploads/woman.png';
-    let profilePhoto   = defaultPhoto;
+    let profilePhoto = defaultPhoto;
     let additionalPhotos = [];
     // 1. Process Main Profile Photo (800x800 Square Crop)
     if (req.files?.['profilePhoto']?.[0]) {
@@ -109,50 +122,60 @@ const setupProfile = async (req, res, next) => {
     }
 
     // ── Parse comma-separated string arrays from FormData ─────────────────
-    const traitsArray    = traits    ? traits.split(',').map((t) => t.trim()).filter(Boolean)    : [];
-    const interestsArray = interests ? interests.split(',').map((i) => i.trim()).filter(Boolean) : [];
+    const traitsArray = traits
+      ? traits
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [];
+    const interestsArray = interests
+      ? interests
+          .split(',')
+          .map((i) => i.trim())
+          .filter(Boolean)
+      : [];
 
     // ── Smart Master Data Registration ───────────────────────────────────
     const [regCaste, regReligion, regMT, regState, regCity] = await Promise.all([
-      registerValue('caste',        caste),
-      registerValue('religion',     religion),
+      registerValue('caste', caste),
+      registerValue('religion', religion),
       registerValue('motherTongue', motherTongue),
-      registerValue('state',        currentState),
-      registerValue('city',         currentCity, currentState)
+      registerValue('state', currentState),
+      registerValue('city', currentCity, currentState),
     ]);
     // Also register native location
     await Promise.all([
-       registerValue('state', nativeState),
-       registerValue('city',  nativeCity, nativeState)
+      registerValue('state', nativeState),
+      registerValue('city', nativeCity, nativeState),
     ]);
 
     // ── Create profile ─────────────────────────────────────────────────────
     const profile = await Profile.create({
-      user:     req.user._id,
+      user: req.user._id,
       name,
       gender,
       // age:      Number(age), // No longer manually set, handled by DOB hook
       location: location || (currentCity && currentState ? `${currentCity}, ${currentState}` : ''),
-      currentState:   currentState || '',
-      currentCity:    currentCity  || '',
-      nativeState:    nativeState  || '',
-      nativeCity:     nativeCity   || '',
-      nativeCity:     nativeCity   || '',
-      caste:      regCaste      || caste     || '',
-      religion:   regReligion   || religion  || 'Hindu',
-      motherTongue: regMT       || motherTongue || '',
-      height:     height    || "5' 5\"",
-      education:  education || 'Graduate',
-      profession: profession|| 'Professional',
-      bio:        bio       || '',
+      currentState: currentState || '',
+      currentCity: currentCity || '',
+      nativeState: nativeState || '',
+      nativeCity: nativeCity || '',
+      nativeCity: nativeCity || '',
+      caste: regCaste || caste || '',
+      religion: regReligion || religion || 'Hindu',
+      motherTongue: regMT || motherTongue || '',
+      height: height || '5\' 5"',
+      education: education || 'Graduate',
+      profession: profession || 'Professional',
+      bio: bio || '',
       profilePhoto,
       additionalPhotos,
-      traits:    traitsArray,
+      traits: traitsArray,
       interests: interestsArray,
       family: {
         fatherName: fatherName || '',
         motherName: motherName || '',
-        siblings:   siblings   || '0',
+        siblings: siblings || '0',
         familyType: familyType || 'Nuclear',
       },
       partnerInterests: partnerInterests || '',
@@ -163,7 +186,7 @@ const setupProfile = async (req, res, next) => {
         pada: pada ? Number(pada) : null,
         gotra: gotra || '',
         manglik: manglik || 'Unknown',
-      }
+      },
     });
 
     return sendSuccess(res, profile, 'Profile created successfully', 201);
@@ -177,12 +200,27 @@ const setupProfile = async (req, res, next) => {
 // @route   GET /api/profiles?gender=X&page=1&limit=12&...filters
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getMatches = async (req, res, next) => {
   try {
     const {
-      gender, location, minAge, maxAge, caste, religion, education,
-      motherTongue, manglik, profession,
-      page = 1, limit = 12,
+      gender,
+      location,
+      minAge,
+      maxAge,
+      caste,
+      religion,
+      education,
+      motherTongue,
+      manglik,
+      profession,
+      page = 1,
+      limit = 12,
     } = req.query;
 
     // ── Resolve User Gender ───────────────────────────────────────────────
@@ -201,20 +239,20 @@ const getMatches = async (req, res, next) => {
     }
 
     // ── Build dynamic MongoDB query ────────────────────────────────────────
-    const query = { 
+    const query = {
       gender: targetGender,
-      completenessScore: { $gte: 20 } // Hide completely blank/test profiles
+      completenessScore: { $gte: 20 }, // Hide completely blank/test profiles
     };
 
     // ── Exclude Admins & Self ──────────────────────────────────────────────
     // 1. Fetch all admin IDs (for large systems, this should be cached)
     const adminUsers = await User.find({ role: 'admin' }).select('_id').lean();
-    const adminIds = adminUsers.map(a => a._id);
+    const adminIds = adminUsers.map((a) => a._id);
 
     // 2. Add exclusion to query
-    query.user = { 
-      $ne: req.user._id, 
-      $nin: adminIds 
+    query.user = {
+      $ne: req.user._id,
+      $nin: adminIds,
     };
 
     // Exclude hidden profiles
@@ -222,11 +260,11 @@ const getMatches = async (req, res, next) => {
 
     // Optional filters
     if (location && location !== 'Any') query.currentState = new RegExp(location, 'i');
-    if (caste     && caste     !== 'Any') query.caste     = new RegExp(caste,     'i');
-    if (religion  && religion  !== 'Any') query.religion  = new RegExp(religion,  'i');
+    if (caste && caste !== 'Any') query.caste = new RegExp(caste, 'i');
+    if (religion && religion !== 'Any') query.religion = new RegExp(religion, 'i');
     if (education && education !== 'Any') query.education = new RegExp(education, 'i');
     if (motherTongue && motherTongue !== 'Any') query.motherTongue = new RegExp(motherTongue, 'i');
-    if (profession   && profession   !== 'Any') query.profession   = new RegExp(profession,   'i');
+    if (profession && profession !== 'Any') query.profession = new RegExp(profession, 'i');
 
     // Horoscope: Manglik
     if (manglik && manglik !== 'Any') {
@@ -240,9 +278,9 @@ const getMatches = async (req, res, next) => {
     }
 
     // ── Pagination ─────────────────────────────────────────────────────────
-    const pageNum  = Math.max(1, Number(page));
+    const pageNum = Math.max(1, Number(page));
     const limitNum = Math.min(50, Math.max(1, Number(limit))); // cap at 50
-    const skip     = (pageNum - 1) * limitNum;
+    const skip = (pageNum - 1) * limitNum;
 
     const [candidates, total] = await Promise.all([
       Profile.find(query)
@@ -255,26 +293,26 @@ const getMatches = async (req, res, next) => {
 
     // ── Enrich with smart match scores ─────────────────────────────────────
     const myProfile = await Profile.findOne({ user: req.user._id }).lean();
-    let enriched    = enrichWithMatchScores(myProfile, candidates);
+    let enriched = enrichWithMatchScores(myProfile, candidates);
 
     // ── Privacy Shield Logic: Batch Interest Check ─────────────────────────
-    const candidateUserIds = candidates.map(c => c.user._id);
+    const candidateUserIds = candidates.map((c) => c.user._id);
     const acceptedInterests = await Interest.find({
       $or: [
         { sender: req.user._id, receiver: { $in: candidateUserIds }, status: 'accepted' },
-        { sender: { $in: candidateUserIds }, receiver: req.user._id, status: 'accepted' }
-      ]
+        { sender: { $in: candidateUserIds }, receiver: req.user._id, status: 'accepted' },
+      ],
     }).lean();
 
     const connectedUserIds = new Set([
-      ...acceptedInterests.map(i => i.sender.toString()),
-      ...acceptedInterests.map(i => i.receiver.toString())
+      ...acceptedInterests.map((i) => i.sender.toString()),
+      ...acceptedInterests.map((i) => i.receiver.toString()),
     ]);
 
-    enriched.forEach(c => {
+    enriched.forEach((c) => {
       const showTo = c.privacySettings?.showPhotoTo || 'everyone';
       const isConnected = connectedUserIds.has(c.user._id.toString());
-      
+
       if (showTo === 'everyone') {
         c.isPhotoBlurred = false;
       } else if (showTo === 'interests_only') {
@@ -310,10 +348,18 @@ const getMatches = async (req, res, next) => {
 // @route   GET /api/profiles/:id
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getProfileById = async (req, res, next) => {
   try {
-    const profile = await Profile.findById(req.params.id)
-      .populate('user', 'email name isPremium premiumPlan');
+    const profile = await Profile.findById(req.params.id).populate(
+      'user',
+      'email name isPremium premiumPlan',
+    );
 
     if (!profile) {
       return sendError(res, 'Profile not found', 404);
@@ -325,7 +371,7 @@ const getProfileById = async (req, res, next) => {
         await ProfileView.findOneAndUpdate(
           { profileOwner: profile.user._id, viewer: req.user._id },
           { viewedAt: new Date() },
-          { upsert: true, new: true }
+          { upsert: true, new: true },
         );
         await Profile.findByIdAndUpdate(req.params.id, { $inc: { profileViews: 1 } });
       } catch (_) {}
@@ -339,17 +385,17 @@ const getProfileById = async (req, res, next) => {
     let isPhotoBlurred = false;
 
     if (!isOwner && !isAdmin) {
-       if (showTo === 'interests_only') {
-          const connection = await Interest.findOne({
-             $or: [
-                { sender: req.user._id, receiver: profile.user._id, status: 'accepted' },
-                { sender: profile.user._id, receiver: req.user._id, status: 'accepted' }
-             ]
-          });
-          isPhotoBlurred = !connection;
-       } else if (showTo === 'none') {
-          isPhotoBlurred = true;
-       }
+      if (showTo === 'interests_only') {
+        const connection = await Interest.findOne({
+          $or: [
+            { sender: req.user._id, receiver: profile.user._id, status: 'accepted' },
+            { sender: profile.user._id, receiver: req.user._id, status: 'accepted' },
+          ],
+        });
+        isPhotoBlurred = !connection;
+      } else if (showTo === 'none') {
+        isPhotoBlurred = true;
+      }
     }
 
     const result = profile.toObject();
@@ -357,9 +403,9 @@ const getProfileById = async (req, res, next) => {
 
     // Redact gallery if blurred
     if (isPhotoBlurred) {
-       result.additionalPhotos = [];
+      result.additionalPhotos = [];
     }
-    
+
     // ── Gating Sensitive Info (Contact Details) ───────────────────────────
     const isPremium = req.user.isPremiumActive ? req.user.isPremiumActive() : req.user.isPremium;
     const isUnlocked = req.user.contactsViewed?.includes(profile._id);
@@ -369,7 +415,7 @@ const getProfileById = async (req, res, next) => {
       // Hide contact details
       if (result.user) {
         result.user.email = 'LOCKED';
-        result.user.phone = 'LOCKED'; 
+        result.user.phone = 'LOCKED';
       }
       result.isContactUnlocked = false;
     } else {
@@ -379,7 +425,7 @@ const getProfileById = async (req, res, next) => {
     // ── Guna Milan Integration (v2.1.0) ─────────────────────────────────────
     // Calculate compatibility between viewer and target if both have astrology data
     const myProfile = await Profile.findOne({ user: req.user._id }).lean();
-    
+
     const targetNak = result.horoscope?.nakshatra || result.nakshatra;
     const targetRas = result.horoscope?.rashi || result.rashi;
     const myNak = myProfile?.horoscope?.nakshatra || myProfile?.nakshatra;
@@ -400,6 +446,12 @@ const getProfileById = async (req, res, next) => {
 // @route   PUT /api/profiles/:id
 // @access  Private (owner only)
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const updateProfile = async (req, res, next) => {
   try {
     const profile = await Profile.findById(req.params.id);
@@ -427,8 +479,12 @@ const updateProfile = async (req, res, next) => {
         .toBuffer();
 
       // Delete old photo if it exists and isn't a default placeholder
-      if (profile.profilePhoto && !profile.profilePhoto.includes('man.png') && !profile.profilePhoto.includes('woman.png')) {
-          await storageService.deleteFile(profile.profilePhoto);
+      if (
+        profile.profilePhoto &&
+        !profile.profilePhoto.includes('man.png') &&
+        !profile.profilePhoto.includes('woman.png')
+      ) {
+        await storageService.deleteFile(profile.profilePhoto);
       }
 
       updateData.profilePhoto = await storageService.uploadBuffer(buffer, filename);
@@ -456,15 +512,16 @@ const updateProfile = async (req, res, next) => {
 
     // Handle gallery photo deletions
     if (req.body.removePhotos) {
-      const toRemove   = JSON.parse(req.body.removePhotos);
-      
+      const toRemove = JSON.parse(req.body.removePhotos);
+
       // Physically delete files from storage
       for (const photoUrl of toRemove) {
-          await storageService.deleteFile(photoUrl);
+        await storageService.deleteFile(photoUrl);
       }
 
-      const remaining  = (updateData.additionalPhotos || profile.additionalPhotos || [])
-        .filter((p) => !toRemove.includes(p));
+      const remaining = (updateData.additionalPhotos || profile.additionalPhotos || []).filter(
+        (p) => !toRemove.includes(p),
+      );
       updateData.additionalPhotos = remaining;
     }
 
@@ -474,27 +531,37 @@ const updateProfile = async (req, res, next) => {
         ...profile.family,
         fatherName: req.body.fatherName || profile.family?.fatherName,
         motherName: req.body.motherName || profile.family?.motherName,
-        siblings:   req.body.siblings   || profile.family?.siblings,
+        siblings: req.body.siblings || profile.family?.siblings,
         familyType: req.body.familyType || profile.family?.familyType,
       };
     }
 
     // Re-derive location string if state/city updated
     if (req.body.currentCity || req.body.currentState) {
-      const city  = req.body.currentCity  || profile.currentCity;
+      const city = req.body.currentCity || profile.currentCity;
       const state = req.body.currentState || profile.currentState;
       updateData.location = `${city}, ${state}`;
     }
 
-    if (req.body.dateOfBirth || req.body.rashi || req.body.nakshatra || req.body.pada || req.body.gotra || req.body.manglik !== undefined) {
+    if (
+      req.body.dateOfBirth ||
+      req.body.rashi ||
+      req.body.nakshatra ||
+      req.body.pada ||
+      req.body.gotra ||
+      req.body.manglik !== undefined
+    ) {
       updateData.horoscope = {
         ...profile.horoscope,
-        dateOfBirth:  req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : profile.horoscope?.dateOfBirth,
-        rashi:        req.body.rashi       !== undefined ? req.body.rashi       : profile.horoscope?.rashi,
-        nakshatra:    req.body.nakshatra   !== undefined ? req.body.nakshatra   : profile.horoscope?.nakshatra,
-        pada:         req.body.pada        !== undefined ? Number(req.body.pada) : profile.horoscope?.pada,
-        gotra:        req.body.gotra       !== undefined ? req.body.gotra       : profile.horoscope?.gotra,
-        manglik:      req.body.manglik     !== undefined ? req.body.manglik     : profile.horoscope?.manglik,
+        dateOfBirth: req.body.dateOfBirth
+          ? new Date(req.body.dateOfBirth)
+          : profile.horoscope?.dateOfBirth,
+        rashi: req.body.rashi !== undefined ? req.body.rashi : profile.horoscope?.rashi,
+        nakshatra:
+          req.body.nakshatra !== undefined ? req.body.nakshatra : profile.horoscope?.nakshatra,
+        pada: req.body.pada !== undefined ? Number(req.body.pada) : profile.horoscope?.pada,
+        gotra: req.body.gotra !== undefined ? req.body.gotra : profile.horoscope?.gotra,
+        manglik: req.body.manglik !== undefined ? req.body.manglik : profile.horoscope?.manglik,
       };
     }
 
@@ -502,34 +569,61 @@ const updateProfile = async (req, res, next) => {
     if (req.body.showPhotoTo || req.body.showContactTo || req.body.isProfileHidden !== undefined) {
       updateData.privacySettings = {
         ...profile.privacySettings,
-        showPhotoTo:    req.body.showPhotoTo    || profile.privacySettings?.showPhotoTo,
-        showContactTo:  req.body.showContactTo  || profile.privacySettings?.showContactTo,
-        isProfileHidden: req.body.isProfileHidden !== undefined ? (req.body.isProfileHidden === 'true' || req.body.isProfileHidden === true) : profile.privacySettings?.isProfileHidden,
+        showPhotoTo: req.body.showPhotoTo || profile.privacySettings?.showPhotoTo,
+        showContactTo: req.body.showContactTo || profile.privacySettings?.showContactTo,
+        isProfileHidden:
+          req.body.isProfileHidden !== undefined
+            ? req.body.isProfileHidden === 'true' || req.body.isProfileHidden === true
+            : profile.privacySettings?.isProfileHidden,
       };
     }
 
     // Handle Partner Preferences Updates
-    if (req.body.prefMinAge || req.body.prefMaxAge || req.body.prefLocation || req.body.prefCaste || req.body.prefReligion) {
+    if (
+      req.body.prefMinAge ||
+      req.body.prefMaxAge ||
+      req.body.prefLocation ||
+      req.body.prefCaste ||
+      req.body.prefReligion
+    ) {
       updateData.partnerPreferences = {
         ...profile.partnerPreferences,
-        minAge:   req.body.prefMinAge   ? Number(req.body.prefMinAge)   : profile.partnerPreferences?.minAge,
-        maxAge:   req.body.prefMaxAge   ? Number(req.body.prefMaxAge)   : profile.partnerPreferences?.maxAge,
-        location: req.body.prefLocation !== undefined ? req.body.prefLocation : profile.partnerPreferences?.location,
-        caste:    req.body.prefCaste    !== undefined ? req.body.prefCaste    : profile.partnerPreferences?.caste,
-        religion: req.body.prefReligion !== undefined ? req.body.prefReligion : profile.partnerPreferences?.religion,
+        minAge: req.body.prefMinAge
+          ? Number(req.body.prefMinAge)
+          : profile.partnerPreferences?.minAge,
+        maxAge: req.body.prefMaxAge
+          ? Number(req.body.prefMaxAge)
+          : profile.partnerPreferences?.maxAge,
+        location:
+          req.body.prefLocation !== undefined
+            ? req.body.prefLocation
+            : profile.partnerPreferences?.location,
+        caste:
+          req.body.prefCaste !== undefined ? req.body.prefCaste : profile.partnerPreferences?.caste,
+        religion:
+          req.body.prefReligion !== undefined
+            ? req.body.prefReligion
+            : profile.partnerPreferences?.religion,
       };
     }
 
     // ── Smart Master Data Registration for Updates ────────────────────────
-    if (req.body.caste)        updateData.caste = await registerValue('caste', req.body.caste);
-    if (req.body.religion)     updateData.religion = await registerValue('religion', req.body.religion);
-    if (req.body.motherTongue) updateData.motherTongue = await registerValue('motherTongue', req.body.motherTongue);
-    
+    if (req.body.caste) updateData.caste = await registerValue('caste', req.body.caste);
+    if (req.body.religion) updateData.religion = await registerValue('religion', req.body.religion);
+    if (req.body.motherTongue)
+      updateData.motherTongue = await registerValue('motherTongue', req.body.motherTongue);
+
     if (req.body.currentState) await registerValue('state', req.body.currentState);
-    if (req.body.currentCity)  await registerValue('city',  req.body.currentCity, req.body.currentState || profile.currentState);
-    
-    if (req.body.nativeState)  await registerValue('state', req.body.nativeState);
-    if (req.body.nativeCity)   await registerValue('city',  req.body.nativeCity, req.body.nativeState || profile.nativeState);
+    if (req.body.currentCity)
+      await registerValue(
+        'city',
+        req.body.currentCity,
+        req.body.currentState || profile.currentState,
+      );
+
+    if (req.body.nativeState) await registerValue('state', req.body.nativeState);
+    if (req.body.nativeCity)
+      await registerValue('city', req.body.nativeCity, req.body.nativeState || profile.nativeState);
 
     // Ensure age is NOT manually updated; it must derive from DOB
     delete updateData.age;
@@ -549,6 +643,12 @@ const updateProfile = async (req, res, next) => {
 // @route   GET /api/profiles/me
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getMyProfile = async (req, res, next) => {
   try {
     const profile = await Profile.findOne({ user: req.user._id });
@@ -564,6 +664,12 @@ const getMyProfile = async (req, res, next) => {
 // @route   GET /api/profiles/views
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getProfileViews = async (req, res, next) => {
   try {
     const isPremium = req.user.isPremiumActive ? req.user.isPremiumActive() : req.user.isPremium;
@@ -592,6 +698,12 @@ const getProfileViews = async (req, res, next) => {
 // @route   POST /api/profiles/:id/unlock-contact
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const unlockContact = async (req, res, next) => {
   try {
     const profile = await Profile.findById(req.params.id);
@@ -624,14 +736,22 @@ const unlockContact = async (req, res, next) => {
     // 5. Gold quota check
     if (user.premiumPlan === 'gold') {
       if (user.contactsAllowed <= 0) {
-        return sendError(res, 'You have reached your 30-contact limit. Upgrade to Platinum for unlimited access.', 403);
+        return sendError(
+          res,
+          'You have reached your 30-contact limit. Upgrade to Platinum for unlimited access.',
+          403,
+        );
       }
 
       user.contactsAllowed -= 1;
       user.contactsViewed.push(profile._id);
       await user.save();
 
-      return sendSuccess(res, { remaining: user.contactsAllowed }, 'Contact unlocked! Quota deducted.');
+      return sendSuccess(
+        res,
+        { remaining: user.contactsAllowed },
+        'Contact unlocked! Quota deducted.',
+      );
     }
 
     return sendError(res, 'Unsupported plan tier', 400);
@@ -645,6 +765,12 @@ const unlockContact = async (req, res, next) => {
 // @route   POST /api/profiles/shortlist/:id
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const toggleShortlist = async (req, res, next) => {
   try {
     const profileId = req.params.id;
@@ -657,7 +783,7 @@ const toggleShortlist = async (req, res, next) => {
     if (isShortlisted) {
       // Remove
       user.shortlistedProfiles = user.shortlistedProfiles.filter(
-        (id) => id.toString() !== profileId.toString()
+        (id) => id.toString() !== profileId.toString(),
       );
       await user.save();
       return sendSuccess(res, { isShortlisted: false }, 'Removed from shortlist');
@@ -677,11 +803,17 @@ const toggleShortlist = async (req, res, next) => {
 // @route   GET /api/profiles/shortlisted
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getShortlistedProfiles = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: 'shortlistedProfiles',
-      populate: { path: 'user', select: 'name email isPremium premiumPlan' }
+      populate: { path: 'user', select: 'name email isPremium premiumPlan' },
     });
 
     if (!user) return sendError(res, 'User not found', 404);

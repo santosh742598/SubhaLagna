@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Coupon Model
+ * @file SubhaLagna v3.0.0 — Coupon Model
  * @description   Schema for managing discount coupons.
  *                Supports percentage and fixed-amount discounts.
  */
@@ -46,7 +46,7 @@ const couponSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 /**
@@ -55,11 +55,7 @@ const couponSchema = new mongoose.Schema(
  */
 couponSchema.methods.isValid = function () {
   const now = new Date();
-  return (
-    this.isActive &&
-    this.usageCount < this.usageLimit &&
-    this.expiryDate > now
-  );
+  return this.isActive && this.usageCount < this.usageLimit && this.expiryDate > now;
 };
 
 module.exports = mongoose.model('Coupon', couponSchema);

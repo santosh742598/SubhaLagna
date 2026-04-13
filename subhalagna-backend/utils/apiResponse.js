@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Centralized API Response Helper
+ * @file SubhaLagna v3.0.0 — Centralized API Response Helper
  * @description   Standardizes all API responses across the application.
  *                Every successful response follows { success, data } and
  *                every error follows { success, message } format.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  *
  * Usage:
  *   const { sendSuccess, sendError } = require('../utils/apiResponse');
@@ -16,11 +16,10 @@
 
 /**
  * Send a standardized success response.
- *
  * @param {import('express').Response} res  - Express response object
  * @param {*}      data                     - Payload to send
- * @param {string} [message='Success']      - Human-readable message
- * @param {number} [statusCode=200]         - HTTP status code
+ * @param {string} [message]      - Human-readable message
+ * @param {number} [statusCode]         - HTTP status code
  */
 const sendSuccess = (res, data = null, message = 'Success', statusCode = 200) => {
   const payload = { success: true, message };
@@ -30,11 +29,10 @@ const sendSuccess = (res, data = null, message = 'Success', statusCode = 200) =>
 
 /**
  * Send a standardized error response.
- *
  * @param {import('express').Response} res  - Express response object
  * @param {string} message                  - Error message for the client
- * @param {number} [statusCode=500]         - HTTP status code
- * @param {*}      [errors=null]            - Optional validation errors array
+ * @param {number} [statusCode]         - HTTP status code
+ * @param {*}      [errors]            - Optional validation errors array
  */
 const sendError = (res, message = 'An error occurred', statusCode = 500, errors = null) => {
   const payload = { success: false, message };
@@ -44,7 +42,6 @@ const sendError = (res, message = 'An error occurred', statusCode = 500, errors 
 
 /**
  * Send a paginated list response.
- *
  * @param {import('express').Response} res
  * @param {Array}  data       - Array of results
  * @param {number} total      - Total count before pagination

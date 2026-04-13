@@ -1,51 +1,40 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Main Application Router
+ * @fileoverview SubhaLagna v3.0.0 — Main Application Router
  * @description   Entry point for all React routes. Wraps the application
  *                in required context providers (Auth → Notification → Chat)
  *                and configures all route guards.
- *
- *                Route Guards:
- *                  - GuestRoute      → only for unauthenticated users (Login, Signup)
- *                  - OnboardRoute    → only for logged-in users who haven't created a profile
- *                  - ProtectedRoute  → requires full auth + profile
- *                  - AdminRoute      → requires role === 'admin'
- *
- *                New routes in v2.4.0:
- *                  - /verify-email     → 6-digit OTP authentication center
- *
- *                New routes in v2.0.0:
- *
- *                v2.4.0 changes:
- *                  - Integrated VerifyEmail route.
- *                  - Updated ProtectedRoute and OnboardRoute to enforce isEmailVerified gating.
- *
+ *                - [v3.0.0 changes]
+ *                - Upgraded to Version 3.0.0.
+ *                - Implemented automated Class Sorting for Tailwind CSS.
+ *                - Standardized ESLint & Prettier for premium code quality.
+ *                - Enhanced JSDoc requirements for architectural integrity.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
 /* ── Context Providers ─────────────────────────────────────────────────────── */
-import { AuthProvider,         AuthContext }         from './context/AuthContext';
-import { NotificationProvider }                      from './context/NotificationContext';
-import { ChatProvider }                              from './context/ChatContext';
+import { AuthProvider, AuthContext } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
+import { ChatProvider } from './context/ChatContext';
 
 /* ── Components ────────────────────────────────────────────────────────────── */
-import Header           from './components/Header';
-import Home             from './components/Home';
-import Login            from './components/Login';
-import Signup           from './components/Signup';
-import CreateProfile    from './components/CreateProfile';
+import Header from './components/Header';
+import Home from './components/Home';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import CreateProfile from './components/CreateProfile';
 import ProfileDashboard from './components/ProfileDashboard';
-import MatchResults     from './components/MatchResults';
-import ProfileDetail    from './components/ProfileDetail';
+import MatchResults from './components/MatchResults';
+import ProfileDetail from './components/ProfileDetail';
 import PremiumMembership from './components/PremiumMembership';
-import Chat              from './components/Chat';
-import AdminDashboard     from './components/AdminDashboard';
-import VerifyEmail       from './components/VerifyEmail';
+import Chat from './components/Chat';
+import AdminDashboard from './components/AdminDashboard';
+import VerifyEmail from './components/VerifyEmail';
 import ShortlistedProfiles from './components/ShortlistedProfiles';
-import InterestButton   from './components/InterestButton'; // exported for reference
+import InterestButton from './components/InterestButton'; // exported for reference
 
 // ── Route Guards ──────────────────────────────────────────────────────────────
 
@@ -85,11 +74,12 @@ const OnboardRoute = ({ children }) => {
  */
 const ProtectedRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-rose-500 border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-rose-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   if (!token) return <Navigate to="/login" replace />;
 
   // Must be verified
@@ -150,44 +140,124 @@ function App() {
           <Router>
             <div className="min-h-screen relative flex flex-col font-sans">
               <Routes>
-
                 {/* ── Public Marketing Landing ────────────────────────── */}
                 <Route path="/" element={<Home />} />
 
                 {/* ── Auth + Dashboard Layout ──────────────────────────── */}
                 <Route element={<AppLayout />}>
-
                   {/* Auth flows (redirect to /matches if already logged in) */}
-                  <Route path="/login"  element={<GuestRoute><Login  /></GuestRoute>} />
-                  <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
+                  <Route
+                    path="/login"
+                    element={
+                      <GuestRoute>
+                        <Login />
+                      </GuestRoute>
+                    }
+                  />
+                  <Route
+                    path="/signup"
+                    element={
+                      <GuestRoute>
+                        <Signup />
+                      </GuestRoute>
+                    }
+                  />
 
                   {/* Onboarding — create initial profile */}
-                  <Route path="/verify-email"    element={<OnboardRoute><VerifyEmail /></OnboardRoute>} />
-                  <Route path="/create-profile"  element={<OnboardRoute><CreateProfile /></OnboardRoute>} />
+                  <Route
+                    path="/verify-email"
+                    element={
+                      <OnboardRoute>
+                        <VerifyEmail />
+                      </OnboardRoute>
+                    }
+                  />
+                  <Route
+                    path="/create-profile"
+                    element={
+                      <OnboardRoute>
+                        <CreateProfile />
+                      </OnboardRoute>
+                    }
+                  />
 
                   {/* ── Protected Dashboard Routes ────────────────────── */}
-                  <Route path="/profile"  element={<ProtectedRoute><ProfileDashboard /></ProtectedRoute>} />
-                  <Route path="/premium"  element={<ProtectedRoute><PremiumMembership /></ProtectedRoute>} />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <ProfileDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/premium"
+                    element={
+                      <ProtectedRoute>
+                        <PremiumMembership />
+                      </ProtectedRoute>
+                    }
+                  />
 
                   {/* ── v2.0.0 New Features ───────────────────────────── */}
-                  <Route path="/chat"     element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-                  <Route path="/chat/:conversationId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+                  <Route
+                    path="/chat"
+                    element={
+                      <ProtectedRoute>
+                        <Chat />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/chat/:conversationId"
+                    element={
+                      <ProtectedRoute>
+                        <Chat />
+                      </ProtectedRoute>
+                    }
+                  />
 
                   {/* ── Admin Dashboard ───────────────────────────────── */}
-                  <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                  <Route
+                    path="/admin"
+                    element={
+                      <AdminRoute>
+                        <AdminDashboard />
+                      </AdminRoute>
+                    }
+                  />
 
                   {/* ── Shortlisted Profiles ────────────────────────────── */}
-                  <Route path="/shortlisted" element={<ProtectedRoute><ShortlistedProfiles /></ProtectedRoute>} />
-
+                  <Route
+                    path="/shortlisted"
+                    element={
+                      <ProtectedRoute>
+                        <ShortlistedProfiles />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Route>
 
                 {/* ── Routes without the standard AppLayout padding ────── */}
-                <Route path="/matches"     element={<ProtectedRoute><MatchResults /></ProtectedRoute>} />
-                <Route path="/profile/:id" element={<ProtectedRoute><ProfileDetail /></ProtectedRoute>} />
+                <Route
+                  path="/matches"
+                  element={
+                    <ProtectedRoute>
+                      <MatchResults />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ProfileDetail />
+                    </ProtectedRoute>
+                  }
+                />
 
                 {/* ── Catch-all 404 ─────────────────────────────────────── */}
                 <Route path="*" element={<Navigate to="/" replace />} />
-
               </Routes>
             </div>
           </Router>

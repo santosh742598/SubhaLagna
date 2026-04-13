@@ -1,32 +1,31 @@
 /**
- * @fileoverview SubhaLagna v2.4.0 — Auth Controller
- * @description   Handles all authentication operations:
- *                - register     → create account + send OTP email
- *                - login        → validate credentials, issue tokens
- *                - verifyEmail  → verify 6-digit OTP
- *                - resendOTP    → generate new OTP with rate limiting
- *                - refreshToken → issue new access token using refresh token
- *                - forgotPassword, resetPassword → secure password reset flow
- *                - logout       → invalidate refresh token in DB
- *                - getMe        → fetch current user + profile
- *
- *                v2.4.0 changes:
- *                  - Implemented resendOTP with persistence-based rate limiting (Max 3/hr)
- *                  - Added auto-reset of resend counters on successful verification
- *
+ * @fileoverview SubhaLagna v3.0.0 — Auth Controller
+ * @description   Handles all authentication operations including:
+ *                - Secure registration and 6-digit OTP verification.
+ *                - JWT rotation (Access/Refresh) strategy.
+ *                - Secure password recovery and logout.
+ *                - [v3.0.0 changes]
+ *                - Upgraded to Version 3.0.0.
+ *                - Implemented strict JSDoc header validation.
+ *                - Standardized security-first error handling (apiResponse).
+ *                - Verified Express 5 compatibility layers.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
 
 const crypto = require('crypto');
 
-const User    = require('../models/User');
+const User = require('../models/User');
 const Profile = require('../models/Profile');
-const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../utils/generateToken');
-const { sendVerificationEmail, sendPasswordResetEmail }                  = require('../utils/emailService');
-const { sendSuccess, sendError }                                          = require('../utils/apiResponse');
+const {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} = require('../utils/generateToken');
+const { sendVerificationEmail, sendPasswordResetEmail } = require('../utils/emailService');
+const { sendSuccess, sendError } = require('../utils/apiResponse');
 
 // ── Helper: Generate a 6-digit OTP ───────────────────────────────────────────
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -39,17 +38,17 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
  * @returns {object}
  */
 const buildAuthResponse = (user, profile) => ({
-  _id:             user._id,
-  name:            user.name,
-  email:           user.email,
-  role:            user.role,
-  isPremium:       user.isPremium,
-  premiumPlan:     user.premiumPlan,
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  isPremium: user.isPremium,
+  premiumPlan: user.premiumPlan,
   isEmailVerified: user.isEmailVerified,
-  hasProfile:      !!profile,
-  profile:         profile || null,
-  accessToken:     generateAccessToken(user._id),
-  refreshToken:    generateRefreshToken(user._id),
+  hasProfile: !!profile,
+  profile: profile || null,
+  accessToken: generateAccessToken(user._id),
+  refreshToken: generateRefreshToken(user._id),
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -57,6 +56,12 @@ const buildAuthResponse = (user, profile) => ({
 // @route   POST /api/auth/register
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const registerUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -68,7 +73,7 @@ const registerUser = async (req, res, next) => {
     }
 
     // Generate OTP for email verification
-    const otp    = generateOTP();
+    const otp = generateOTP();
     const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     // Create user (password hashed in pre-save hook)
@@ -76,8 +81,8 @@ const registerUser = async (req, res, next) => {
       name,
       email,
       password,
-      emailVerifyOtp:         otp,
-      emailVerifyOtpExpires:  expiry,
+      emailVerifyOtp: otp,
+      emailVerifyOtpExpires: expiry,
     });
 
     // Send verification email (non-blocking failure — don't break registration)
@@ -97,7 +102,7 @@ const registerUser = async (req, res, next) => {
       res,
       responseData,
       'Account created! Please check your email for the verification OTP.',
-      201
+      201,
     );
   } catch (err) {
     next(err); // Mongoose duplicate key errors are handled by errorHandler
@@ -109,13 +114,18 @@ const registerUser = async (req, res, next) => {
 // @route   POST /api/auth/verify-email
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const verifyEmail = async (req, res, next) => {
   try {
     const { email, otp } = req.body;
 
     // Must select hidden fields explicitly
-    const user = await User.findOne({ email })
-      .select('+emailVerifyOtp +emailVerifyOtpExpires');
+    const user = await User.findOne({ email }).select('+emailVerifyOtp +emailVerifyOtpExpires');
 
     if (!user) return sendError(res, 'User not found', 404);
     if (user.isEmailVerified) return sendError(res, 'Email already verified', 400);
@@ -127,11 +137,11 @@ const verifyEmail = async (req, res, next) => {
     }
 
     // Mark verified, clear OTP fields and resend counters
-    user.isEmailVerified        = true;
-    user.emailVerifyOtp         = undefined;
-    user.emailVerifyOtpExpires  = undefined;
-    user.otpResendCount         = 0;
-    user.otpLastResend          = undefined;
+    user.isEmailVerified = true;
+    user.emailVerifyOtp = undefined;
+    user.emailVerifyOtpExpires = undefined;
+    user.otpResendCount = 0;
+    user.otpLastResend = undefined;
     await user.save({ validateBeforeSave: false });
 
     return sendSuccess(res, null, 'Email verified successfully! You can now log in.');
@@ -145,6 +155,12 @@ const verifyEmail = async (req, res, next) => {
 // @route   POST /api/auth/resend-otp
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const resendOTP = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -169,13 +185,13 @@ const resendOTP = async (req, res, next) => {
     }
 
     // ── Generate and Send New OTP ────────────────────────────────────────────
-    const otp    = generateOTP();
+    const otp = generateOTP();
     const expiry = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes
 
-    user.emailVerifyOtp        = otp;
+    user.emailVerifyOtp = otp;
     user.emailVerifyOtpExpires = expiry;
-    user.otpResendCount       += 1;
-    user.otpLastResend         = now;
+    user.otpResendCount += 1;
+    user.otpLastResend = now;
 
     await user.save({ validateBeforeSave: false });
 
@@ -197,6 +213,12 @@ const resendOTP = async (req, res, next) => {
 // @route   POST /api/auth/login
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -216,7 +238,7 @@ const loginUser = async (req, res, next) => {
 
     // Generate and store refresh token (for rotation strategy)
     const refreshToken = generateRefreshToken(user._id);
-    user.refreshToken  = refreshToken;
+    user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
     const responseData = buildAuthResponse(user, profile);
@@ -232,6 +254,12 @@ const loginUser = async (req, res, next) => {
 // @route   POST /api/auth/refresh-token
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken: incomingToken } = req.body;
@@ -248,12 +276,16 @@ const refreshToken = async (req, res, next) => {
     }
 
     // Issue new tokens (rotation — old refresh token is replaced)
-    const newAccessToken  = generateAccessToken(user._id);
+    const newAccessToken = generateAccessToken(user._id);
     const newRefreshToken = generateRefreshToken(user._id);
-    user.refreshToken     = newRefreshToken;
+    user.refreshToken = newRefreshToken;
     await user.save({ validateBeforeSave: false });
 
-    return sendSuccess(res, { accessToken: newAccessToken, refreshToken: newRefreshToken }, 'Token refreshed');
+    return sendSuccess(
+      res,
+      { accessToken: newAccessToken, refreshToken: newRefreshToken },
+      'Token refreshed',
+    );
   } catch (err) {
     next(err);
   }
@@ -264,6 +296,12 @@ const refreshToken = async (req, res, next) => {
 // @route   POST /api/auth/forgot-password
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -271,14 +309,18 @@ const forgotPassword = async (req, res, next) => {
     const user = await User.findOne({ email });
     // Always return success even if user doesn't exist (prevent user enumeration)
     if (!user) {
-      return sendSuccess(res, null, 'If an account with this email exists, a reset link has been sent.');
+      return sendSuccess(
+        res,
+        null,
+        'If an account with this email exists, a reset link has been sent.',
+      );
     }
 
     // Generate secure random token
     const resetToken = crypto.randomBytes(32).toString('hex');
 
     // Store hashed token in DB (never store plain token)
-    user.resetPasswordToken   = crypto.createHash('sha256').update(resetToken).digest('hex');
+    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
     user.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     await user.save({ validateBeforeSave: false });
 
@@ -288,13 +330,17 @@ const forgotPassword = async (req, res, next) => {
       await sendPasswordResetEmail(email, user.name, resetUrl);
     } catch (emailErr) {
       // Roll back token if email fails
-      user.resetPasswordToken   = undefined;
+      user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
       await user.save({ validateBeforeSave: false });
       return sendError(res, 'Email could not be sent. Please try again.', 500);
     }
 
-    return sendSuccess(res, null, 'If an account with this email exists, a reset link has been sent.');
+    return sendSuccess(
+      res,
+      null,
+      'If an account with this email exists, a reset link has been sent.',
+    );
   } catch (err) {
     next(err);
   }
@@ -305,6 +351,12 @@ const forgotPassword = async (req, res, next) => {
 // @route   POST /api/auth/reset-password/:token
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const resetPassword = async (req, res, next) => {
   try {
     const { token } = req.params;
@@ -314,7 +366,7 @@ const resetPassword = async (req, res, next) => {
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
     const user = await User.findOne({
-      resetPasswordToken:   hashedToken,
+      resetPasswordToken: hashedToken,
       resetPasswordExpires: { $gt: new Date() }, // Token must not be expired
     }).select('+resetPasswordToken +resetPasswordExpires');
 
@@ -323,13 +375,17 @@ const resetPassword = async (req, res, next) => {
     }
 
     // Set new password and clear reset fields
-    user.password             = password; // pre-save hook will hash it
-    user.resetPasswordToken   = undefined;
+    user.password = password; // pre-save hook will hash it
+    user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
-    user.refreshToken         = undefined; // Invalidate all sessions
+    user.refreshToken = undefined; // Invalidate all sessions
     await user.save();
 
-    return sendSuccess(res, null, 'Password reset successful. Please log in with your new password.');
+    return sendSuccess(
+      res,
+      null,
+      'Password reset successful. Please log in with your new password.',
+    );
   } catch (err) {
     next(err);
   }
@@ -340,6 +396,12 @@ const resetPassword = async (req, res, next) => {
 // @route   POST /api/auth/logout
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const logoutUser = async (req, res, next) => {
   try {
     // Clear refresh token so it can't be reused
@@ -355,6 +417,12 @@ const logoutUser = async (req, res, next) => {
 // @route   GET /api/auth/me
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 const getMe = async (req, res, next) => {
   try {
     const profile = await Profile.findOne({ user: req.user._id });

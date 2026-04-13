@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Profile Routes
+ * @file SubhaLagna v3.0.0 — Profile Routes
  * @description   Route definitions for profile management.
  *                All routes require authentication.
  *
@@ -11,33 +11,38 @@
  *   GET   /views         → who viewed my profile (premium)
  *   GET   /:id           → get any profile by ID (tracks view)
  *   PUT   /:id           → update own profile (ownership enforced)
- *
  * @author SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
 
 const express = require('express');
-const router  = express.Router();
+const router = express.Router();
 
 const {
-  setupProfile, getMatches, getProfileById,
-  updateProfile, getMyProfile, getProfileViews,
-  unlockContact, toggleShortlist, getShortlistedProfiles,
+  setupProfile,
+  getMatches,
+  getProfileById,
+  updateProfile,
+  getMyProfile,
+  getProfileViews,
+  unlockContact,
+  toggleShortlist,
+  getShortlistedProfiles,
 } = require('../controllers/profileController');
 
-const { protect }                 = require('../middleware/authMiddleware');
-const { uploadProfilePhotos }     = require('../middleware/uploadMiddleware');
-const { uploadLimiter }           = require('../middleware/rateLimitMiddleware');
+const { protect } = require('../middleware/authMiddleware');
+const { uploadProfilePhotos } = require('../middleware/uploadMiddleware');
+const { uploadLimiter } = require('../middleware/rateLimitMiddleware');
 const { profileSetupRules, validate } = require('../middleware/validateMiddleware');
 
 // All profile routes require authentication
 router.use(protect);
 
 // ── Specific Action Routes (Must come BEFORE generic :id) ────────────────────
-router.get('/me',          getMyProfile);
-router.get('/views',       getProfileViews);
+router.get('/me', getMyProfile);
+router.get('/views', getProfileViews);
 router.get('/shortlisted', getShortlistedProfiles);
 router.post('/shortlist/:id', toggleShortlist);
 
@@ -48,7 +53,7 @@ router.post(
   uploadProfilePhotos,
   profileSetupRules,
   validate,
-  setupProfile
+  setupProfile,
 );
 
 // Match browsing
@@ -62,11 +67,6 @@ router.get('/:id', getProfileById);
 router.post('/:id/unlock-contact', unlockContact);
 
 // Update profile (ownership checked in controller)
-router.put(
-  '/:id',
-  uploadLimiter,
-  uploadProfilePhotos,
-  updateProfile
-);
+router.put('/:id', uploadLimiter, uploadProfilePhotos, updateProfile);
 
 module.exports = router;

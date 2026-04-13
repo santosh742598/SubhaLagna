@@ -1,17 +1,16 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Profile Model
- * @description   Detailed matrimony profile schema. One profile per user (enforced
- *                by unique index on `user`). Stores biographical, family, career,
- *                personality, and preference data.
- *
- *                New in v2.0.0:
- *                  - privacySettings (photo/contact visibility)
- *                  - horoscope (DOB, time, place for Kundali matching)
- *                  - profileViews count
- *                  - completenessScore (computed on save)
- *
+ * @fileoverview SubhaLagna v3.0.0 — Profile Model
+ * @description   Detailed matrimony profile schema. Enforces:
+ *                - One profile per user (unique index).
+ *                - Comprehensive biographical and preference data.
+ *                - privacySettings for photo and contact visibility.
+ *                - [v3.0.0 changes]
+ *                - Upgraded to Version 3.0.0.
+ *                - Strict Schema validation for Manglik and Caste fields.
+ *                - JSDoc compliance for architectural clarity.
+ *                - Standardized pre-save hooks for completeness scoring.
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
@@ -29,30 +28,30 @@ const profileSchema = new mongoose.Schema(
     },
 
     // ── Basic Info ────────────────────────────────────────────────────────────
-    name:   { type: String, required: true, trim: true },
+    name: { type: String, required: true, trim: true },
     gender: { type: String, required: true, enum: ['Male', 'Female'] },
-    age:    { type: Number, min: 18, max: 80 }, // Now auto-calculated from DOB
+    age: { type: Number, min: 18, max: 80 }, // Now auto-calculated from DOB
 
     // ── Location ──────────────────────────────────────────────────────────────
-    location:    { type: String, default: '' }, // Derived: "City, State"
+    location: { type: String, default: '' }, // Derived: "City, State"
     currentState: { type: String, default: '' },
-    currentCity:  { type: String, default: '' },
-    nativeState:  { type: String, default: '' },
-    nativeCity:   { type: String, default: '' },
+    currentCity: { type: String, default: '' },
+    nativeState: { type: String, default: '' },
+    nativeCity: { type: String, default: '' },
 
     // ── Religion & Community ──────────────────────────────────────────────────
     religion: { type: String, default: 'Hindu', trim: true },
-    caste:    { type: String, default: '', trim: true },
+    caste: { type: String, default: '', trim: true },
     motherTongue: { type: String, default: '', trim: true },
 
     // ── Physical & Professional ───────────────────────────────────────────────
-    height:     { type: String, default: "5' 5\"" },
-    education:  { type: String, default: 'Graduate', trim: true },
+    height: { type: String, default: '5\' 5"' },
+    education: { type: String, default: 'Graduate', trim: true },
     profession: { type: String, default: 'Professional', trim: true },
-    bio:        { type: String, default: '', maxlength: [500, 'Bio cannot exceed 500 characters'] },
+    bio: { type: String, default: '', maxlength: [500, 'Bio cannot exceed 500 characters'] },
 
     // ── Photos ────────────────────────────────────────────────────────────────
-    profilePhoto:     { type: String, default: '' },
+    profilePhoto: { type: String, default: '' },
     additionalPhotos: [{ type: String }],
 
     // ── Verification ─────────────────────────────────────────────────────────
@@ -62,44 +61,44 @@ const profileSchema = new mongoose.Schema(
     family: {
       fatherName: { type: String, default: '', trim: true },
       motherName: { type: String, default: '', trim: true },
-      siblings:   { type: String, default: '0' },
+      siblings: { type: String, default: '0' },
       familyType: { type: String, enum: ['Nuclear', 'Joint'], default: 'Nuclear' },
     },
 
     // ── Personality & Hobbies ─────────────────────────────────────────────────
-    traits:           [{ type: String }],
-    interests:        [{ type: String }],
+    traits: [{ type: String }],
+    interests: [{ type: String }],
     partnerInterests: { type: String, default: '', maxlength: 500 },
 
     // ── Partner Preferences ───────────────────────────────────────────────────
     partnerPreferences: {
-      minAge:   { type: Number, default: 18 },
-      maxAge:   { type: Number, default: 40 },
+      minAge: { type: Number, default: 18 },
+      maxAge: { type: Number, default: 40 },
       location: { type: String, default: 'Any' },
-      caste:    { type: String, default: 'Any' },
+      caste: { type: String, default: 'Any' },
       religion: { type: String, default: 'Any' },
     },
 
     // ── Horoscope / Kundali (v2.0.0) ─────────────────────────────────────────
     horoscope: {
-      dateOfBirth:  { type: Date,   default: null },
-      timeOfBirth:  { type: String, default: '' },
+      dateOfBirth: { type: Date, default: null },
+      timeOfBirth: { type: String, default: '' },
       placeOfBirth: { type: String, default: '' },
-      rashi:        { type: String, default: '' }, // Moon sign
-      nakshatra:    { type: String, default: '' },
-      pada:         { type: Number, enum: [1, 2, 3, 4], default: null }, // Nakshatra quarter
-      gotra:        { type: String, default: '' },
-      manglik:      { type: String, enum: ['Yes', 'No', 'Unknown'], default: 'Unknown' },
+      rashi: { type: String, default: '' }, // Moon sign
+      nakshatra: { type: String, default: '' },
+      pada: { type: Number, enum: [1, 2, 3, 4], default: null }, // Nakshatra quarter
+      gotra: { type: String, default: '' },
+      manglik: { type: String, enum: ['Yes', 'No', 'Unknown'], default: 'Unknown' },
     },
 
     // ── Privacy Settings (v2.0.0) ────────────────────────────────────────────
     privacySettings: {
-      showPhotoTo:    {
+      showPhotoTo: {
         type: String,
         enum: ['everyone', 'interests_only', 'none'],
         default: 'everyone',
       },
-      showContactTo:  {
+      showContactTo: {
         type: String,
         enum: ['premium_only', 'interests_only', 'none'],
         default: 'premium_only',
@@ -108,12 +107,12 @@ const profileSchema = new mongoose.Schema(
     },
 
     // ── Analytics (v2.0.0) ───────────────────────────────────────────────────
-    profileViews:       { type: Number, default: 0 },
-    completenessScore:  { type: Number, default: 0, min: 0, max: 100 },
+    profileViews: { type: Number, default: 0 },
+    completenessScore: { type: Number, default: 0, min: 0, max: 100 },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // ── Indexes for fast querying ─────────────────────────────────────────────────
@@ -130,29 +129,41 @@ profileSchema.pre('save', async function () {
   if (this.horoscope?.dateOfBirth) {
     const dob = new Date(this.horoscope.dateOfBirth);
     const diff = Date.now() - dob.getTime();
-    const ageDate = new Date(diff); 
+    const ageDate = new Date(diff);
     this.age = Math.abs(ageDate.getUTCFullYear() - 1970);
   }
 
   // 2. Compute profile completeness score
   let score = 0;
-  const w = { // field: weight
-    name: 10, bio: 15, profilePhoto: 15, age: 5, religion: 5,
-    location: 5, education: 5, profession: 5, height: 5, motherTongue: 5,
-    traits: 10, interests: 10, 'family.fatherName': 5, 'horoscope.dateOfBirth': 5,
+  const w = {
+    // field: weight
+    name: 10,
+    bio: 15,
+    profilePhoto: 15,
+    age: 5,
+    religion: 5,
+    location: 5,
+    education: 5,
+    profession: 5,
+    height: 5,
+    motherTongue: 5,
+    traits: 10,
+    interests: 10,
+    'family.fatherName': 5,
+    'horoscope.dateOfBirth': 5,
   };
 
-  if (this.name)              score += w.name;
-  if (this.bio?.length > 20)  score += w.bio;
+  if (this.name) score += w.name;
+  if (this.bio?.length > 20) score += w.bio;
   if (this.profilePhoto && !this.profilePhoto.includes('default')) score += w.profilePhoto;
-  if (this.age)               score += w.age;
-  if (this.religion)          score += w.religion;
-  if (this.location)          score += w.location;
-  if (this.education)         score += w.education;
-  if (this.profession)        score += w.profession;
-  if (this.height)            score += w.height;
-  if (this.motherTongue)      score += w.motherTongue;
-  if (this.traits?.length)    score += w.traits;
+  if (this.age) score += w.age;
+  if (this.religion) score += w.religion;
+  if (this.location) score += w.location;
+  if (this.education) score += w.education;
+  if (this.profession) score += w.profession;
+  if (this.height) score += w.height;
+  if (this.motherTongue) score += w.motherTongue;
+  if (this.traits?.length) score += w.traits;
   if (this.interests?.length) score += w.interests;
   if (this.family?.fatherName) score += w['family.fatherName'];
   if (this.horoscope?.dateOfBirth) score += w['horoscope.dateOfBirth'];

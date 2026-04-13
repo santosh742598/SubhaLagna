@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — User Model
+ * @file SubhaLagna v3.0.0 — User Model
  * @description   Core user account schema. Stores authentication credentials
  *                and account-level metadata. Profile details are in Profile.js.
  *
@@ -8,15 +8,14 @@
  *
  *                Fields added in v2.0.0:
  *                  - isEmailVerified, emailVerifyOtp, emailVerifyOtpExpires
- *
  * @author        SubhaLagna Team
- * @version 2.4.0
+ * @version      3.0.0
  */
 
 'use strict';
 
 const mongoose = require('mongoose');
-const bcrypt   = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
@@ -110,23 +109,27 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
     // ── Contact View Tracking (v2.0.0) ──────────────────────────────────────────
-    contactsViewed: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Profile'
-    }],
+    contactsViewed: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile',
+      },
+    ],
     contactsAllowed: {
       type: Number,
-      default: 0 // Will be set to 30 for Gold, -1 for Platinum
+      default: 0, // Will be set to 30 for Gold, -1 for Platinum
     },
     // ── Shortlist Management (v2.3.2) ───────────────────────────────────────
-    shortlistedProfiles: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Profile'
-    }]
+    shortlistedProfiles: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile',
+      },
+    ],
   },
   {
     timestamps: true, // createdAt, updatedAt
-  }
+  },
 );
 
 // ── Indexes ───────────────────────────────────────────────────────────────────
@@ -145,7 +148,6 @@ userSchema.pre('save', async function () {
 
 /**
  * Compare candidate password with stored hash.
- *
  * @param {string} candidatePassword - Plain text password from login form
  * @returns {Promise<boolean>}
  */
@@ -155,7 +157,6 @@ userSchema.methods.matchPassword = async function (candidatePassword) {
 
 /**
  * Check if the user's premium subscription is currently active.
- *
  * @returns {boolean}
  */
 userSchema.methods.isPremiumActive = function () {
@@ -167,7 +168,7 @@ userSchema.virtual('profile', {
   ref: 'Profile',
   localField: '_id',
   foreignField: 'user',
-  justOne: true
+  justOne: true,
 });
 
 // Ensure virtuals are included in toObject and toJSON transformations

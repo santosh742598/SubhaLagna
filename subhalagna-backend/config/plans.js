@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v2.3.0 — Subscription Plans Configuration
+ * @file SubhaLagna v3.0.0 — Subscription Plans Configuration
  * @description   Unified source of truth for all membership plans.
  *                Changes here reflect instantly across frontend and payment gateway.
  */
@@ -18,7 +18,7 @@ const plans = [
       { text: 'View Contact Info', included: false },
       { text: 'Direct Messaging', included: false },
     ],
-    contactsAllowed: 0
+    contactsAllowed: 0,
   },
   {
     id: 'gold',
@@ -35,7 +35,7 @@ const plans = [
       { text: 'Direct Messaging', included: true },
       { text: 'View Private Photos', included: true },
     ],
-    contactsAllowed: 30
+    contactsAllowed: 30,
   },
   {
     id: 'platinum',
@@ -52,8 +52,8 @@ const plans = [
       { text: 'Priority Placement', included: true },
       { text: 'View Private Photos', included: true },
     ],
-    contactsAllowed: -1 // Unlimited
-  }
+    contactsAllowed: -1, // Unlimited
+  },
 ];
 
 module.exports = plans;
