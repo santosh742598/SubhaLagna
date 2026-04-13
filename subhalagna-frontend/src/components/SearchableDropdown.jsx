@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.2 — Searchable Dropdown
+ * @file        SubhaLagna v3.0.3 — Searchable Dropdown
  * @description   A reusable interactive dropdown with search filtering and manual entry support.
  */
 

@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Notification Controller
+ * @file SubhaLagna v3.0.3 — Notification Controller
  * @description   Handles in-app notifications for the bell icon in the header.
  *                Endpoints:
  *                  - getNotifications → GET paginated list
@@ -9,7 +9,7 @@
  *                  - markAllRead      → PUT mark all as read
  *                  - deleteNotification → DELETE a specific one
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const Notification = require('../models/Notification');
@@ -21,10 +21,11 @@ const { sendSuccess, sendError } = require('../utils/apiResponse');
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getNotifications = async (req, res, next) => {
   try {
@@ -53,10 +54,11 @@ const getNotifications = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const markOneRead = async (req, res, next) => {
   try {
@@ -84,10 +86,11 @@ const markOneRead = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const markAllRead = async (req, res, next) => {
   try {
@@ -107,10 +110,11 @@ const markAllRead = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const deleteNotification = async (req, res, next) => {
   try {

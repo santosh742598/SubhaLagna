@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — MasterData Service
+ * @file SubhaLagna v3.0.3 — MasterData Service
  * @description   Handles logic for registering and retrieving master data entries.
  */
 
@@ -10,7 +10,8 @@ const MasterData = require('../models/MasterData');
 /**
  * Normalizes a string for deduplication logic.
  * E.g., " Brahmin  " -> "brahmin"
- * @param val
+ * @param {string} val - The raw string to normalize.
+ * @returns {string} - The normalized string.
  */
 const normalize = (val) => {
   if (!val) return '';
@@ -20,7 +21,8 @@ const normalize = (val) => {
 /**
  * Formats a string to Title Case for better display.
  * E.g., "brahmin" -> "Brahmin"
- * @param str
+ * @param {string} str - The string to format.
+ * @returns {string} - The formatted string in Title Case.
  */
 const toTitleCase = (str) => {
   if (!str) return '';
@@ -35,7 +37,8 @@ const toTitleCase = (str) => {
  * Updates the usage count if it does.
  * @param {string} type - 'caste', 'city', 'state', 'religion', 'motherTongue'
  * @param {string} value - The raw input value
- * @param {string} group - Optional group (e.g. State name for a City)
+ * @param {string} [group=''] - Optional group (e.g. State name for a City)
+ * @returns {Promise<string|null>} - Returns the official value or null.
  */
 const registerValue = async (type, value, group = '') => {
   if (!value) return null;
@@ -75,8 +78,9 @@ const registerValue = async (type, value, group = '') => {
 
 /**
  * Fetches unique values for a given type.
- * @param type
- * @param group
+ * @param {string} type - The type of data to fetch (e.g., 'caste', 'city').
+ * @param {string} [group=null] - Optional group filter.
+ * @returns {Promise<Array>} - Array of option objects.
  */
 const getOptions = async (type, group = null) => {
   const query = { type };

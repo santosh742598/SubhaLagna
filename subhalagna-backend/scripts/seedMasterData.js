@@ -6,7 +6,6 @@
 
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const MasterData = require('./models/MasterData');
 const { registerValue } = require('./services/masterDataService');
 
 dotenv.config();

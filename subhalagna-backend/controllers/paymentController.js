@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.2 — Payment & Subscription Controller
+ * @file        SubhaLagna v3.0.3 — Payment & Subscription Controller
  * @description   Handles Razorpay orders, payment verification, and membership logic:
  *                - Integrated Razorpay order creation and signature verification.
  *                - Automated subscription activation and quota management.
@@ -12,7 +12,7 @@
  *                - Implemented strict JSDoc validation and security checkpoints.
  *                - Verified audit logging for manual bank transfers.
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const Razorpay = require('razorpay');
@@ -33,14 +33,14 @@ const razorpay = new Razorpay({
 /**
  * Get available subscription plans.
  * GET /api/payments/plans
- * @param req
- * @param res
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
  */
 exports.getPlans = async (req, res) => {
   try {
     const plans = await MembershipPlan.find({ isActive: true }).lean();
     res.json({ success: true, data: plans });
-  } catch (err) {
+  } catch {
     res.status(500).json({ success: false, message: 'Failed to fetch plans' });
   }
 };
@@ -48,8 +48,8 @@ exports.getPlans = async (req, res) => {
 /**
  * Validate a coupon code and return discount details.
  * POST /api/payments/validate-coupon
- * @param req
- * @param res
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
  */
 exports.validateCoupon = async (req, res) => {
   const { code, planId } = req.body;
@@ -90,8 +90,8 @@ exports.validateCoupon = async (req, res) => {
 /**
  * Create a Razorpay Order (or return isFree if amount is 0).
  * POST /api/payments/order
- * @param req
- * @param res
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
  */
 exports.createOrder = async (req, res) => {
   const { planId, couponCode } = req.body;
@@ -101,8 +101,6 @@ exports.createOrder = async (req, res) => {
     if (!plan) return res.status(404).json({ success: false, message: 'Plan not found' });
 
     let finalAmount = plan.price;
-    let couponApplied = null;
-
     if (couponCode) {
       const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
       if (coupon && coupon.isValid()) {
@@ -113,7 +111,6 @@ exports.createOrder = async (req, res) => {
           discount = coupon.discountValue;
         }
         finalAmount = Math.max(0, plan.price - discount);
-        couponApplied = coupon;
       }
     }
 
@@ -154,8 +151,8 @@ exports.createOrder = async (req, res) => {
 /**
  * Verify Razorpay payment signature and upgrade user.
  * POST /api/payments/verify
- * @param req
- * @param res
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
  */
 exports.verifyPayment = async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, planId, couponCode } =
@@ -196,8 +193,8 @@ exports.verifyPayment = async (req, res) => {
 /**
  * Direct activation for ₹0 plans (bypass Razorpay).
  * POST /api/payments/confirm-free
- * @param req
- * @param res
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
  */
 exports.confirmFreeSubscription = async (req, res) => {
   const { planId, couponCode } = req.body;
@@ -231,11 +228,12 @@ exports.confirmFreeSubscription = async (req, res) => {
 
 /**
  * Helper to update user status and expiry and record payment.
- * @param userId
- * @param planId
- * @param couponCode
- * @param amount
- * @param razorData
+ * @param {string} userId - ID of the user to upgrade.
+ * @param {string} planId - ID of the membership plan.
+ * @param {string} couponCode - Optional coupon code used.
+ * @param {number} amount - Final amount paid.
+ * @param {object} [razorData={}] - Optional Razorpay payment metadata.
+ * @returns {Promise<void>} - A promise that resolves when the upgrade is complete.
  */
 const upgradeUserSubscription = async (userId, planId, couponCode, amount, razorData = {}) => {
   const plan = await MembershipPlan.findOne({ planId });
@@ -297,11 +295,11 @@ const upgradeUserSubscription = async (userId, planId, couponCode, amount, razor
 /**
  * Request a manual bank transfer payment.
  * POST /api/payments/bank-transfer
- * @param req
- * @param res
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
  */
 exports.requestBankTransfer = async (req, res) => {
-  const { planId, couponCode, amount, utrNumber, senderUpiId, paymentDateTime, userRemarks } =
+  const { planId, amount, utrNumber, senderUpiId, paymentDateTime, userRemarks } =
     req.body;
 
   try {

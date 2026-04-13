@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.2 — Match Results
+ * @file        SubhaLagna v3.0.3 — Match Results
  * @description   Displays compatible profiles based on user's preferences.
  *                v2.0.0 changes:
  *                  - Centralized data fetching via profileService

@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.2 — Signup Implementation
+ * @file        SubhaLagna v3.0.3 — Signup Implementation
  * @description   Handles new user account creation.
  *                v2.4.0 changes:
  *                  - Updated successful signup redirect to /verify-email.

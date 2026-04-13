@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.2 — Profile Controller
+ * @file        SubhaLagna v3.0.3 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
  *                - Comprehensive profile setup (onboarding).
  *                - Paginated matches with Guna Milan scoring.
@@ -12,17 +12,14 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const Profile = require('../models/Profile');
 const User = require('../models/User');
 const ProfileView = require('../models/ProfileView');
 const Interest = require('../models/Interest');
-const Notification = require('../models/Notification');
 const sharp = require('sharp');
-const path = require('path');
-const fs = require('fs');
 const storageService = require('../utils/storageService');
 const { enrichWithMatchScores } = require('../utils/matchingAlgorithm');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
@@ -35,17 +32,17 @@ const { registerValue } = require('../services/masterDataService');
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const setupProfile = async (req, res, next) => {
   try {
     const {
       name,
       gender,
-      age,
       location,
       caste,
       religion,
@@ -136,12 +133,10 @@ const setupProfile = async (req, res, next) => {
       : [];
 
     // ── Smart Master Data Registration ───────────────────────────────────
-    const [regCaste, regReligion, regMT, regState, regCity] = await Promise.all([
+    const [regCaste, regReligion, regMT] = await Promise.all([
       registerValue('caste', caste),
       registerValue('religion', religion),
       registerValue('motherTongue', motherTongue),
-      registerValue('state', currentState),
-      registerValue('city', currentCity, currentState),
     ]);
     // Also register native location
     await Promise.all([
@@ -159,7 +154,6 @@ const setupProfile = async (req, res, next) => {
       currentState: currentState || '',
       currentCity: currentCity || '',
       nativeState: nativeState || '',
-      nativeCity: nativeCity || '',
       nativeCity: nativeCity || '',
       caste: regCaste || caste || '',
       religion: regReligion || religion || 'Hindu',
@@ -201,10 +195,11 @@ const setupProfile = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getMatches = async (req, res, next) => {
   try {
@@ -258,13 +253,27 @@ const getMatches = async (req, res, next) => {
     // Exclude hidden profiles
     query['privacySettings.isProfileHidden'] = false;
 
+    const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
     // Optional filters
-    if (location && location !== 'Any') query.currentState = new RegExp(location, 'i');
-    if (caste && caste !== 'Any') query.caste = new RegExp(caste, 'i');
-    if (religion && religion !== 'Any') query.religion = new RegExp(religion, 'i');
-    if (education && education !== 'Any') query.education = new RegExp(education, 'i');
-    if (motherTongue && motherTongue !== 'Any') query.motherTongue = new RegExp(motherTongue, 'i');
-    if (profession && profession !== 'Any') query.profession = new RegExp(profession, 'i');
+    if (location && location !== 'Any') {
+      query.currentState = new RegExp(escapeRegExp(location), 'i');
+    }
+    if (caste && caste !== 'Any') {
+      query.caste = new RegExp(escapeRegExp(caste), 'i');
+    }
+    if (religion && religion !== 'Any') {
+      query.religion = new RegExp(escapeRegExp(religion), 'i');
+    }
+    if (education && education !== 'Any') {
+      query.education = new RegExp(escapeRegExp(education), 'i');
+    }
+    if (motherTongue && motherTongue !== 'Any') {
+      query.motherTongue = new RegExp(escapeRegExp(motherTongue), 'i');
+    }
+    if (profession && profession !== 'Any') {
+      query.profession = new RegExp(escapeRegExp(profession), 'i');
+    }
 
     // Horoscope: Manglik
     if (manglik && manglik !== 'Any') {
@@ -349,10 +358,11 @@ const getMatches = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getProfileById = async (req, res, next) => {
   try {
@@ -374,7 +384,9 @@ const getProfileById = async (req, res, next) => {
           { upsert: true, new: true },
         );
         await Profile.findByIdAndUpdate(req.params.id, { $inc: { profileViews: 1 } });
-      } catch (_) {}
+      } catch {
+        // Silently fail if view tracking fails
+      }
     }
 
     const isOwner = profile.user._id.toString() === req.user._id.toString();
@@ -411,7 +423,7 @@ const getProfileById = async (req, res, next) => {
     const isUnlocked = req.user.contactsViewed?.includes(profile._id);
     const isPlatinum = req.user.premiumPlan === 'platinum';
 
-    if (!isOwner && !isPlatinum && !isUnlocked && !isAdmin) {
+    if (!isOwner && !isPlatinum && !isUnlocked && !isAdmin && !isPremium) {
       // Hide contact details
       if (result.user) {
         result.user.email = 'LOCKED';
@@ -447,10 +459,11 @@ const getProfileById = async (req, res, next) => {
 // @access  Private (owner only)
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const updateProfile = async (req, res, next) => {
   try {
@@ -644,10 +657,11 @@ const updateProfile = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getMyProfile = async (req, res, next) => {
   try {
@@ -665,10 +679,11 @@ const getMyProfile = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getProfileViews = async (req, res, next) => {
   try {
@@ -699,10 +714,11 @@ const getProfileViews = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const unlockContact = async (req, res, next) => {
   try {
@@ -766,10 +782,11 @@ const unlockContact = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const toggleShortlist = async (req, res, next) => {
   try {
@@ -804,10 +821,11 @@ const toggleShortlist = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getShortlistedProfiles = async (req, res, next) => {
   try {

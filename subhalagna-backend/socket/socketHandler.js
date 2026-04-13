@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Socket.io Real-Time Handler
+ * @file SubhaLagna v3.0.3 — Socket.io Real-Time Handler
  * @description   Manages all WebSocket connections for the live chat feature.
  *                Architecture:
  *                  - Each authenticated user joins a private room named by their userId
@@ -22,7 +22,7 @@
  *                  stop_typing        : other user stopped typing
  *                  notification       : real-time notification push
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const { verifyAccessToken } = require('../utils/generateToken');
@@ -55,7 +55,7 @@ const socketHandler = (io) => {
       // Attach user to socket for use in event handlers
       socket.user = user;
       next();
-    } catch (err) {
+    } catch {
       next(new Error('Invalid or expired token'));
     }
   });
@@ -146,9 +146,9 @@ const socketHandler = (io) => {
 /**
  * Emit a real-time notification to a specific user (called from controllers).
  * The user must be connected for this to deliver; otherwise it's a no-op.
- * @param {import('socket.io').Server} io
- * @param {string} userId
- * @param {object} notification
+ * @param {import('socket.io').Server} io - The Socket.io server instance.
+ * @param {string} userId - ID of the user to receive the notification.
+ * @param {object} notification - The notification object to send.
  */
 const emitNotification = (io, userId, notification) => {
   io.to(`user:${userId}`).emit('notification', notification);

@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Smart Matching Algorithm
+ * @file SubhaLagna v3.0.3 — Smart Matching Algorithm
  * @description   Computes a weighted compatibility score (0–100) between the
  *                logged-in user's profile and each candidate profile.
  *
@@ -15,7 +15,7 @@
  *                  - Education level    →  5 pts
  *                  Total possible       → 100 pts
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 /**
@@ -38,9 +38,9 @@ const EDUCATION_TIERS = {
  * Age difference of 3-5  → 10 pts
  * Age difference of 6-10 → 5 pts
  * Otherwise              → 0 pts
- * @param {number} myAge
- * @param {number} theirAge
- * @returns {number} Score 0–15
+ * @param {number} myAge - The age of the primary user (current logged-in user).
+ * @param {number} theirAge - The age of the candidate profile being compared.
+ * @returns {number} Score 0–15 representing age proximity.
  */
 const getAgeScore = (myAge, theirAge) => {
   const diff = Math.abs(Number(myAge) - Number(theirAge));
@@ -53,9 +53,9 @@ const getAgeScore = (myAge, theirAge) => {
 /**
  * Compute the interest overlap score.
  * Based on Jaccard similarity to ensure fairness regardless of total count.
- * @param {string[]} myInterests
- * @param {string[]} theirInterests
- * @returns {number} Score 0–25
+ * @param {string[]} myInterests - Array of interests from the primary user's profile.
+ * @param {string[]} theirInterests - Array of interests from the candidate's profile.
+ * @returns {number} Score 0–25 representing interest overlap.
  */
 const getInterestScore = (myInterests = [], theirInterests = []) => {
   if (!myInterests.length || !theirInterests.length) return 0;
@@ -68,9 +68,9 @@ const getInterestScore = (myInterests = [], theirInterests = []) => {
 
 /**
  * Compute the trait overlap score.
- * @param {string[]} myTraits
- * @param {string[]} theirTraits
- * @returns {number} Score 0–15
+ * @param {string[]} myTraits - Array of traits from the primary user's profile.
+ * @param {string[]} theirTraits - Array of traits from the candidate's profile.
+ * @returns {number} Score 0–15 representing trait overlap.
  */
 const getTraitScore = (myTraits = [], theirTraits = []) => {
   if (!myTraits.length || !theirTraits.length) return 0;
@@ -83,13 +83,13 @@ const getTraitScore = (myTraits = [], theirTraits = []) => {
 
 /**
  * Compute education tier proximity score.
- * @param {string} myEdu
- * @param {string} theirEdu
- * @returns {number} Score 0–5
+ * @param {string} myEdu - Education level name of the primary user.
+ * @param {string} theirEdu - Education level name of the candidate user.
+ * @returns {number} Score 0–5 representing education compatibility.
  */
 const getEducationScore = (myEdu, theirEdu) => {
-  const myTier = EDUCATION_TIERS[myEdu] || 3;
-  const theirTier = EDUCATION_TIERS[theirEdu] || 3;
+  const myTier = EDUCATION_TIERS[String(myEdu)] || 3;
+  const theirTier = EDUCATION_TIERS[String(theirEdu)] || 3;
   const diff = Math.abs(myTier - theirTier);
   if (diff === 0) return 5;
   if (diff === 1) return 3;
@@ -100,12 +100,7 @@ const getEducationScore = (myEdu, theirEdu) => {
  * Compute a full compatibility score for a single candidate profile.
  * @param {object} myProfile       - The logged-in user's profile document
  * @param {object} candidateProfile - A candidate profile document from DB
- * @returns {{
- *   compatibilityScore: number,
- *   sharedInterests: string[],
- *   sharedTraits: string[],
- *   breakdown: object
- * }}
+ * @returns {object} A results object containing score, shared tags, and breakdown.
  */
 const computeMatchScore = (myProfile, candidateProfile) => {
   // ── Individual dimension scores ───────────────────────────────────────────

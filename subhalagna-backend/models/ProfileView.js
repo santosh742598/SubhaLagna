@@ -1,13 +1,13 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — ProfileView Model
+ * @file SubhaLagna v3.0.3 — ProfileView Model
  * @description   Tracks which users have viewed a specific profile.
  *                Used for the "Who Viewed My Profile" premium feature.
  *                Free users see the count; Premium users see the full list.
  *                Documents auto-expire after 60 days via TTL index.
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const mongoose = require('mongoose');

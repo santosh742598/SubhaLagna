@@ -1,14 +1,14 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Unified Storage Service
+ * @file SubhaLagna v3.0.3 — Unified Storage Service
  * @description   Abstracts file storage logic between Local Disk and AWS S3.
  *                Enables seamless cloud migration via .env toggle.
  *                v2.2.0 changes:
  *                  - Initial implementation with lazy-loaded AWS SDK
  *                  - Support for local filesystem fallback
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const fs = require('fs');
@@ -80,7 +80,8 @@ exports.uploadBuffer = async (buffer, filename, folder = 'uploads') => {
 
 /**
  * Deletes a file from storage.
- * @param fileUrl
+ * @param {string} fileUrl - The URL or local path of the file to delete.
+ * @returns {Promise<void>} - A promise that resolves when the file is deleted.
  */
 exports.deleteFile = async (fileUrl) => {
   if (!fileUrl || (fileUrl.startsWith('http') && !fileUrl.includes(process.env.AWS_S3_BUCKET))) {

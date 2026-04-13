@@ -1,14 +1,14 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Admin Routes
+ * @file SubhaLagna v3.0.3 — Admin Routes
  * @description Route definitions for the admin dashboard.
  * - v2.4.0 changes:
  *   - Added GET /api/admin/payments/ledger for full transaction oversight. [v2.4.0]
  * - v2.3.0 changes:
  *   - Added GET /api/admin/plans and PUT /api/admin/plans/:id for dynamic membership control.
  *   - Integrated plan management into the administrative API surface.
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const express = require('express');

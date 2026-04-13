@@ -1,11 +1,11 @@
 /**
- * @file        SubhaLagna v3.0.2 — Admin Dashboard
+ * @file        SubhaLagna v3.0.3 — Admin Dashboard
  * @description Executive interface for platform commercial and user management.
  * - v2.4.0 changes:
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 import React, { useState, useEffect } from 'react';

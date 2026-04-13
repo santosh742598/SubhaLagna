@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.2 — Admin Controller
+ * @file        SubhaLagna v3.0.3 — Admin Controller
  * @description   Administrative tools for platform management:
  *                - User and Profile moderation (suspend, delete).
  *                - System-wide statistics and matchmaking analytics.
@@ -12,21 +12,24 @@
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const User = require('../models/User');
 const Profile = require('../models/Profile');
 const Interest = require('../models/Interest');
 const MembershipPlan = require('../models/MembershipPlan');
+const Coupon = require('../models/Coupon');
 const sharp = require('sharp');
 const storageService = require('../utils/storageService');
 const Message = require('../models/Message');
 const Notification = require('../models/Notification');
-const Coupon = require('../models/Coupon');
 const Payment = require('../models/Payment');
 const { upgradeUserSubscription } = require('./paymentController');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
+
+// Utility to escape regex special characters
+const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Get platform dashboard statistics
@@ -34,10 +37,11 @@ const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse'
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getDashboardStats = async (req, res, next) => {
   try {
@@ -102,10 +106,11 @@ const getDashboardStats = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getAllUsers = async (req, res, next) => {
   try {
@@ -114,7 +119,8 @@ const getAllUsers = async (req, res, next) => {
 
     const query = {};
     if (search) {
-      query.$or = [{ name: new RegExp(search, 'i') }, { email: new RegExp(search, 'i') }];
+      const safeSearch = escapeRegExp(search);
+      query.$or = [{ name: new RegExp(safeSearch, 'i') }, { email: new RegExp(safeSearch, 'i') }];
     }
 
     if (role && role !== 'all') {
@@ -143,10 +149,11 @@ const getAllUsers = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const createUserWithProfile = async (req, res, next) => {
   try {
@@ -239,10 +246,11 @@ const createUserWithProfile = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const updateUserAndProfile = async (req, res, next) => {
   try {
@@ -356,10 +364,11 @@ const updateUserAndProfile = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const toggleSuspendUser = async (req, res, next) => {
   try {
@@ -399,10 +408,11 @@ const toggleSuspendUser = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const toggleVerifyProfile = async (req, res, next) => {
   try {
@@ -438,10 +448,11 @@ const toggleVerifyProfile = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const deleteUser = async (req, res, next) => {
   try {
@@ -472,10 +483,11 @@ const deleteUser = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getAllCoupons = async (req, res, next) => {
   try {
@@ -492,10 +504,11 @@ const getAllCoupons = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const createCoupon = async (req, res, next) => {
   try {
@@ -527,10 +540,11 @@ const createCoupon = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const deleteCoupon = async (req, res, next) => {
   try {
@@ -547,10 +561,11 @@ const deleteCoupon = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const manualUpgradeUser = async (req, res, next) => {
   try {
@@ -597,10 +612,11 @@ const manualUpgradeUser = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getPendingPayments = async (req, res, next) => {
   try {
@@ -621,10 +637,11 @@ const getPendingPayments = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const verifyBankPayment = async (req, res, next) => {
   try {
@@ -675,10 +692,11 @@ const verifyBankPayment = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getAllPlans = async (req, res, next) => {
   try {
@@ -695,10 +713,11 @@ const getAllPlans = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const updatePlan = async (req, res, next) => {
   try {
@@ -724,10 +743,11 @@ const updatePlan = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const createPlan = async (req, res, next) => {
   try {
@@ -744,10 +764,11 @@ const createPlan = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const uploadUserPhotosAdmin = async (req, res, next) => {
   try {
@@ -822,10 +843,11 @@ const uploadUserPhotosAdmin = async (req, res, next) => {
 // @access  Admin
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getAllPayments = async (req, res, next) => {
   try {

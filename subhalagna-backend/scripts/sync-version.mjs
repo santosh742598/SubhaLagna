@@ -1,5 +1,7 @@
+/* globals module, require, process, console */
+
 /**
- * @fileoverview SubhaLagna v3.0.0 — Automated Version Synchronization
+ * @file        SubhaLagna v3.0.0 — Automated Version Synchronization
  * @description  Synchronizes version headers project-wide using Backend as Master.
  *               - [v3.0.0 changes]
  *               - Initial implementation of the permanent versioning solution.
@@ -26,8 +28,8 @@ const version = packageData.version;
 console.log(`🚀 Master Version Detected: ${version}`);
 
 /**
- * Recursively sync versions in a directory
- * @param {string} dir
+ * Recursively sync versions in a directory.
+ * @param {string} dir - The directory to process.
  */
 function syncDirectory(dir) {
   const files = fs.readdirSync(dir);
@@ -47,8 +49,8 @@ function syncDirectory(dir) {
 }
 
 /**
- * Update version strings and standards in a single file
- * @param {string} filePath
+ * Update version strings and standards in a single file.
+ * @param {string} filePath - Path to the file to be updated.
  */
 function syncFile(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');

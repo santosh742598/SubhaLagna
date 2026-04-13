@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.2 — Interest Controller
+ * @file        SubhaLagna v3.0.3 — Interest Controller
  * @description   Manages the interest/connection request system:
  *                - Handles sending, accepting, and rejecting interests.
  *                - Automated Conversation creation upon interest acceptance.
@@ -12,7 +12,7 @@
  *                - Standardized security checks for interest ownership.
  *                - Verified Express 5 compatibility for nested population.
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const Interest = require('../models/Interest');
@@ -29,10 +29,11 @@ const { sendSuccess, sendError } = require('../utils/apiResponse');
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const sendInterest = async (req, res, next) => {
   try {
@@ -90,10 +91,11 @@ const sendInterest = async (req, res, next) => {
 // @access  Private (receiver only)
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const respondInterest = async (req, res, next) => {
   try {
@@ -166,10 +168,11 @@ const respondInterest = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getMyInterests = async (req, res, next) => {
   try {
@@ -211,10 +214,11 @@ const getMyInterests = async (req, res, next) => {
 // @access  Private (sender only)
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const withdrawInterest = async (req, res, next) => {
   try {
@@ -240,12 +244,11 @@ const withdrawInterest = async (req, res, next) => {
 };
 
 /**
- * @param req
- * @param res
- * @param next
- * @description    Check interest status between current user and a specific profile owner
- * @route   GET /api/interests/status/:userId
- * @access  Private
+ * Check interest status between current user and a specific profile owner.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getInterestStatus = async (req, res, next) => {
   try {

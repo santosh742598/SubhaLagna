@@ -1,12 +1,12 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Notification Model
+ * @file SubhaLagna v3.0.3 — Notification Model
  * @description   In-app notifications for user activity events such as
  *                new interests received, messages, profile views, and system alerts.
  *                Powers the notification bell in the UI header.
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const mongoose = require('mongoose');

@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.2 — Real-Time Premium Chat
+ * @file        SubhaLagna v3.0.3 — Real-Time Premium Chat
  * @description   Full-featured chat UI with glassmorphism, real-time sync,
  *                and optimized mobile flows.
  *                v2.0.0 changes:

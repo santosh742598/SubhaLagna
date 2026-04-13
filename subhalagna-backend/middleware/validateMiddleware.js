@@ -1,15 +1,15 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Input Validation Middleware
+ * @file SubhaLagna v3.0.3 — Input Validation Middleware
  * @description   Express-validator rule sets for all API endpoints.
  *                Provides a reusable `validate` runner that collects errors
  *                and returns a standardized 400 response.
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
-const { body, param, query, validationResult } = require('express-validator');
+const { body, param, validationResult } = require('express-validator');
 
 /**
  * Validation runner middleware.
@@ -18,6 +18,7 @@ const { body, param, query, validationResult } = require('express-validator');
  * @param {import('express').Request}  req
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const validate = (req, res, next) => {
   const errors = validationResult(req);

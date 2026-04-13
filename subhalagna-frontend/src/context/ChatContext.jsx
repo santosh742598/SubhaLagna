@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.2 — Chat Context
+ * @file        SubhaLagna v3.0.3 — Chat Context
  * @description   Manages the Socket.io connection and real-time chat state.
  *                Provides the socket instance and active message streams to
  *                all chat-related components.
@@ -9,7 +9,7 @@
  *                    useContext(ChatContext);
  *
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 import React, { createContext, useState, useEffect, useContext, useRef, useCallback } from 'react';

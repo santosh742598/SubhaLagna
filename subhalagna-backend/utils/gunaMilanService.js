@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Guna Milan Service
+ * @file SubhaLagna v3.0.3 — Guna Milan Service
  * @description   Core matchmaking engine implementing the Ashta Koota (36-point) match.
  *                v2.1.0 changes:
  *                  - Implemented 108-Pada precise Rashi resolution
@@ -9,30 +9,32 @@
  *                  - Added Bhakoot Dosha cancellation rules (Maitri/Friendship)
  *                  - Dynamic results with factor breakdown and labels
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const { NAKSHATRAS, RASHIS, YONI_COMPATIBILITY, LORD_FRIENDSHIP } = require('./gunaMilanData');
 
 /**
- * @param nakshatra
- * @param pada
- * @param providedRashi
- * @description Resolves Rashi if it might be ambiguous due to Pada
+ * @param {string} nakshatra - The name of the birth nakshatra.
+ * @param {number} pada - The nakshatra pada (1-4).
+ * @param {string} providedRashi - The client-provided rashi name.
+ * @description Resolves Rashi if it might be ambiguous due to Pada.
+ * @returns {string} The resolved rashi name.
  */
 
 const resolveRashi = (nakshatra, pada, providedRashi) => {
   const nakEntry = NAKSHATRAS.find((n) => n.name === nakshatra);
   if (nakEntry && nakEntry.rashiMapping && pada) {
-    return nakEntry.rashiMapping[pada] || providedRashi;
+    return (nakEntry.rashiMapping && nakEntry.rashiMapping[String(pada)]) || providedRashi;
   }
   return providedRashi;
 };
 
 /**
- *
- * @param p1
- * @param p2
+ * Multi-factor matchmaking calculation between two profiles.
+ * @param {object} p1 - First user profile object.
+ * @param {object} p2 - Second user profile object.
+ * @returns {object|null} Match breakdown or null if data is insufficient.
  */
 const calculateGunaMilan = (p1, p2) => {
   // Support both nested horoscope structure (v2.0+) and top-level fields (legacy/internal)
@@ -91,12 +93,18 @@ const calculateGunaMilan = (p1, p2) => {
   breakdown.tara = taraScore;
 
   // 4. YONI (4 Points)
-  const yoniScore = YONI_COMPATIBILITY[p1Nak.yoni][p2Nak.yoni] || 0;
+  const yoniScore =
+    (YONI_COMPATIBILITY[String(p1Nak.yoni)] &&
+      YONI_COMPATIBILITY[String(p1Nak.yoni)][String(p2Nak.yoni)]) ||
+    0;
   totalScore += yoniScore;
   breakdown.yoni = yoniScore;
 
   // 5. MAITRI (5 Points)
-  const maitriScore = LORD_FRIENDSHIP[p1Rashi.lord][p2Rashi.lord] || 0;
+  const maitriScore =
+    (LORD_FRIENDSHIP[String(p1Rashi.lord)] &&
+      LORD_FRIENDSHIP[String(p1Rashi.lord)][String(p2Rashi.lord)]) ||
+    0;
   totalScore += maitriScore;
   breakdown.maitri = maitriScore;
 

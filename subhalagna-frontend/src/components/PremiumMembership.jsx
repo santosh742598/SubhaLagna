@@ -1,11 +1,11 @@
 /**
- * @file        SubhaLagna v3.0.2 — Premium Membership & Payments
+ * @file        SubhaLagna v3.0.3 — Premium Membership & Payments
  * @description Dynamic membership selection with Coupon system and Razorpay integration.
  * - v2.3.1 changes:
  *   - Removed hardcoded duration strings in favor of plan-driven duration text.
  *   - Integrated dynamic Razorpay order metadata.
  *   - Fixed checkout initialization for dynamic plans.
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 import React, { useState, useEffect, useContext } from 'react';

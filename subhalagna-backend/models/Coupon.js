@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Coupon Model
+ * @file SubhaLagna v3.0.3 — Coupon Model
  * @description   Schema for managing discount coupons.
  *                Supports percentage and fixed-amount discounts.
  */

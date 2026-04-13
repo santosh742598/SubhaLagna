@@ -1,10 +1,10 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Auth & Role Middleware
+ * @file SubhaLagna v3.0.3 — Auth & Role Middleware
  * @description JWT-based route protection middleware. [v2.4.0]
  * @author SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const User = require('../models/User');
@@ -17,6 +17,7 @@ const { verifyAccessToken } = require('../utils/generateToken');
  * @param {import('express').Request}  req
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const protect = async (req, res, next) => {
   try {
@@ -65,6 +66,7 @@ const protect = async (req, res, next) => {
  * @param {import('express').Request}  req
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {

@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.3] - 2026-04-13
+
+### Added
+- **🛡️ Quality Guardrails**: achieved a clean **Exit Code: 0** across the entire backend after resolving 175+ ESLint errors and warnings.
+- **🛡️ Performance Verification**: verified success of the centralized version synchronization and master data seeding scripts.
+
+### Changed
+- **🚀 Version Bump**: Universal automated synchronization to `v3.0.3` across the entire project codebase and metadata.
+- **🛡️ Backend Standardization**: Resolved all critical JSDoc warnings, unused variables, and empty catch blocks in core controllers and services.
+- **🛡️ Security Hardening**: Refactored dynamic object access in `matchingAlgorithm.js` and `gunaMilanService.js` to eliminate object injection vulnerabilities.
+
 ## [3.0.2] - 2026-04-13
 
 ### Added

@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.2 — Auth Controller
+ * @file        SubhaLagna v3.0.3 — Auth Controller
  * @description   Handles all authentication operations including:
  *                - Secure registration and 6-digit OTP verification.
  *                - JWT rotation (Access/Refresh) strategy.
@@ -12,7 +12,7 @@
  *                - Standardized security-first error handling (apiResponse).
  *                - Verified Express 5 compatibility layers.
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const crypto = require('crypto');
@@ -57,10 +57,11 @@ const buildAuthResponse = (user, profile) => ({
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const registerUser = async (req, res, next) => {
   try {
@@ -115,10 +116,11 @@ const registerUser = async (req, res, next) => {
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const verifyEmail = async (req, res, next) => {
   try {
@@ -156,10 +158,11 @@ const verifyEmail = async (req, res, next) => {
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const resendOTP = async (req, res, next) => {
   try {
@@ -214,10 +217,11 @@ const resendOTP = async (req, res, next) => {
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const loginUser = async (req, res, next) => {
   try {
@@ -255,10 +259,11 @@ const loginUser = async (req, res, next) => {
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const refreshToken = async (req, res, next) => {
   try {
@@ -297,10 +302,11 @@ const refreshToken = async (req, res, next) => {
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const forgotPassword = async (req, res, next) => {
   try {
@@ -328,7 +334,7 @@ const forgotPassword = async (req, res, next) => {
 
     try {
       await sendPasswordResetEmail(email, user.name, resetUrl);
-    } catch (emailErr) {
+    } catch {
       // Roll back token if email fails
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
@@ -352,10 +358,11 @@ const forgotPassword = async (req, res, next) => {
 // @access  Public
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const resetPassword = async (req, res, next) => {
   try {
@@ -397,10 +404,11 @@ const resetPassword = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const logoutUser = async (req, res, next) => {
   try {
@@ -418,10 +426,11 @@ const logoutUser = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getMe = async (req, res, next) => {
   try {

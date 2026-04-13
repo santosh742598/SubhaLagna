@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.2 — Shortlisted Profiles Page
+ * @file        SubhaLagna v3.0.3 — Shortlisted Profiles Page
  * @description   Displays a collection of profiles saved by the user.
  */
 

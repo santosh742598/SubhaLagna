@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.2 — Chat Controller
+ * @file SubhaLagna v3.0.3 — Chat Controller
  * @description   REST endpoints for the messaging system.
  *                Real-time delivery is handled separately by Socket.io
  *                (see socket/socketHandler.js). These REST endpoints handle:
@@ -10,7 +10,7 @@
  *                  - sendMessage      → save message to DB (socket emits in real-time)
  *                  - markAsRead       → mark all messages in a conversation as read
  * @author        SubhaLagna Team
- * @version      3.0.2
+ * @version      3.0.3
  */
 
 const Conversation = require('../models/Conversation');
@@ -25,10 +25,11 @@ const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse'
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getConversations = async (req, res, next) => {
   try {
@@ -71,10 +72,11 @@ const getConversations = async (req, res, next) => {
 // @access  Private (participant only)
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const getMessages = async (req, res, next) => {
   try {
@@ -117,10 +119,11 @@ const getMessages = async (req, res, next) => {
 // @access  Private (participant only)
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const sendMessage = async (req, res, next) => {
   try {
@@ -182,10 +185,11 @@ const sendMessage = async (req, res, next) => {
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- *
- * @param req
- * @param res
- * @param next
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const markAsRead = async (req, res, next) => {
   try {

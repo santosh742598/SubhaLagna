@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
 
 /**
- * @file        SubhaLagna v3.0.2 — Global Header
+ * @file        SubhaLagna v3.0.3 — Global Header
  * @description   Modern, responsive navigation bar with real-time notifications and chat triggers.
  */
 const Header = () => {
