@@ -1,5 +1,5 @@
 /**
- * @file SubhaLagna v3.0.0 — MasterData Service
+ * @file SubhaLagna v3.0.1 — MasterData Service
  * @description   Handles logic for registering and retrieving master data entries.
  */
 

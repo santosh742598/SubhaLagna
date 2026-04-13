@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v3.0.0 — Shortlist Service
+ * @fileoverview SubhaLagna v3.0.1 — Shortlist Service
  * @description   API wrappers for managing the user's private shortlist.
  */
 

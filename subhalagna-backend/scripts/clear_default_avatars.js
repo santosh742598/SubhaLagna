@@ -1,5 +1,5 @@
 /**
- * @file SubhaLagna v3.0.0 — Migration Script
+ * @file SubhaLagna v3.0.1 — Migration Script
  * @description Clears existing "/uploads/default-avatar.png" strings from Profile records
  * to allow the new gender-specific placeholder logic to work correctly.
  */

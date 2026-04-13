@@ -1,5 +1,5 @@
 /**
- * @file SubhaLagna v3.0.0 — Notification Routes
+ * @file SubhaLagna v3.0.1 — Notification Routes
  * @description   Route definitions for in-app notification management.
  *
  * Base path: /api/notifications
@@ -9,7 +9,7 @@
  *   PUT    /:id/read   → mark single notification as read
  *   DELETE /:id        → delete a notification
  * @author SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.1
  */
 
 'use strict';

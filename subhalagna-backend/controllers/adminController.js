@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v3.0.0 — Admin Controller
+ * @fileoverview SubhaLagna v3.0.1 — Admin Controller
  * @description   Administrative tools for platform management:
  *                - User and Profile moderation (suspend, delete).
  *                - System-wide statistics and matchmaking analytics.
@@ -10,7 +10,7 @@
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.1
  */
 
 'use strict';

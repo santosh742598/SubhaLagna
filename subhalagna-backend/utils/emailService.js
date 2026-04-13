@@ -1,5 +1,5 @@
 /**
- * @file SubhaLagna v3.0.0 — Email Service
+ * @file SubhaLagna v3.0.1 — Email Service
  * @description   Nodemailer-based email service with pre-built templates for:
  *                - Email verification (OTP)
  *                - Password reset link
@@ -7,7 +7,7 @@
  *                - Payment Success / Membership activation [v2.4.0]
  *                Gracefully degrades (logs to console) if SMTP is not configured.
  * @author        SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.1
  */
 
 'use strict';

@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v3.0.0 — Profile Card
+ * @fileoverview SubhaLagna v3.0.1 — Profile Card
  * @description   Brief overview card for the search results grid.
  *                v2.0.0 changes:
  *                  - Integration with InterestButton for quick interactions

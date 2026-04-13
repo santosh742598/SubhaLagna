@@ -1,5 +1,5 @@
 /**
- * @file SubhaLagna v3.0.0 — Interest Routes
+ * @file SubhaLagna v3.0.1 — Interest Routes
  * @description   Route definitions for the interest/connection request system.
  *
  * Base path: /api/interests
@@ -10,7 +10,7 @@
  *   PUT    /:id                → accept or reject a received interest
  *   DELETE /:id                → withdraw a sent interest
  * @author SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.1
  */
 
 'use strict';

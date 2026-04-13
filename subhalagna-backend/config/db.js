@@ -1,9 +1,9 @@
 /**
- * @file SubhaLagna v3.0.0 — MongoDB Connection Configuration
+ * @file SubhaLagna v3.0.1 — MongoDB Connection Configuration
  * @description   Connects to MongoDB via Mongoose with retry logic and
  *                connection event logging.
  * @author        SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.1
  */
 
 'use strict';

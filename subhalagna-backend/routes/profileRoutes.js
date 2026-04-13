@@ -1,5 +1,5 @@
 /**
- * @file SubhaLagna v3.0.0 — Profile Routes
+ * @file SubhaLagna v3.0.1 — Profile Routes
  * @description   Route definitions for profile management.
  *                All routes require authentication.
  *
@@ -12,7 +12,7 @@
  *   GET   /:id           → get any profile by ID (tracks view)
  *   PUT   /:id           → update own profile (ownership enforced)
  * @author SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.1
  */
 
 'use strict';

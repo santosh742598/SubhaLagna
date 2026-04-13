@@ -1,10 +1,10 @@
 /**
- * @file SubhaLagna v3.0.0 — JWT Token Utilities
+ * @file SubhaLagna v3.0.1 — JWT Token Utilities
  * @description   Centralized functions for generating short-lived access tokens
  *                and long-lived refresh tokens. Tokens are verified against
  *                their respective secrets for added security.
  * @author        SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.1
  */
 
 'use strict';

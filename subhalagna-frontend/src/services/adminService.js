@@ -1,12 +1,12 @@
 /**
- * @fileoverview SubhaLagna v3.0.0 — Admin Service
+ * @fileoverview SubhaLagna v3.0.1 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
  * - v2.4.0 changes:
  *   - Added getAllTransactions for comprehensive financial oversight. [v2.4.0]
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
  * @author SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.1
  */
 
 import api, { getErrorMessage } from './api';

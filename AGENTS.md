@@ -1,4 +1,4 @@
-# 🤖 AGENTS.md — SubhaLagna v3.0.0 Best Practices & Coding Standards
+# 🤖 AGENTS.md — SubhaLagna v3.0.1 Best Practices & Coding Standards
 
 This document serves as the **Source of Truth** for any developer or AI Agent working on the SubhaLagna Matrimony project. Adherence to these standards is mandatory to maintain the project's premium quality, security, and architectural integrity.
 
@@ -109,9 +109,9 @@ Respect the guard hierarchy in `App.jsx`:
     - **Source of Truth**: The Backend `package.json` (`subhalagna-backend/package.json`) is the project's Master Version.
     - **Header Protocol**: Never edit version numbers in file headers manually.
     - **Sync Command**: After updating the master version, run `npm run version:sync` (or `node scripts/sync-version.mjs`) from the backend to propagate the change project-wide.
-- **Versioned Headers**: Every file MUST maintain a standardized JSDoc header. 
-    - The `@version` tag MUST match the current project version (`3.0.0`).
-    - The `@description` MUST be updated to include a bulleted "v3.0.0 changes" list.
+- **Versioned Headers (Agent Mandate)**: Every file MUST maintain a standardized JSDoc header. 
+    - **Agent Responsibility**: AI Agents are REQUIRED to update the `@description` block with a bulleted "vX.X.X changes" list whenever a file is modified.
+    - **Tag Sync**: The `@version` tag and the `@fileoverview` version number are managed by the automation script; Agents should focus on describing the *logic* changes.
     - **Header Template**:
 ```javascript
 /**

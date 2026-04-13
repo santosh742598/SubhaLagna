@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v3.0.0 — Profile Detail Page
+ * @fileoverview SubhaLagna v3.0.1 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
  *
@@ -8,7 +8,7 @@
  *
  *                v2.1.0 changes:
 ...
- * @version      3.0.0
+ * @version      3.0.1
  */
 
 import React, { useState, useEffect, useContext } from 'react';

@@ -1,6 +1,6 @@
-# 💍 SubhaLagna Matrimony — v3.0.0
+# 💍 SubhaLagna Matrimony — v3.0.1
 
-[![Project Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](CHANGELOG.md)
+[![Project Version](https://img.shields.io/badge/version-3.0.1-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![Stack](https://img.shields.io/badge/stack-MERN-green.svg)](#technology-stack)
 
@@ -103,6 +103,11 @@ Create a `.env` file in the `subhalagna-backend/` directory based on the followi
 | `SMTP_HOST` | Outgoing mail server (e.g., smtp.gmail.com) |
 | `SMTP_USER` | Email account username |
 | `SMTP_PASS` | Email app password |
+| `STORAGE_TYPE` | `local` (disk) or `s3` (AWS Cloud) |
+| `AWS_S3_BUCKET` | Your AWS S3 bucket name |
+| `AWS_REGION` | AWS region (e.g., ap-south-1) |
+| `AWS_ACCESS_KEY_ID` | AWS IAM access key |
+| `AWS_SECRET_ACCESS_KEY` | AWS IAM secret key |
 
 ### 3. Backend Setup
 ```bash
