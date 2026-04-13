@@ -1,5 +1,7 @@
+"use strict";
+
 /**
- * @file SubhaLagna v3.0.1 — Membership Plan Seeder
+ * @file SubhaLagna v3.0.2 — Membership Plan Seeder
  * @description   Initializes the database with standard Gold and Platinum plans.
  */
 

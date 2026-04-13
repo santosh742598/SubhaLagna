@@ -47,25 +47,41 @@ function syncDirectory(dir) {
 }
 
 /**
- * Update version strings in a single file
+ * Update version strings and standards in a single file
  * @param {string} filePath
  */
 function syncFile(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
   let changed = false;
 
-  // Pattern A: @version X.X.X
+  // 1. Tag Modernization: @fileoverview -> @file
+  if (content.includes('@fileoverview')) {
+    content = content.replace(/@fileoverview/g, '@file       ');
+    changed = true;
+  }
+
+  // 2. Pattern A: @version X.X.X
   const versionRegex = /@version\s+(\d+\.\d+\.\d+)/g;
   if (versionRegex.test(content)) {
     content = content.replace(versionRegex, `@version      ${version}`);
     changed = true;
   }
 
-  // Pattern B: SubhaLagna vX.X.X
-  // This handles @file, @fileoverview, etc.
+  // 3. Pattern B: SubhaLagna vX.X.X
   const nameVersionRegex = /SubhaLagna v(\d+\.\d+\.\d+)/g;
   if (nameVersionRegex.test(content)) {
     content = content.replace(nameVersionRegex, `SubhaLagna v${version}`);
+    changed = true;
+  }
+
+  // 4. Strict Mode Enforcement (Backend Node.js files only)
+  if (filePath.includes('subhalagna-backend') && filePath.endsWith('.js')) {
+    // Remove existing strict mode (global or duplicate) to ensure it stays at Line 1
+    const strictRegex = /^['"]use strict['"];?\s*/gm;
+    if (strictRegex.test(content)) {
+      content = content.replace(strictRegex, '');
+    }
+    content = '"use strict";\n\n' + content;
     changed = true;
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "subhalagna-backend",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "SubhaLagna Matrimony Platform — RESTful API Backend with Socket.io",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "mongodb"
   ],
   "author": "SubhaLagna Team",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "type": "commonjs",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1029.0",

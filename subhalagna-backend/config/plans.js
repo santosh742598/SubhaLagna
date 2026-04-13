@@ -1,5 +1,7 @@
+"use strict";
+
 /**
- * @file SubhaLagna v3.0.1 — Subscription Plans Configuration
+ * @file SubhaLagna v3.0.2 — Subscription Plans Configuration
  * @description   Unified source of truth for all membership plans.
  *                Changes here reflect instantly across frontend and payment gateway.
  */

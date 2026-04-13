@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * @file patch_admin_astrology.js
  * @description Adds sample astrology data to the Test Admin profile for Guna Milana demo.

@@ -1,5 +1,7 @@
+"use strict";
+
 /**
- * @file SubhaLagna v3.0.1 — Interest Routes
+ * @file SubhaLagna v3.0.2 — Interest Routes
  * @description   Route definitions for the interest/connection request system.
  *
  * Base path: /api/interests
@@ -10,10 +12,8 @@
  *   PUT    /:id                → accept or reject a received interest
  *   DELETE /:id                → withdraw a sent interest
  * @author SubhaLagna Team
- * @version      3.0.1
+ * @version      3.0.2
  */
-
-'use strict';
 
 const express = require('express');
 const router = express.Router();

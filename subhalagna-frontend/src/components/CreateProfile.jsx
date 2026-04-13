@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v3.0.1 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.0.2 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
  *                v2.1.0 changes:
  *                  - Automated Rashi selection logic based on Nakshatra/Pada mapping

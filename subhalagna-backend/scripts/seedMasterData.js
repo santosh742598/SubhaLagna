@@ -1,6 +1,9 @@
+"use strict";
+
 /**
  * SEED SCRIPT: Populate MasterData with initial entries
  */
+
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const MasterData = require('./models/MasterData');

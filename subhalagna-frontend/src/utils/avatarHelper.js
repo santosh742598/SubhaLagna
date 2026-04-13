@@ -1,5 +1,5 @@
 /**
- * @fileoverview SubhaLagna v3.0.1 — Avatar Utility
+ * @file        SubhaLagna v3.0.2 — Avatar Utility
  * @description Centralized logic for profile photo selection and fallbacks.
  */
 

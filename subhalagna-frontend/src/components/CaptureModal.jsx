@@ -1,10 +1,10 @@
 /**
- * @fileoverview SubhaLagna v3.0.1 — Capture Modal
+ * @file        SubhaLagna v3.0.2 — Capture Modal
  * @description   Reusable webcam capture component. Uses MediaDevices API
  *                to provide a live preview and snapshot capability.
  *
  * @author        SubhaLagna Team
- * @version      3.0.1
+ * @version      3.0.2
  */
 
 import React, { useRef, useState, useEffect } from 'react';

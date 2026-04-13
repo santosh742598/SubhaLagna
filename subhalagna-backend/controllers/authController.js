@@ -1,5 +1,7 @@
+"use strict";
+
 /**
- * @fileoverview SubhaLagna v3.0.1 — Auth Controller
+ * @file        SubhaLagna v3.0.2 — Auth Controller
  * @description   Handles all authentication operations including:
  *                - Secure registration and 6-digit OTP verification.
  *                - JWT rotation (Access/Refresh) strategy.
@@ -10,10 +12,8 @@
  *                - Standardized security-first error handling (apiResponse).
  *                - Verified Express 5 compatibility layers.
  * @author        SubhaLagna Team
- * @version      3.0.1
+ * @version      3.0.2
  */
-
-'use strict';
 
 const crypto = require('crypto');
 

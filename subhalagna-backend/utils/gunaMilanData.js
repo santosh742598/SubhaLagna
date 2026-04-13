@@ -1,11 +1,13 @@
+"use strict";
+
 /**
- * @file SubhaLagna v3.0.1 — Guna Milan (Ashta Koota) Data
+ * @file SubhaLagna v3.0.2 — Guna Milan (Ashta Koota) Data
  * @description   Static lookup tables for Vedic astrology compatibility.
  *                v2.1.0 changes:
  *                  - Implemented 108 Pada-to-Rashi mapping matrix
  *                  - Updated Lord Friendship and Yoni compatibility constants
  * @author        SubhaLagna Team
- * @version      3.0.1
+ * @version      3.0.2
  */
 
 const RASHIS = [

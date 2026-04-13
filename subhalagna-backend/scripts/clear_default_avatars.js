@@ -1,8 +1,11 @@
+"use strict";
+
 /**
- * @file SubhaLagna v3.0.1 — Migration Script
+ * @file SubhaLagna v3.0.2 — Migration Script
  * @description Clears existing "/uploads/default-avatar.png" strings from Profile records
  * to allow the new gender-specific placeholder logic to work correctly.
  */
+
 const mongoose = require('mongoose');
 const Profile = require('../models/Profile');
 require('dotenv').config();

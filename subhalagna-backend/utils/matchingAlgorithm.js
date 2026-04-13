@@ -1,5 +1,7 @@
+"use strict";
+
 /**
- * @file SubhaLagna v3.0.1 — Smart Matching Algorithm
+ * @file SubhaLagna v3.0.2 — Smart Matching Algorithm
  * @description   Computes a weighted compatibility score (0–100) between the
  *                logged-in user's profile and each candidate profile.
  *
@@ -13,10 +15,8 @@
  *                  - Education level    →  5 pts
  *                  Total possible       → 100 pts
  * @author        SubhaLagna Team
- * @version      3.0.1
+ * @version      3.0.2
  */
-
-'use strict';
 
 /**
  * Education tier mapping for partial scoring.

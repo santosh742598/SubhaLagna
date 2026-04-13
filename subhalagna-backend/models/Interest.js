@@ -1,13 +1,13 @@
+"use strict";
+
 /**
- * @file SubhaLagna v3.0.1 — Interest (Connection Request) Model
+ * @file SubhaLagna v3.0.2 — Interest (Connection Request) Model
  * @description   Tracks interest requests sent between users (like Shaadi.com's
  *                "Send Interest" feature). One interest document per sender-receiver pair.
  *                Status transitions: pending → accepted | rejected | withdrawn.
  * @author        SubhaLagna Team
- * @version      3.0.1
+ * @version      3.0.2
  */
-
-'use strict';
 
 const mongoose = require('mongoose');
 

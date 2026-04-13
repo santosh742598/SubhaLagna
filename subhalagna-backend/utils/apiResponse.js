@@ -1,18 +1,18 @@
+"use strict";
+
 /**
- * @file SubhaLagna v3.0.1 — Centralized API Response Helper
+ * @file SubhaLagna v3.0.2 — Centralized API Response Helper
  * @description   Standardizes all API responses across the application.
  *                Every successful response follows { success, data } and
  *                every error follows { success, message } format.
  * @author        SubhaLagna Team
- * @version      3.0.1
+ * @version      3.0.2
  *
- * Usage:
- *   const { sendSuccess, sendError } = require('../utils/apiResponse');
- *   sendSuccess(res, data, 'Profile created', 201);
- *   sendError(res, 'Not authorized', 403);
+ * @example
+ * const { sendSuccess, sendError } = require('../utils/apiResponse');
+ * sendSuccess(res, data, 'Profile created', 201);
+ * sendError(res, 'Not authorized', 403);
  */
-
-'use strict';
 
 /**
  * Send a standardized success response.

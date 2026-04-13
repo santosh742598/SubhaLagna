@@ -1,7 +1,10 @@
+"use strict";
+
 /**
  * Patch script to fix "Test Admin" search visibility by adding a missing birth date.
  * Setting DOB to 1995-01-01 (approx 31 years old) ensures the account passes age filters.
  */
+
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Profile = require('./models/Profile');

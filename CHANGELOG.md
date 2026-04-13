@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.2] - 2026-04-13
+
+### Added
+- **🛡️ Enterprise License**: Expanded the Proprietary License to a multi-section EULA covering intellectual property, liability, and governing law.
+
+### Changed
+- **🚀 Version Bump**: Universal synchronization to `v3.0.2` across 85+ source files and project metadata.
+- **🛡️ License Standardization**: Formally established the project as Proprietary, updated backend `package.json` to `UNLICENSED`, and added a root `LICENSE` document.
+
 ## [3.0.1] - 2026-04-13
 
 ### Added
@@ -132,7 +141,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.4] - 2026-04-11
 
+### Changed
+- **🔧 Internal Maintenance**: Standardized versioning across platform modules.
+
 ## [2.0.3] - 2026-04-11
+
+### Changed
+- **🔧 Internal Maintenance**: Metadata synchronization.
 
 ## [2.0.2] - 2026-04-11
 
