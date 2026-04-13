@@ -111,6 +111,7 @@ Respect the guard hierarchy in `App.jsx`:
     - **Sync Command**: After updating the master version, run `npm run version:sync` (or `node scripts/sync-version.mjs`) from the backend to propagate the change project-wide.
 - **Versioned Headers (Agent Mandate)**: Every file MUST maintain a standardized JSDoc header. 
     - **Agent Responsibility**: AI Agents are REQUIRED to update the `@description` block with a bulleted "vX.X.X changes" list whenever a file is modified.
+    - **Release Protocol**: Every version bump MUST be accompanied by a formal entry in `CHANGELOG.md` documenting added, changed, and fixed items.
     - **Tag Sync**: The `@version` tag and the `@fileoverview` version number are managed by the automation script; Agents should focus on describing the *logic* changes.
     - **Header Template**:
 ```javascript
