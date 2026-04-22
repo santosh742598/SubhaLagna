@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.4 — Reset Password
+ * @file        SubhaLagna v3.0.5 — Reset Password
  * @description   Secure interface for setting a new password via recovery token.
  * - v3.0.4 changes:
  *   - Initial implementation with premium validation UI.
  * @author        SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  */
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';

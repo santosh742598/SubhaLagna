@@ -1,9 +1,9 @@
 /**
- * @file        SubhaLagna v3.0.4 — Chat Service
+ * @file        SubhaLagna v3.0.5 — Chat Service
  * @description   REST API calls for the chat/messaging feature.
  *                Real-time delivery uses Socket.io (see ChatContext).
  * @author        SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  */
 
 import api, { getErrorMessage } from './api';

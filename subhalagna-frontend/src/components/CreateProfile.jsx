@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.4 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.0.5 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
  *                v2.1.0 changes:
  *                  - Automated Rashi selection logic based on Nakshatra/Pada mapping
@@ -8,7 +8,7 @@
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  * @author        SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  */
 
 import React, { useState, useContext, useRef, useEffect } from 'react';
@@ -424,7 +424,8 @@ const CreateProfile = () => {
     if (profilePhoto) submitData.append('profilePhoto', profilePhoto);
     additionalFiles.forEach((f) => submitData.append('additionalPhotos', f));
     try {
-      const res = await fetch(`${API_BASE_URL}/api/profiles/setup`, {
+      const apiUrl = API_BASE_URL.endsWith('/api') ? `${API_BASE_URL}/profiles/setup` : `${API_BASE_URL}/api/profiles/setup`;
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: submitData,

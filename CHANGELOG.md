@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.5] - 2026-04-22
+
+### Added
+- **🎉 Enhanced Signup UX**: Implemented celebratory success banners on the verification page for newly registered users.
+- **📧 OTP Feedback**: Added visual confirmation of OTP delivery during the signup process to improve clarity.
+
+### Fixed
+- **🛡️ Production Connectivity**: Resolved critical HTTPS/Mixed-content issues for the `bahaghara.in` domain using a domain-aware "Smart Config."
+- **💻 Localhost Stability**: Implemented automatic environment detection to seamlessly switch between local and production backend URLs.
+- **🔐 Login Visibility**: Fixed a major bug where 401 Unauthorized errors triggered accidental page refreshes, clearing error messages before the user could read them.
+- **💅 UI Polish**: Removed redundant Header components and improved error message visibility with layout stabilization.
+
+### Changed
+- **🚀 Version Bump**: Universal synchronization of the project to `v3.0.5` including updated JSDoc headers with bulleted change documentation.
+
 ## [3.0.4] - 2026-04-22
 
 ### Added

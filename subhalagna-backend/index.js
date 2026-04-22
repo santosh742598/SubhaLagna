@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.4 — Main Server Entry Point
+ * @file        SubhaLagna v3.0.5 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
  *                - [v3.0.4 changes]
@@ -12,7 +12,7 @@
  *                - Enhanced JSDoc documentation requirements.
  *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  *
  * @description Architecture:
  *  ┌──────────────────────────────────────────┐
@@ -96,6 +96,30 @@ app.use(
   }),
 );
 
+// ── Health Check ─────────────────────────────────────────────────────────────
+// Placed above rate limiting to ensure health monitoring is always available.
+app.get('/api/health', (req, res) => {
+  // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+  const dbStatus = mongoose.connection.readyState;
+  const statusMap = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+  };
+
+  res.json({
+    success: true,
+    message: `SubhaLagna API v${version} is running 🚀`,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    database: {
+      status: statusMap[dbStatus] || 'unknown',
+      connected: dbStatus === 1,
+    },
+  });
+});
+
 // ── Global Rate Limiter ───────────────────────────────────────────────────────
 app.use(globalLimiter);
 
@@ -113,29 +137,6 @@ app.use(mongoSanitize());
 
 // ── Static Files (uploaded images) ───────────────────────────────────────────
 app.use('/uploads', express.static('uploads'));
-
-// ── Health Check ─────────────────────────────────────────────────────────────
-app.get('/api/health', (req, res) => {
-  // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
-  const dbStatus = mongoose.connection.readyState;
-  const statusMap = {
-    0: 'disconnected',
-    1: 'connected',
-    2: 'connecting',
-    3: 'disconnecting',
-  };
-
-  res.json({
-    success: true,
-    message: `SubhaLagna API v${version} is running 🚀`,
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    database: {
-      status: statusMap[dbStatus] || 'unknown',
-      connected: dbStatus === 1,
-    },
-  });
-});
 
 // ── API Routes ────────────────────────────────────────────────────────────────
 // Auth routes get a stricter rate limiter (brute-force protection)

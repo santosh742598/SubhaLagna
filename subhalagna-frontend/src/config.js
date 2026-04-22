@@ -1,8 +1,11 @@
 /**
- * @file        SubhaLagna v3.0.4 — Global Frontend Configuration
- * @description Centralizes all environment-dependent configuration values. [v2.4.0]
+ * @file        SubhaLagna v3.0.5 — Global Frontend Configuration
+ * @description Centralizes all environment-dependent configuration values.
+ *               - v3.0.5 changes:
+ *                 - Implemented Smart Config for auto-detection of bahaghara.in vs localhost.
+ *                 - Forced HTTPS protocols for production domain stability.
  * @author SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  */
 
 /**
@@ -10,14 +13,33 @@
  * Override with VITE_API_URL env var for staging/production.
  * @type {string}
  */
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+let baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+let socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+
+// Smart Config: Detect Environment and set URLs automatically
+if (typeof window !== 'undefined') {
+  const host = window.location.hostname;
+  
+  // 🌍 Production Case
+  if (host === 'bahaghara.in' || host === 'www.bahaghara.in') {
+    baseUrl = 'https://bahaghara.in';
+    socketUrl = 'https://bahaghara.in';
+  } 
+  // 💻 Local Development Case
+  else if (host === 'localhost' || host === '127.0.0.1') {
+    baseUrl = 'http://localhost:5000';
+    socketUrl = 'http://localhost:5000';
+  }
+}
+
+export const API_BASE_URL = baseUrl;
 
 /**
  * WebSocket server URL for Socket.io real-time features.
  * Typically same host as API.
  * @type {string}
  */
-export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+export const SOCKET_URL = socketUrl;
 
 /**
  * Application version.

@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.4 — Shortlist Service
+ * @file        SubhaLagna v3.0.5 — Shortlist Service
  * @description   API wrappers for managing the user's private shortlist.
  * @author        SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  */
 
 import { API_BASE_URL } from '../config';

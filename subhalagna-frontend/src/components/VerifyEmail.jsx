@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.4 — Email Verification Component
+ * @file        SubhaLagna v3.0.5 — Email Verification Component
  * @description   Handles 6-digit OTP entry and resend logic.
- *                Gates user progression until account is activated.
- *
+ *               - v3.0.5 changes:
+ *                 - Implemented celebratory success banner for newly registered users.
  * @author        SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  */
 
 import React, { useState, useEffect, useContext, useRef } from 'react';
@@ -123,6 +123,11 @@ const VerifyEmail = () => {
         className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-xl shadow-rose-100/40 border border-rose-100"
         style={containerStyle}
       >
+        {location.state?.fromSignup && (
+          <div className="mb-6 p-4 bg-rose-500 text-white text-xs font-bold rounded-2xl text-center animate-bounce shadow-lg shadow-rose-200">
+            🎉 Account Created! Please verify your email below.
+          </div>
+        )}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-rose-500">
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -5,12 +5,12 @@ import NotificationBell from './NotificationBell';
 import SystemStatus from './SystemStatus';
 
 /**
- * @file        SubhaLagna v3.0.4 — Global Header
+ * @file        SubhaLagna v3.0.5 — Global Header
  * @description   Modern, responsive navigation bar with real-time notifications and chat triggers.
  * - v3.0.4 changes:
  *   - Integrated SystemStatus indicator for real-time infrastructure monitoring.
  * @author        SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  */
 const Header = () => {
   const { token, logoutContext, user } = useContext(AuthContext);

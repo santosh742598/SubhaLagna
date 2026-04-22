@@ -1,13 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.4 — Axios API Base Instance
+ * @file        SubhaLagna v3.0.5 — Axios API Base Instance
  * @description   Configures a single axios instance used by all service modules.
- *                Features:
- *                  - Attaches JWT Bearer token from localStorage automatically
- *                  - Handles 401 responses by clearing auth and redirecting to login
- *                  - Provides consistent error message extraction
- *
+ *               - v3.0.5 changes:
+ *                 - Added exception to 401 redirect logic for login endpoint to prevent vanishing error messages.
  * @author        SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  */
 
 import axios from 'axios';
@@ -18,7 +15,8 @@ import { API_BASE_URL } from '../config';
  * All services should import this instead of creating their own.
  */
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  // Ensure we don't double up on /api if it's already in the BASE_URL
+  baseURL: API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -44,7 +42,12 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // If 401 and not already retried, attempt token refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // EXCEPTION: Do not redirect if we are ALREADY attempting to log in
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes('/auth/login')
+    ) {
       originalRequest._retry = true;
       const refreshToken = localStorage.getItem('refreshToken');
 

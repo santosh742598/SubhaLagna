@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.4 — Quick Registration Form
+ * @file        SubhaLagna v3.0.5 — Quick Registration Form
  * @description   Initial lead generation form for new guests to quickly find matches.
  * @author        SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.5
  */
 import React, { useState } from 'react';
 import { CITIES } from '../data/mockProfiles';
@@ -27,7 +27,8 @@ const RegistrationForm = ({ onSubmit }) => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/profiles`, {
+      const apiUrl = API_BASE_URL.endsWith('/api') ? `${API_BASE_URL}/profiles` : `${API_BASE_URL}/api/profiles`;
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
