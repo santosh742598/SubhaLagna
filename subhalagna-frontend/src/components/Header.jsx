@@ -2,10 +2,15 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
+import SystemStatus from './SystemStatus';
 
 /**
- * @file        SubhaLagna v3.0.3 — Global Header
+ * @file        SubhaLagna v3.0.4 — Global Header
  * @description   Modern, responsive navigation bar with real-time notifications and chat triggers.
+ * - v3.0.4 changes:
+ *   - Integrated SystemStatus indicator for real-time infrastructure monitoring.
+ * @author        SubhaLagna Team
+ * @version      3.0.4
  */
 const Header = () => {
   const { token, logoutContext, user } = useContext(AuthContext);
@@ -74,6 +79,11 @@ const Header = () => {
               </p>
             </div>
           </Link>
+
+          {/* ── System Status Indicator ── */}
+          <div className="hidden sm:block ml-4">
+            <SystemStatus />
+          </div>
 
           {/* ── Desktop Navigation ── */}
           {token && (

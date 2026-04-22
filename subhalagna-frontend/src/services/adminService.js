@@ -1,12 +1,14 @@
 /**
- * @file        SubhaLagna v3.0.3 — Admin Service
+ * @file        SubhaLagna v3.0.4 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
+ * - v3.0.4 changes:
+ *   - Added updateUserRole API wrapper for admin promotion/demotion.
  * - v2.4.0 changes:
  *   - Added getAllTransactions for comprehensive financial oversight. [v2.4.0]
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
  * @author SubhaLagna Team
- * @version      3.0.3
+ * @version      3.0.4
  */
 
 import api, { getErrorMessage } from './api';
@@ -233,5 +235,20 @@ export const getAllTransactions = async () => {
     return data.data;
   } catch (err) {
     throw getErrorMessage(err, 'Failed to fetch transactions');
+  }
+};
+
+/**
+ * Update a user's system role (admin or user).
+ * @param {string} id - User ID
+ * @param {string} role - New role ('admin' or 'user')
+ * @returns {Promise<object>} Updated user info
+ */
+export const updateUserRole = async (id, role) => {
+  try {
+    const { data } = await api.put(`/admin/users/${id}/role`, { role });
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to update user role');
   }
 };

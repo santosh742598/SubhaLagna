@@ -1,4 +1,4 @@
-# 🤖 AGENTS.md — SubhaLagna v3.0.1 Best Practices & Coding Standards
+# 🤖 AGENTS.md — SubhaLagna v3.0.4 Best Practices & Coding Standards
 
 This document serves as the **Source of Truth** for any developer or AI Agent working on the SubhaLagna Matrimony project. Adherence to these standards is mandatory to maintain the project's premium quality, security, and architectural integrity.
 
@@ -54,7 +54,7 @@ return sendPaginated(res, results, total, page, limit, 'Results retrieved');
 
 ---
 
-## 🛠️ Development Workflow (v3.0.2)
+## 🛠️ Development Workflow (v3.0.4)
 
 ### 1. Unified Formatting
 
@@ -137,11 +137,11 @@ Respect the guard hierarchy in `App.jsx`:
 
 ```javascript
 /**
- * @file        SubhaLagna v3.0.0 — [Brief Title]
+ * @file        SubhaLagna v3.0.4 — [Brief Title]
  * @description  [Detailed description of file purpose]
- *               - [v3.0.0 changes]
+ *               - [v3.0.4 changes]
  * @author       SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.4
  * @example
  * [Usage example here]
  */

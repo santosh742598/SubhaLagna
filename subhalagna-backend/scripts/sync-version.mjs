@@ -1,12 +1,14 @@
 /* globals module, require, process, console */
 
 /**
- * @file        SubhaLagna v3.0.0 — Automated Version Synchronization
+ * @file        SubhaLagna v3.0.4 — Automated Version Synchronization
  * @description  Synchronizes version headers project-wide using Backend as Master.
+ *               - [v3.0.4 changes]
+ *               - Updated internal header to reflect the current platform version.
  *               - [v3.0.0 changes]
  *               - Initial implementation of the permanent versioning solution.
  * @author       SubhaLagna Team
- * @version      3.0.0
+ * @version      3.0.4
  */
 
 import fs from 'fs';
@@ -62,18 +64,33 @@ function syncFile(filePath) {
     changed = true;
   }
 
-  // 2. Pattern A: @version X.X.X
-  const versionRegex = /@version\s+(\d+\.\d+\.\d+)/g;
-  if (versionRegex.test(content)) {
-    content = content.replace(versionRegex, `@version      ${version}`);
-    changed = true;
-  }
-
   // 3. Pattern B: SubhaLagna vX.X.X
   const nameVersionRegex = /SubhaLagna v(\d+\.\d+\.\d+)/g;
   if (nameVersionRegex.test(content)) {
     content = content.replace(nameVersionRegex, `SubhaLagna v${version}`);
     changed = true;
+  }
+
+  // 4. Ensure @version and @author tags are present within JSDoc if @file exists
+  const jsdocRegex = /\/\*\*[\s\S]*?@file[\s\S]*?\*\//;
+  if (jsdocRegex.test(content)) {
+    let header = content.match(jsdocRegex)[0];
+    let originalHeader = header;
+
+    if (!header.includes('@author')) {
+      header = header.replace(/\n\s*\*\//, `\n * @author        SubhaLagna Team\n */`);
+    }
+    if (!header.includes('@version')) {
+      header = header.replace(/\n\s*\*\//, `\n * @version      ${version}\n */`);
+    } else {
+      // Update existing version tag if present
+      header = header.replace(/@version\s+\d+\.\d+\.\d+/g, `@version      ${version}`);
+    }
+
+    if (header !== originalHeader) {
+      content = content.replace(originalHeader, header);
+      changed = true;
+    }
   }
 
   // 4. Strict Mode Enforcement (Backend Node.js files only)

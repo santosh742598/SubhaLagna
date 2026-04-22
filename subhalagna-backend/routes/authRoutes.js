@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.3 — Auth Routes
+ * @file SubhaLagna v3.0.4 — Auth Routes
  * @description   Route definitions for authentication endpoints.
  *                All public routes use input validation before reaching controllers.
  *                Protected routes require a valid JWT access token.
@@ -24,7 +24,7 @@
  *   GET  /me               → get current user
  *   POST /logout           → invalidate refresh token
  * @author SubhaLagna Team
- * @version      3.0.3
+ * @version      3.0.4
  */
 
 const express = require('express');

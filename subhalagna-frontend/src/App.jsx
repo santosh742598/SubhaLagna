@@ -1,15 +1,18 @@
 /**
- * @file        SubhaLagna v3.0.3 — Main Application Router
+ * @file        SubhaLagna v3.0.4 — Main Application Router
  * @description   Entry point for all React routes. Wraps the application
  *                in required context providers (Auth → Notification → Chat)
  *                and configures all route guards.
+ *                - [v3.0.4 changes]
+ *                - Registered Forgot Password and Reset Password routes.
+ *                - Integrated GuestRoute guarding for recovery flows.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0.
  *                - Implemented automated Class Sorting for Tailwind CSS.
  *                - Standardized ESLint & Prettier for premium code quality.
  *                - Enhanced JSDoc requirements for architectural integrity.
  * @author        SubhaLagna Team
- * @version      3.0.3
+ * @version      3.0.4
  */
 
 import React, { useContext } from 'react';
@@ -25,6 +28,8 @@ import Header from './components/Header';
 import Home from './components/Home';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 import CreateProfile from './components/CreateProfile';
 import ProfileDashboard from './components/ProfileDashboard';
 import MatchResults from './components/MatchResults';
@@ -159,6 +164,22 @@ function App() {
                     element={
                       <GuestRoute>
                         <Signup />
+                      </GuestRoute>
+                    }
+                  />
+                  <Route
+                    path="/forgot-password"
+                    element={
+                      <GuestRoute>
+                        <ForgotPassword />
+                      </GuestRoute>
+                    }
+                  />
+                  <Route
+                    path="/reset-password/:token"
+                    element={
+                      <GuestRoute>
+                        <ResetPassword />
                       </GuestRoute>
                     }
                   />

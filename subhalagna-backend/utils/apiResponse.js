@@ -1,12 +1,12 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.3 — Centralized API Response Helper
+ * @file SubhaLagna v3.0.4 — Centralized API Response Helper
  * @description   Standardizes all API responses across the application.
  *                Every successful response follows { success, data } and
  *                every error follows { success, message } format.
  * @author        SubhaLagna Team
- * @version      3.0.3
+ * @version      3.0.4
  *
  * @example
  * const { sendSuccess, sendError } = require('../utils/apiResponse');

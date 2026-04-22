@@ -1,5 +1,9 @@
-// src/data/locationData.js
-
+/**
+ * @file        SubhaLagna v3.0.4 — Location Data (India)
+ * @description   Comprehensive list of Indian states and cities for profile targeting.
+ * @author        SubhaLagna Team
+ * @version      3.0.4
+ */
 export const LOCATION_DATA = {
   'Andaman and Nicobar Islands': ['Port Blair'],
   'Andhra Pradesh': [

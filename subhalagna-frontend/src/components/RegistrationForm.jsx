@@ -1,3 +1,9 @@
+/**
+ * @file        SubhaLagna v3.0.4 — Quick Registration Form
+ * @description   Initial lead generation form for new guests to quickly find matches.
+ * @author        SubhaLagna Team
+ * @version      3.0.4
+ */
 import React, { useState } from 'react';
 import { CITIES } from '../data/mockProfiles';
 import { API_BASE_URL } from '../config';
@@ -18,8 +24,6 @@ const RegistrationForm = ({ onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.gender || !formData.location) return;
-
-    text;
 
     setIsSubmitting(true);
     try {
@@ -58,7 +62,6 @@ const RegistrationForm = ({ onSubmit }) => {
             Join the Telli Community network to discover authentic profiles near you.
           </p>
         </div>
-        text
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name Field */}
           <div>

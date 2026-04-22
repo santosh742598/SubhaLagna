@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.3 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.0.4 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
  *                v2.1.0 changes:
  *                  - Automated Rashi selection logic based on Nakshatra/Pada mapping
@@ -7,6 +7,8 @@
  *                  - Laptop camera direct capture support
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
+ * @author        SubhaLagna Team
+ * @version      3.0.4
  */
 
 import React, { useState, useContext, useRef, useEffect } from 'react';

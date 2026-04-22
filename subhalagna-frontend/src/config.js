@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.3 — Global Frontend Configuration
+ * @file        SubhaLagna v3.0.4 — Global Frontend Configuration
  * @description Centralizes all environment-dependent configuration values. [v2.4.0]
  * @author SubhaLagna Team
- * @version      3.0.3
+ * @version      3.0.4
  */
 
 /**

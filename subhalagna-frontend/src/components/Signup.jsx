@@ -1,8 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.3 — Signup Implementation
+ * @file        SubhaLagna v3.0.4 — Signup Implementation
  * @description   Handles new user account creation.
  *                v2.4.0 changes:
  *                  - Updated successful signup redirect to /verify-email.
+ * @author        SubhaLagna Team
+ * @version      3.0.4
  */
 
 import React, { useState, useContext } from 'react';

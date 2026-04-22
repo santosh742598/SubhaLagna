@@ -1,7 +1,10 @@
 "use strict";
 
 /**
- * SEED SCRIPT: Populate MasterData with initial entries
+ * @file        SubhaLagna v3.0.4 — Master Data Seeder
+ * @description   Populates the database with initial lookup data (Caste, Education, Occupation).
+ * @author        SubhaLagna Team
+ * @version      3.0.4
  */
 
 const mongoose = require('mongoose');

@@ -1,11 +1,15 @@
 /**
- * @file        SubhaLagna v3.0.3 — Admin Dashboard
+ * @file        SubhaLagna v3.0.4 — Admin Dashboard
  * @description Executive interface for platform commercial and user management.
+ * - v3.0.4 changes:
+ *   - Implemented Admin Role Moderation (Promote/Demote users) with safety confirmations.
+ *   - Integrated Role badges and toggle actions in User Moderation table.
  * - v2.4.0 changes:
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.0.3
+ * @version      3.0.4
+ * @author        SubhaLagna Team
  */
 
 import React, { useState, useEffect } from 'react';
@@ -27,6 +31,7 @@ import {
   adminAddUser,
   adminUpdateUser,
   adminUploadPhotos,
+  updateUserRole,
 } from '../services/adminService';
 import { getProfileAvatar } from '../utils/avatarHelper';
 import { fetchLookupOptions } from '../services/lookupService';
@@ -548,6 +553,24 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleRoleUpdate = async (user) => {
+    const newRole = user.role === 'admin' ? 'user' : 'admin';
+    const confirmMsg =
+      newRole === 'admin'
+        ? `🛡️ Are you sure you want to promote ${user.name} to ADMINISTRATOR?`
+        : `⚠️ Are you sure you want to demote ${user.name} to a standard user?`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      await updateUserRole(user._id, newRole);
+      fetchData(pagination.page);
+      alert(`Success: ${user.name} is now a ${newRole}.`);
+    } catch (err) {
+      alert(err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50/50">
       <main className="max-w-7xl mx-auto pt-10 pb-20">
@@ -683,6 +706,7 @@ const AdminDashboard = () => {
                   <tr className="bg-slate-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                     <th className="px-8 py-4">User</th>
                     <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4">Role</th>
                     <th className="px-6 py-4">Premium</th>
                     <th className="px-8 py-4 text-right">Actions</th>
                   </tr>
@@ -741,6 +765,17 @@ const AdminDashboard = () => {
                           </div>
                         </td>
                         <td className="px-6 py-5">
+                          <span
+                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              user.role === 'admin'
+                                ? 'bg-indigo-100 text-indigo-600 border border-indigo-200'
+                                : 'bg-slate-100 text-slate-500 border border-slate-200'
+                            }`}
+                          >
+                            {user.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5">
                           {user.isPremium ? (
                             <span className="text-amber-500 text-xs font-bold flex flex-col">
                               <span>👑 {user.premiumPlan.toUpperCase()}</span>
@@ -752,7 +787,30 @@ const AdminDashboard = () => {
                             <span className="text-gray-300 text-xs font-medium">Free</span>
                           )}
                         </td>
-                        <td className="px-8 py-5 text-right flex items-center justify-end gap-2">
+                         <td className="px-8 py-5 text-right flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleRoleUpdate(user)}
+                            className={`p-2 rounded-xl border transition-all ${
+                              user.role === 'admin'
+                                ? 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100'
+                                : 'bg-slate-50 border-slate-100 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100'
+                            }`}
+                            title={user.role === 'admin' ? 'Demote to User' : 'Promote to Admin'}
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                              />
+                            </svg>
+                          </button>
                           <button
                             onClick={() => handleOpenEditUser(user)}
                             className="p-2 rounded-xl border border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-100 transition-all"

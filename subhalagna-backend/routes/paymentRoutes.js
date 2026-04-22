@@ -1,9 +1,10 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.3 — Payment Routes
+ * @file SubhaLagna v3.0.4 — Payment Routes
  * @description   Endpoints for subscription management and payments.
- * @version      3.0.3
+ * @version      3.0.4
+ * @author        SubhaLagna Team
  */
 
 const express = require('express');

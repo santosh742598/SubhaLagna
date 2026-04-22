@@ -1,18 +1,21 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.3 — Admin Controller
+ * @file        SubhaLagna v3.0.4 — Admin Controller
  * @description   Administrative tools for platform management:
  *                - User and Profile moderation (suspend, delete).
  *                - System-wide statistics and matchmaking analytics.
  *                - Dynamic membership plan management (pricing/features).
+ *                - [v3.0.4 changes]
+ *                - Implemented updateUserRole for administrative promotion and demotion.
+ *                - Added self-protection logic to prevent admins from demoting themselves.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0 with automated coding standards.
  *                - Integrated strict JSDoc validation.
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.0.3
+ * @version      3.0.4
  */
 
 const User = require('../models/User');
@@ -437,6 +440,53 @@ const toggleVerifyProfile = async (req, res, next) => {
       { profileId: profile._id, isVerified: profile.isVerified },
       `Profile ${profile.isVerified ? 'verified' : 'unverified'} successfully`,
     );
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Update user role (Admin only)
+// @route   PUT /api/admin/users/:id/role
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+const updateUserRole = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    if (!['user', 'admin'].includes(role)) {
+      return sendError(res, 'Invalid role. Must be user or admin.', 400);
+    }
+
+    const user = await User.findById(id);
+    if (!user) return sendError(res, 'User not found', 404);
+
+    // Prevent self-demotion
+    if (id === req.user._id.toString() && role === 'user') {
+      return sendError(res, 'You cannot demote yourself. Safety first!', 400);
+    }
+
+    user.role = role;
+    await user.save({ validateBeforeSave: false });
+
+    await Notification.create({
+      recipient: user._id,
+      type: 'system',
+      message:
+        role === 'admin'
+          ? '🛡️ You have been promoted to an Administrator. You now have access to the Admin Dashboard.'
+          : 'ℹ️ Your administrative access has been revoked. You are now a standard user.',
+    });
+
+    return sendSuccess(res, { userId: user._id, role: user.role }, `User role updated to ${role}`);
   } catch (err) {
     next(err);
   }
@@ -868,6 +918,7 @@ module.exports = {
   createUserWithProfile,
   updateUserAndProfile,
   uploadUserPhotosAdmin,
+  updateUserRole,
   toggleSuspendUser,
   toggleVerifyProfile,
   deleteUser,

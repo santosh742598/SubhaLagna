@@ -1,16 +1,18 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.3 — Main Server Entry Point
+ * @file        SubhaLagna v3.0.4 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
+ *                - [v3.0.4 changes]
+ *                - Enhanced /api/health endpoint with real-time MongoDB connection status.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0 architecture.
  *                - Standardized ESLint & Prettier configuration across the project.
  *                - Enhanced JSDoc documentation requirements.
  *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version      3.0.3
+ * @version      3.0.4
  *
  * @description Architecture:
  *  ┌──────────────────────────────────────────┐
@@ -30,6 +32,7 @@ const http = require('http');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const mongoose = require('mongoose');
 const { Server } = require('socket.io');
 
 const connectDB = require('./config/db');
@@ -113,11 +116,24 @@ app.use('/uploads', express.static('uploads'));
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
+  // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+  const dbStatus = mongoose.connection.readyState;
+  const statusMap = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+  };
+
   res.json({
     success: true,
     message: `SubhaLagna API v${version} is running 🚀`,
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
+    database: {
+      status: statusMap[dbStatus] || 'unknown',
+      connected: dbStatus === 1,
+    },
   });
 });
 

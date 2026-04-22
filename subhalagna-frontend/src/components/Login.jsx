@@ -1,3 +1,11 @@
+/**
+ * @file        SubhaLagna v3.0.4 — Login Component
+ * @description   Secure authentication portal with glassmorphism UI and animated background.
+ * - v3.0.4 changes:
+ *   - Added navigation link to Forgot Password flow.
+ * @author        SubhaLagna Team
+ * @version      3.0.4
+ */
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -204,6 +212,14 @@ const Login = () => {
                     </svg>
                   )}
                 </button>
+              </div>
+              <div className="flex justify-end mt-1">
+                <Link
+                  to="/forgot-password"
+                  className="text-[10px] font-bold text-rose-500 hover:text-rose-600 transition-colors uppercase tracking-wider"
+                >
+                  Forgot Password?
+                </Link>
               </div>
             </div>
 
