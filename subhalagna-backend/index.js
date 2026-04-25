@@ -134,8 +134,8 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // ── Body Parsers ──────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10kb' })); // reject oversized JSON payloads
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(express.json({ limit: '10mb' })); // Allow larger JSON payloads (e.g. for rich profiles)
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // NoSQL Injection Protection
 app.use(mongoSanitize());
