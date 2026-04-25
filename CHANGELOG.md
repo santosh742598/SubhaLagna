@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.6] - 2026-04-25
+
+### Added
+- **🛠️ Documentation Versioning**: Enhanced the global synchronization script to automatically update version strings in `README.md` and `AGENTS.md`.
+- **📁 Markdown Support**: Expanded version sync regex patterns to capture markdown headers, shield badges, and parenthetical version references.
+
+### Fixed
+- **🛡️ Critical Profile State**: Resolved a major bug in `CreateProfile.jsx` where the API response was not properly unwrapped, causing profile data to appear missing and generating "undefined" public profile links.
+- **💅 Tailwind v4 Polish**: Updated `Header.jsx` to use modern `bg-linear-to-*` syntax as per Tailwind v4 standards.
+- **👤 Avatar Fallback**: Implemented Initial-based fallback avatars for users without profile photos in the navigation header.
+
+### Changed
+- **🚀 Version Bump**: Universal synchronization of the project to `v3.0.6`.
+
+
 ## [3.0.5] - 2026-04-22
 
 ### Added

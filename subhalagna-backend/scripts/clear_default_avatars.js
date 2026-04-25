@@ -1,11 +1,11 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.5 — Migration Script
+ * @file SubhaLagna v3.0.6 — Migration Script
  * @description Clears existing "/uploads/default-avatar.png" strings from Profile records
  * to allow the new gender-specific placeholder logic to work correctly.
  * @author        SubhaLagna Team
- * @version      3.0.5
+ * @version      3.0.6
  */
 
 const mongoose = require('mongoose');

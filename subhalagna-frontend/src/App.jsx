@@ -1,9 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.5 — Main Application Router
+ * @file        SubhaLagna v3.0.6 — Main Application Router
  * @description   Entry point for all React routes. Wraps the application
  *                in required context providers (Auth → Notification → Chat)
  *                and configures all route guards.
- *                - [v3.0.4 changes]
+ *                - [v3.0.5 changes]
+ *                - Fixed circular redirect bug in OnboardRoute for email verification.
  *                - Registered Forgot Password and Reset Password routes.
  *                - Integrated GuestRoute guarding for recovery flows.
  *                - [v3.0.0 changes]
@@ -12,11 +13,11 @@
  *                - Standardized ESLint & Prettier for premium code quality.
  *                - Enhanced JSDoc requirements for architectural integrity.
  * @author        SubhaLagna Team
- * @version      3.0.5
+ * @version      3.0.6
  */
 
 import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 
 /* ── Context Providers ─────────────────────────────────────────────────────── */
 import { AuthProvider, AuthContext } from './context/AuthContext';
@@ -64,11 +65,15 @@ const GuestRoute = ({ children }) => {
  */
 const OnboardRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
+  const location = useLocation();
+
   if (loading) return null;
   if (!token) return <Navigate to="/login" replace />;
 
-  // Force email verification first
-  if (user && !user.isEmailVerified) return <Navigate to="/verify-email" replace />;
+  // Force email verification first (skip if already on verify page)
+  if (user && !user.isEmailVerified && location.pathname !== '/verify-email') {
+    return <Navigate to="/verify-email" replace />;
+  }
 
   if (user && user.hasProfile) return <Navigate to="/matches" replace />;
   return children;

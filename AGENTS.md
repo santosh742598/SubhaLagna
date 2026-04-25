@@ -1,4 +1,4 @@
-# 🤖 AGENTS.md — SubhaLagna v3.0.4 Best Practices & Coding Standards
+# 🤖 AGENTS.md — SubhaLagna v3.0.6 Best Practices & Coding Standards
 
 This document serves as the **Source of Truth** for any developer or AI Agent working on the SubhaLagna Matrimony project. Adherence to these standards is mandatory to maintain the project's premium quality, security, and architectural integrity.
 
@@ -54,7 +54,7 @@ return sendPaginated(res, results, total, page, limit, 'Results retrieved');
 
 ---
 
-## 🛠️ Development Workflow (v3.0.4)
+## 🛠️ Development Workflow (v3.0.6)
 
 ### 1. Unified Formatting
 
@@ -132,16 +132,16 @@ Respect the guard hierarchy in `App.jsx`:
 - **Versioned Headers (Agent Mandate)**: Every file MUST maintain a standardized JSDoc header.
   - **Agent Responsibility**: AI Agents are REQUIRED to update the `@description` block with a bulleted "vX.X.X changes" list whenever a file is modified.
   - **Release Protocol**: Every version bump MUST be accompanied by a formal entry in `CHANGELOG.md` documenting added, changed, and fixed items.
-  - **Tag Sync**: The `@version` tag and the `@fileoverview` version number are managed by the automation script; Agents should focus on describing the _logic_ changes.
+  - **Tag Sync**: The `@version` tag and the `@file       ` version number are managed by the automation script; Agents should focus on describing the _logic_ changes.
   - **Header Template**:
 
 ```javascript
 /**
- * @file        SubhaLagna v3.0.4 — [Brief Title]
+ * @file        SubhaLagna v3.0.6 — [Brief Title]
  * @description  [Detailed description of file purpose]
  *               - [v3.0.4 changes]
  * @author       SubhaLagna Team
- * @version      3.0.4
+ * @version      3.0.6
  * @example
  * [Usage example here]
  */

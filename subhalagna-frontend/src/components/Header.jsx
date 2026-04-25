@@ -1,17 +1,18 @@
+/**
+ * @file        SubhaLagna v3.0.6 — Global Header
+ * @description   Modern, responsive navigation bar with real-time notifications and chat triggers.
+ *               - Implemented premium initial-based avatar fallback for the profile button.
+ *               - Fixed broken placeholder-profile.png reference.
+ *               - Integrated SystemStatus indicator for real-time infrastructure monitoring.
+ * @author        SubhaLagna Team
+ * @version      3.0.6
+ */
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
 import SystemStatus from './SystemStatus';
 
-/**
- * @file        SubhaLagna v3.0.5 — Global Header
- * @description   Modern, responsive navigation bar with real-time notifications and chat triggers.
- * - v3.0.4 changes:
- *   - Integrated SystemStatus indicator for real-time infrastructure monitoring.
- * @author        SubhaLagna Team
- * @version      3.0.5
- */
 const Header = () => {
   const { token, logoutContext, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -58,8 +59,8 @@ const Header = () => {
             to="/"
             className="flex items-center gap-3 group transition-transform hover:scale-[1.02]"
           >
-            <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-pink-400 via-pink-500 to-pink-600 shadow-md shadow-pink-200/50 flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/20"></div>
+            <div className="relative w-11 h-11 rounded-xl bg-linear-to-br from-pink-400 via-pink-500 to-pink-600 shadow-md shadow-pink-200/50 flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 bg-linear-to-t from-transparent to-white/20"></div>
               <svg
                 className="w-6 h-6 text-white relative z-10"
                 viewBox="0 0 24 24"
@@ -118,17 +119,19 @@ const Header = () => {
                 <div className="relative group">
                   <button
                     onClick={() => navigate('/profile')}
-                    className="w-10 h-10 rounded-full border-2 border-pink-100 overflow-hidden hover:border-pink-300 transition-colors shadow-sm"
+                    className="w-10 h-10 rounded-full border-2 border-pink-100 overflow-hidden hover:border-pink-300 transition-colors shadow-sm flex items-center justify-center bg-linear-to-br from-rose-500 to-pink-500"
                   >
-                    <img
-                      src={
-                        user?.profile?.profilePhoto ||
-                        user?.profile?.image ||
-                        '/placeholder-profile.png'
-                      }
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
+                    {user?.profile?.profilePhoto || user?.profile?.image ? (
+                      <img
+                        src={user?.profile?.profilePhoto || user?.profile?.image}
+                        alt="Profile"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <span className="text-white font-bold text-base tracking-wider">
+                        {(user?.name || user?.email || 'U').charAt(0).toUpperCase()}
+                      </span>
+                    )}
                   </button>
                 </div>
 

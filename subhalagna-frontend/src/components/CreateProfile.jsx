@@ -1,22 +1,25 @@
 /**
- * @file        SubhaLagna v3.0.5 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.0.6 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
- *                v2.1.0 changes:
+ *                - [v3.0.5 changes]
+ *                - Fixed critical bug where API response was not unwrapped, causing profile data to appear missing.
+ *                - Refactored submission logic to use profileService for better consistency.
+ *                - [v2.1.0 changes]
  *                  - Automated Rashi selection logic based on Nakshatra/Pada mapping
  *                  - Standardized horoscope dropdowns for Guna Milan data integrity
  *                  - Laptop camera direct capture support
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  * @author        SubhaLagna Team
- * @version      3.0.5
+ * @version      3.0.6
  */
 
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { fetchLookupOptions } from '../services/lookupService';
+import { setupProfile } from '../services/profileService';
 import { RASHIS, NAKSHATRAS, PADA_RASHI_MAP } from '../data/astrologyData.js';
-import { API_BASE_URL } from '../config';
 import CaptureModal from './CaptureModal';
 
 // ─── Floating Heart Component ────────────────────────────────────────────────
@@ -424,19 +427,11 @@ const CreateProfile = () => {
     if (profilePhoto) submitData.append('profilePhoto', profilePhoto);
     additionalFiles.forEach((f) => submitData.append('additionalPhotos', f));
     try {
-      const apiUrl = API_BASE_URL.endsWith('/api') ? `${API_BASE_URL}/profiles/setup` : `${API_BASE_URL}/api/profiles/setup`;
-      const res = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: submitData,
-      });
-      const data = await res.json();
-      if (res.ok) {
-        updateProfileContext(data);
-        navigate('/matches');
-      } else setErrorStr(data.errors?.[0]?.message || data.message || 'Something went wrong.');
-    } catch {
-      setErrorStr('Failed to connect to server.');
+      const data = await setupProfile(submitData);
+      updateProfileContext(data);
+      navigate('/matches');
+    } catch (err) {
+      setErrorStr(err || 'Something went wrong.');
     } finally {
       setIsSubmitting(false);
     }

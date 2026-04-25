@@ -21,7 +21,7 @@ const __dirname = path.dirname(__filename);
 // 1. Configuration
 const MASTER_PACKAGE = path.resolve(__dirname, '../package.json');
 const TARGET_ROOT = path.resolve(__dirname, '../../');
-const TARGET_EXTENSIONS = ['.js', '.jsx'];
+const TARGET_EXTENSIONS = ['.js', '.jsx', '.md'];
 const EXCLUDE_DIRS = ['node_modules', '.git', 'dist', 'build', 'uploads', 'brain'];
 
 // 2. Read Master Version
@@ -64,11 +64,34 @@ function syncFile(filePath) {
     changed = true;
   }
 
-  // 3. Pattern B: SubhaLagna vX.X.X
+  // 3. Pattern B: SubhaLagna vX.X.X (Standard headers/text)
   const nameVersionRegex = /SubhaLagna v(\d+\.\d+\.\d+)/g;
   if (nameVersionRegex.test(content)) {
     content = content.replace(nameVersionRegex, `SubhaLagna v${version}`);
     changed = true;
+  }
+
+  // 4. Pattern C: Markdown Header (SubhaLagna Matrimony — vX.X.X)
+  const headerVersionRegex = /SubhaLagna Matrimony — v(\d+\.\d+\.\d+)/g;
+  if (headerVersionRegex.test(content)) {
+    content = content.replace(headerVersionRegex, `SubhaLagna Matrimony — v${version}`);
+    changed = true;
+  }
+
+  // 5. Pattern D: Shield Badges (version-X.X.X-blue)
+  const badgeVersionRegex = /version-(\d+\.\d+\.\d+)-/g;
+  if (badgeVersionRegex.test(content)) {
+    content = content.replace(badgeVersionRegex, `version-${version}-`);
+    changed = true;
+  }
+
+  // 6. Pattern E: Parenthetical versions (vX.X.X) - specifically for markdown headers
+  if (filePath.endsWith('.md')) {
+    const parenVersionRegex = /\(v(\d+\.\d+\.\d+)\)/g;
+    if (parenVersionRegex.test(content)) {
+      content = content.replace(parenVersionRegex, `(v${version})`);
+      changed = true;
+    }
   }
 
   // 4. Ensure @version and @author tags are present within JSDoc if @file exists
