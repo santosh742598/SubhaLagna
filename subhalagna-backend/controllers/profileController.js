@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.7 — Profile Controller
+ * @file        SubhaLagna v3.0.8 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
  *                - Comprehensive profile setup (onboarding).
  *                - Paginated matches with Guna Milan scoring.
@@ -12,7 +12,7 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.0.7
+ * @version      3.0.8
  */
 
 const Profile = require('../models/Profile');
@@ -239,21 +239,23 @@ const getMatches = async (req, res, next) => {
     }
 
     // ── Build dynamic MongoDB query ────────────────────────────────────────
-    const query = {
-      gender: targetGender,
-      completenessScore: { $gte: 20 }, // Hide completely blank/test profiles
-    };
+    const query = { gender: targetGender };
 
-    // ── Exclude Admins & Self ──────────────────────────────────────────────
     // 1. Fetch all admin IDs (for large systems, this should be cached)
     const adminUsers = await User.find({ role: 'admin' }).select('_id').lean();
     const adminIds = adminUsers.map((a) => a._id);
 
     // 2. Add exclusion to query
+    const isProd = process.env.NODE_ENV === 'production';
     query.user = {
       $ne: req.user._id,
-      $nin: adminIds,
     };
+
+    // Only hide admins and incomplete profiles in production
+    if (isProd) {
+      query.user.$nin = adminIds;
+      query.completenessScore = { $gte: 20 };
+    }
 
     // Exclude hidden profiles
     query['privacySettings.isProfileHidden'] = false;

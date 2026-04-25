@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.7 — Admin Dashboard
+ * @file        SubhaLagna v3.0.8 — Admin Dashboard
  * @description Executive interface for platform commercial and user management.
  * - v3.0.4 changes:
  *   - Implemented Admin Role Moderation (Promote/Demote users) with safety confirmations.
@@ -8,7 +8,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.0.7
+ * @version      3.0.8
  * @author        SubhaLagna Team
  */
 
@@ -32,6 +32,7 @@ import {
   adminUpdateUser,
   adminUploadPhotos,
   updateUserRole,
+  updateAdminPlan,
 } from '../services/adminService';
 import { getProfileAvatar } from '../utils/avatarHelper';
 import { fetchLookupOptions } from '../services/lookupService';
@@ -366,7 +367,6 @@ const AdminDashboard = () => {
   const handleSavePlan = async (e) => {
     e.preventDefault();
     try {
-      const { updateAdminPlan } = await import('../services/adminService');
       await updateAdminPlan(selectedPlan._id, planForm);
       setIsPlanModalOpen(false);
       fetchPlans();

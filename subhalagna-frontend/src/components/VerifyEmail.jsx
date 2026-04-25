@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.7 — Email Verification Component
+ * @file        SubhaLagna v3.0.8 — Email Verification Component
  * @description   Handles 6-digit OTP entry and resend logic.
  *               - v3.0.5 changes:
  *                 - Implemented celebratory success banner for newly registered users.
  * @author        SubhaLagna Team
- * @version      3.0.7
+ * @version      3.0.8
  */
 
 import React, { useState, useEffect, useContext, useRef } from 'react';

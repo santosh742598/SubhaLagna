@@ -1,12 +1,12 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.7 — Message Model
+ * @file SubhaLagna v3.0.8 — Message Model
  * @description   Stores individual chat messages within a Conversation.
  *                Each message belongs to a conversation and has a sender.
  *                Supports read receipts via the `isRead` flag.
  * @author        SubhaLagna Team
- * @version      3.0.7
+ * @version      3.0.8
  */
 
 const mongoose = require('mongoose');

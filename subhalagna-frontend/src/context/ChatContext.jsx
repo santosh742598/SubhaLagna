@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.7 — Chat Context
+ * @file        SubhaLagna v3.0.8 — Chat Context
  * @description   Manages the Socket.io connection and real-time chat state.
  *                Provides the socket instance and active message streams to
  *                all chat-related components.
@@ -9,7 +9,7 @@
  *                    useContext(ChatContext);
  *
  * @author        SubhaLagna Team
- * @version      3.0.7
+ * @version      3.0.8
  */
 
 import React, { createContext, useState, useEffect, useContext, useRef, useCallback } from 'react';
@@ -73,7 +73,28 @@ export const ChatProvider = ({ children }) => {
 
     // New message received via socket
     socket.on('new_message', (message) => {
-      setMessages((prev) => [...prev, message]);
+      setMessages((prev) => {
+        // 1. If this message ID already exists, ignore it
+        if (prev.find((m) => m._id === message._id)) return prev;
+
+        // 2. Look for a temporary message (sent by the current user with same content)
+        const tempIndex = prev.findIndex(
+          (m) =>
+            m._id?.toString().startsWith('temp-') &&
+            m.content === message.content &&
+            (m.sender?._id === message.sender?._id || m.sender === message.sender?._id),
+        );
+
+        if (tempIndex !== -1) {
+          // Replace the temporary message with the real one from the server
+          const updated = [...prev];
+          updated[tempIndex] = message;
+          return updated;
+        }
+
+        // 3. Otherwise, just add the new message
+        return [...prev, message];
+      });
     });
 
     // Typing indicator

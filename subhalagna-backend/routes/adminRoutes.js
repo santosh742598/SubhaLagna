@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.0.7 — Admin Routes
+ * @file SubhaLagna v3.0.8 — Admin Routes
  * @description Route definitions for the admin dashboard.
  * - v3.0.4 changes:
  *   - Added PUT /api/admin/users/:id/role for staff role management.
@@ -10,7 +10,7 @@
  * - v2.3.0 changes:
  *   - Added GET /api/admin/plans and PUT /api/admin/plans/:id for dynamic membership control.
  *   - Integrated plan management into the administrative API surface.
- * @version      3.0.7
+ * @version      3.0.8
  * @author        SubhaLagna Team
  */
 
