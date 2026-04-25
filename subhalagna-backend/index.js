@@ -66,6 +66,11 @@ connectDB();
 // ── Initialize Express ───────────────────────────────────────────────────────
 const app = express();
 
+// Trust the first proxy (Nginx) for correct IP detection in rate limiting
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // ── Create HTTP server (required for Socket.io) ──────────────────────────────
 const server = http.createServer(app);
 
