@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.7] - 2026-04-25
+
+### Added
+- **📞 Contact Recovery**: Implemented a `phone` field in the `User` model to allow persistent storage of mobile numbers.
+- **📱 Onboarding Update**: Added a mandatory "Mobile Number" input field to Step 1 of the profile creation process.
+- **🔄 Account Sync**: Automated synchronization of name and phone data from the profile setup directly into the core user account.
+
+### Fixed
+- **🖼️ Avatar Restoration**: Reverted the initials-based fallback logic in the Header and restored the original gender-specific "sweet photo" (default avatar) images.
+- **🛡️ Registration Flow**: Fixed a response unwrapping bug in the Quick Registration form to ensure profile objects are correctly structured, preventing "undefined" profile links.
+- **🔍 Profile Detail Population**: Updated the backend profile retrieval logic to correctly populate the user's phone number for premium/unlocked views.
+
+### Changed
+- **🚀 Version Bump**: Universal synchronization of the project to `v3.0.7`.
+
+
 ## [3.0.6] - 2026-04-25
 
 ### Added

@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.6 — ESLint Configuration
+ * @file        SubhaLagna v3.0.7 — ESLint Configuration
  * @description   Strict linting rules for frontend React code quality and security.
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 import js from '@eslint/js';
 import globals from 'globals';

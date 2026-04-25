@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.6 — Interest Button Component
+ * @file        SubhaLagna v3.0.7 — Interest Button Component
  * @description   Smart button that shows the current interest status between
  *                the logged-in user and a profile owner. States:
  *                  - No interest    → "Send Interest" button
@@ -11,7 +11,7 @@
  *                Fetches current status on mount. Handles all transitions.
  *
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 
 import React, { useState, useEffect, useContext } from 'react';

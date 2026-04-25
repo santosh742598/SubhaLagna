@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.6 — Profile Service
+ * @file        SubhaLagna v3.0.7 — Profile Service
  * @description   All profile-related API calls. Handles FormData for file uploads.
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 
 import api, { getErrorMessage } from './api';

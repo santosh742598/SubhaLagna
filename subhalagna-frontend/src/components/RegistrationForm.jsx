@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.6 — Quick Registration Form
+ * @file        SubhaLagna v3.0.7 — Quick Registration Form
  * @description   Initial lead generation form for new guests to quickly find matches.
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 import React, { useState } from 'react';
 import { CITIES } from '../data/mockProfiles';
@@ -38,8 +38,8 @@ const RegistrationForm = ({ onSubmit }) => {
 
       if (response.ok) {
         const data = await response.json();
-        // Artificial delay for smooth UX
-        setTimeout(() => onSubmit(data), 500);
+        // Artificial delay for smooth UX (unwrap data.data to ensure consistent profile objects)
+        setTimeout(() => onSubmit(data.data || data), 500);
       } else {
         console.error('Failed to register');
       }

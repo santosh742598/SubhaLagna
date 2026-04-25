@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.6 — Auth Service
+ * @file        SubhaLagna v3.0.7 — Auth Service
  * @description   All authentication-related API calls. Components should call
  *                these service functions instead of calling fetch/axios directly.
  *
@@ -7,7 +7,7 @@
  *                  - Added resendOTP service method.
  *
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 
 import api, { getErrorMessage } from './api';

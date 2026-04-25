@@ -1,17 +1,17 @@
 /**
- * @file        SubhaLagna v3.0.6 — Global Header
+ * @file        SubhaLagna v3.0.7 — Global Header
  * @description   Modern, responsive navigation bar with real-time notifications and chat triggers.
- *               - Implemented premium initial-based avatar fallback for the profile button.
- *               - Fixed broken placeholder-profile.png reference.
+ *               - Restored original gender-based default avatar image (/man.png, /woman.png).
  *               - Integrated SystemStatus indicator for real-time infrastructure monitoring.
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
 import SystemStatus from './SystemStatus';
+import { getProfileAvatar } from '../utils/avatarHelper';
 
 const Header = () => {
   const { token, logoutContext, user } = useContext(AuthContext);
@@ -121,17 +121,11 @@ const Header = () => {
                     onClick={() => navigate('/profile')}
                     className="w-10 h-10 rounded-full border-2 border-pink-100 overflow-hidden hover:border-pink-300 transition-colors shadow-sm flex items-center justify-center bg-linear-to-br from-rose-500 to-pink-500"
                   >
-                    {user?.profile?.profilePhoto || user?.profile?.image ? (
-                      <img
-                        src={user?.profile?.profilePhoto || user?.profile?.image}
-                        alt="Profile"
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    ) : (
-                      <span className="text-white font-bold text-base tracking-wider">
-                        {(user?.name || user?.email || 'U').charAt(0).toUpperCase()}
-                      </span>
-                    )}
+                    <img
+                      src={getProfileAvatar(user?.profile)}
+                      alt="Profile"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
                   </button>
                 </div>
 

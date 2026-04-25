@@ -3,7 +3,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 
 /**
- * @file        SubhaLagna v3.0.6 — System Status Indicator
+ * @file        SubhaLagna v3.0.7 — System Status Indicator
  * @description   Real-time health monitor that checks API and Database availability.
  *                States:
  *                - Green: API & DB Online
@@ -14,7 +14,7 @@ import { API_BASE_URL } from '../config';
  * - v3.0.4 changes:
  *   - Initial implementation of the health monitor.
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 const SystemStatus = () => {
   const [status, setStatus] = useState('checking'); // checking, ok, db_down, backend_down

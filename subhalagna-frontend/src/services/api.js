@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.6 — Axios API Base Instance
+ * @file        SubhaLagna v3.0.7 — Axios API Base Instance
  * @description   Configures a single axios instance used by all service modules.
  *               - v3.0.5 changes:
  *                 - Added exception to 401 redirect logic for login endpoint to prevent vanishing error messages.
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 
 import axios from 'axios';

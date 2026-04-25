@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.6 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.0.7 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
  *                - [v3.0.5 changes]
  *                - Fixed critical bug where API response was not unwrapped, causing profile data to appear missing.
@@ -11,7 +11,7 @@
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 
 import React, { useState, useContext, useRef, useEffect } from 'react';
@@ -228,6 +228,7 @@ const CreateProfile = () => {
   const [formData, setFormData] = useState({
     name: user?.name || '',
     gender: 'Male',
+    phone: '',
     dateOfBirth: '',
     religion: 'Hindu',
     caste: '',
@@ -594,6 +595,22 @@ const CreateProfile = () => {
                           </button>
                         ))}
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">
+                        Mobile Number
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                        placeholder="Enter your mobile number"
+                        className={inputClasses}
+                        style={{ outline: 'none' }}
+                      />
                     </div>
 
                     <div>

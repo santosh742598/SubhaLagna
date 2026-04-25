@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.0.6 — Profile Controller
+ * @file        SubhaLagna v3.0.7 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
  *                - Comprehensive profile setup (onboarding).
  *                - Paginated matches with Guna Milan scoring.
@@ -12,7 +12,7 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.0.6
+ * @version      3.0.7
  */
 
 const Profile = require('../models/Profile');
@@ -68,6 +68,7 @@ const setupProfile = async (req, res, next) => {
       pada,
       gotra,
       manglik,
+      phone,
     } = req.body;
 
     // ── Age validation (server-side double-check) ─────────────────────────
@@ -182,6 +183,10 @@ const setupProfile = async (req, res, next) => {
         manglik: manglik || 'Unknown',
       },
     });
+
+    // ── Update User Model with Phone & Name ──────────────────────────────────
+    const User = mongoose.model('User');
+    await User.findByIdAndUpdate(req.user._id, { name, phone });
 
     return sendSuccess(res, profile, 'Profile created successfully', 201);
   } catch (err) {
@@ -368,7 +373,7 @@ const getProfileById = async (req, res, next) => {
   try {
     const profile = await Profile.findById(req.params.id).populate(
       'user',
-      'email name isPremium premiumPlan',
+      'email name isPremium premiumPlan phone',
     );
 
     if (!profile) {
