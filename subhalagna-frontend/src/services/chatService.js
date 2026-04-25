@@ -1,9 +1,9 @@
 /**
- * @file        SubhaLagna v3.0.8 — Chat Service
- * @description   REST API calls for the chat/messaging feature.
- *                Real-time delivery uses Socket.io (see ChatContext).
- * @author        SubhaLagna Team
- * @version      3.0.8
+ * @file        SubhaLagna v3.1.0 — Chat Service
+ * @description REST API calls for the chat/messaging feature.
+ *              Real-time delivery uses Socket.io (see ChatContext).
+ * @author       SubhaLagna Team
+ * @version      3.1.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -24,9 +24,9 @@ export const getConversations = async () => {
 /**
  * Get paginated messages in a conversation.
  * @param {string} conversationId - MongoDB ObjectId
- * @param {number} [page=1]
- * @param {number} [limit=30]
- * @returns {Promise<{ data: object[], pagination: object }>}
+ * @param {number} [page] - Page number
+ * @param {number} [limit] - Messages per page
+ * @returns {Promise<object>} API response with data and pagination
  */
 export const getMessages = async (conversationId, page = 1, limit = 30) => {
   try {
@@ -40,9 +40,9 @@ export const getMessages = async (conversationId, page = 1, limit = 30) => {
 };
 
 /**
- * Send a message to a conversation (REST — also triggers socket broadcast server-side).
- * @param {string} conversationId
- * @param {string} content
+ * Send a message to a conversation.
+ * @param {string} conversationId - Target conversation ID
+ * @param {string} content - Message text content
  * @returns {Promise<object>} The created Message document
  */
 export const sendMessage = async (conversationId, content) => {
@@ -56,7 +56,7 @@ export const sendMessage = async (conversationId, content) => {
 
 /**
  * Mark all messages in a conversation as read.
- * @param {string} conversationId
+ * @param {string} conversationId - Conversation to mark as read
  * @returns {Promise<void>}
  */
 export const markConversationRead = async (conversationId) => {

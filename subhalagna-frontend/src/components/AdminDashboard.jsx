@@ -1,6 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.8 — Admin Dashboard
- * @description Executive interface for platform commercial and user management.
+ * @file        SubhaLagna v3.1.0 — Admin Dashboard
+ * @description Comprehensive management interface for users, plans, and system state.
+ *               v3.1.0 changes:
+ *                 - Stabilized fetch logic with useCallback/useEffect hooks
+ *                 - Resolved infinite render loops
+ *                 - Modernized Tailwind v4 shorthand syntax
  * - v3.0.4 changes:
  *   - Implemented Admin Role Moderation (Promote/Demote users) with safety confirmations.
  *   - Integrated Role badges and toggle actions in User Moderation table.
@@ -8,11 +12,12 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.0.8
+ * @version      3.1.0
  * @author        SubhaLagna Team
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import {
   getDashboardStats,
@@ -51,6 +56,10 @@ const CreditCard = ({ className }) => (
   </svg>
 );
 
+CreditCard.propTypes = {
+  className: PropTypes.string,
+};
+
 const History = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
@@ -62,9 +71,13 @@ const History = ({ className }) => (
   </svg>
 );
 
+History.propTypes = {
+  className: PropTypes.string,
+};
+
 // ─── Stat Card Component ─────────────────────────────────────────────────────
 const StatCard = ({ label, value, delta, icon, color, isCurrency = false }) => (
-  <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-100 transition-all duration-300">
+  <div className="bg-white p-6 rounded-4xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-100 transition-all duration-300">
     <div className="flex items-center justify-between mb-4">
       <div className={`p-3 rounded-2xl ${color} bg-opacity-10 text-opacity-100`}>{icon}</div>
       {delta && (
@@ -82,15 +95,28 @@ const StatCard = ({ label, value, delta, icon, color, isCurrency = false }) => (
   </div>
 );
 
+StatCard.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  delta: PropTypes.string,
+  icon: PropTypes.node.isRequired,
+  color: PropTypes.string.isRequired,
+  isCurrency: PropTypes.bool,
+};
+
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
   const [stats, setStats] = useState(null);
+  // loading is not currently used for UI feedback, but fetched in fetchData
+  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(true);
 
   // Users State
   const [users, setUsers] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, pages: 1 });
   const [search, setSearch] = useState('');
+  // setFilterRole is currently not used by UI controls
+  // eslint-disable-next-line no-unused-vars
   const [filterRole, setFilterRole] = useState('all');
 
   // Manual Upgrade State
@@ -210,39 +236,42 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchData = async (page = 1) => {
-    try {
-      setLoading(true);
-      const [statsData, usersData] = await Promise.all([
-        getDashboardStats(),
-        getAllUsers({
-          page,
-          limit: 10,
-          search,
-          role: filterRole === 'all' ? undefined : filterRole,
-        }),
-      ]);
-      setStats(statsData);
-      setUsers(usersData.data);
-      setPagination(usersData.pagination);
-    } catch (err) {
-      console.error(err);
-      alert('Failed to fetch dashboard data: ' + err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchData = useCallback(
+    async (page = 1) => {
+      try {
+        setLoading(true);
+        const [statsData, usersData] = await Promise.all([
+          getDashboardStats(),
+          getAllUsers({
+            page,
+            limit: 10,
+            search,
+            role: filterRole === 'all' ? undefined : filterRole,
+          }),
+        ]);
+        setStats(statsData);
+        setUsers(usersData.data);
+        setPagination(usersData.pagination);
+      } catch (err) {
+        console.error(err);
+        alert('Failed to fetch dashboard data: ' + err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [search, filterRole],
+  );
 
-  const fetchCoupons = async () => {
+  const fetchCoupons = useCallback(async () => {
     try {
       const data = await getAllCoupons();
       setCoupons(data);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, []);
 
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     try {
       const pending = await getPendingBankPayments();
       const ledger = await getAllTransactions();
@@ -251,9 +280,9 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, []);
 
-  const fetchPlans = async () => {
+  const fetchPlans = useCallback(async () => {
     try {
       const data = await getAdminPlans();
       setPlans(data);
@@ -261,11 +290,11 @@ const AdminDashboard = () => {
       console.error(err);
       alert('Failed to fetch plans: ' + err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPlans(); // Fetch plans on mount for modals
-  }, []);
+  }, [fetchPlans]);
 
   // Auto-fill Manual Upgrade duration
   useEffect(() => {
@@ -328,14 +357,14 @@ const AdminDashboard = () => {
         }));
       }
     }
-  }, [userForm.profileData.horoscope?.nakshatra, userForm.profileData.horoscope?.pada]);
+  }, [userForm.profileData.horoscope]);
 
   useEffect(() => {
     if (activeTab === 'users') fetchData();
     if (activeTab === 'coupons') fetchCoupons();
     if (activeTab === 'payments') fetchPayments();
     if (activeTab === 'membership_plans') fetchPlans();
-  }, [search, filterRole, activeTab]);
+  }, [search, filterRole, activeTab, fetchData, fetchCoupons, fetchPayments, fetchPlans]);
 
   const handleAction = async (actionFn, id) => {
     if (
@@ -1335,7 +1364,7 @@ const AdminDashboard = () => {
 
       {/* ── Manual Upgrade Modal ── */}
       {showUpgradeModal && selectedUser && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-110 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
           <div className="bg-white rounded-[3rem] w-full max-w-md p-10 shadow-2xl animate-scale-in">
             <h3 className="text-2xl font-serif font-bold text-gray-800 mb-2">Manual Upgrade</h3>
             <p className="text-gray-400 text-sm mb-8">
@@ -1399,7 +1428,7 @@ const AdminDashboard = () => {
 
       {/* ── Payment Verification Modal ── */}
       {showVerifyModal && selectedPayment && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-110 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
           <div className="bg-white rounded-[3rem] w-full max-w-md p-10 shadow-2xl animate-scale-in">
             <h3 className="text-2xl font-serif font-bold text-gray-800 mb-2">Verify Payment</h3>
             <p className="text-gray-400 text-sm mb-6">
@@ -1419,7 +1448,7 @@ const AdminDashboard = () => {
               </p>
               {selectedPayment.userRemarks && (
                 <p className="text-gray-500 pt-2 border-t border-slate-100 mt-2 italic">
-                  "{selectedPayment.userRemarks}"
+                  &quot;{selectedPayment.userRemarks}&quot;
                 </p>
               )}
             </div>
@@ -1471,7 +1500,7 @@ const AdminDashboard = () => {
 
       {/* ── Plan Edit Modal ── */}
       {isPlanModalOpen && selectedPlan && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-120 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
           <div className="bg-white rounded-[3rem] w-full max-w-md p-10 shadow-2xl animate-scale-in">
             <h3 className="text-2xl font-serif font-bold text-gray-800 mb-2">
               Edit Membership Plan
@@ -1544,7 +1573,7 @@ const AdminDashboard = () => {
 
       {/* ── User Add/Edit Modal ── */}
       {showUserModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
+        <div className="fixed inset-0 z-110 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
           <div className="bg-white rounded-[3rem] w-full max-w-4xl max-h-[90vh] overflow-y-auto p-10 shadow-2xl animate-scale-in">
             <div className="flex justify-between items-center mb-8">
               <div>
@@ -1788,7 +1817,7 @@ const AdminDashboard = () => {
                     </div>
                     <div>
                       <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                        Height (e.g. 5' 11")
+                        Height (e.g. 5&apos; 11&quot;)
                       </label>
                       <input
                         type="text"
@@ -1889,7 +1918,7 @@ const AdminDashboard = () => {
                     </div>
                     <div>
                       <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                        Father's Name
+                        Father&apos;s Name
                       </label>
                       <input
                         type="text"
@@ -1901,7 +1930,7 @@ const AdminDashboard = () => {
                     </div>
                     <div>
                       <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                        Mother's Name
+                        Mother&apos;s Name
                       </label>
                       <input
                         type="text"

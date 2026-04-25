@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — Notification Context
+ * @file        SubhaLagna v3.1.0 — Notification Context
  * @description   Provides real-time notification state to all components.
  *                Combines REST API polling with Socket.io push events for
  *                instant notification delivery.
@@ -7,9 +7,8 @@
  *                Usage:
  *                  const { notifications, unreadCount, markRead, markAllRead } =
  *                    useContext(NotificationContext);
- *
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
@@ -49,6 +48,8 @@ export const NotificationContext = createContext(
 /**
  * NotificationProvider — provides notification state globally.
  * Must be inside AuthProvider since it depends on auth state.
+ * @param root0
+ * @param root0.children
  */
 export const NotificationProvider = ({ children }) => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -88,7 +89,6 @@ export const NotificationProvider = ({ children }) => {
   /**
    * Mark a single notification as read.
    * Optimistic update before API call.
-   *
    * @param {string} id - Notification MongoDB ObjectId
    */
   const markRead = useCallback(async (id) => {
@@ -108,7 +108,6 @@ export const NotificationProvider = ({ children }) => {
 
   /**
    * Remove a notification from the list.
-   *
    * @param {string} id
    */
   const remove = useCallback(
@@ -124,7 +123,6 @@ export const NotificationProvider = ({ children }) => {
   /**
    * Add a real-time notification received from Socket.io.
    * Prepends to list and increments unread count.
-   *
    * @param {object} notification - Notification object from server
    */
   const addRealtime = useCallback((notification) => {

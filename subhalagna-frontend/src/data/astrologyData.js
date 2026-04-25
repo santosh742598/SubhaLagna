@@ -1,9 +1,9 @@
 /**
- * @file        SubhaLagna v3.0.8 — Frontend Astrology Constants
+ * @file        SubhaLagna v3.1.0 — Frontend Astrology Constants
  * @description   Standardized lists for Rashi and Nakshatra selections.
  *                Includes Pada-to-Rashi mapping for auto-selection.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 export const RASHIS = [

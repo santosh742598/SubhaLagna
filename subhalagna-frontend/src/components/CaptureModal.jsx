@@ -1,10 +1,9 @@
 /**
- * @file        SubhaLagna v3.0.8 — Capture Modal
+ * @file        SubhaLagna v3.1.0 — Capture Modal
  * @description   Reusable webcam capture component. Uses MediaDevices API
  *                to provide a live preview and snapshot capability.
- *
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { useRef, useState, useEffect } from 'react';
@@ -12,7 +11,6 @@ import React, { useRef, useState, useEffect } from 'react';
 const CaptureModal = ({ isOpen, onClose, onCapture }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [hasPermission, setHasPermission] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState(null);
 
@@ -35,11 +33,9 @@ const CaptureModal = ({ isOpen, onClose, onCapture }) => {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setIsStreaming(true);
-        setHasPermission(true);
       }
     } catch (err) {
       console.error('Camera Error:', err);
-      setHasPermission(false);
       setError(err.name === 'NotAllowedError' ? 'Camera access denied' : 'Could not access camera');
     }
   };
@@ -81,7 +77,7 @@ const CaptureModal = ({ isOpen, onClose, onCapture }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in">
       <div className="bg-white rounded-[2.5rem] w-full max-w-xl overflow-hidden shadow-2xl border border-white/20 relative group">
         {/* Header */}
         <div className="px-8 py-6 border-b border-rose-50 flex items-center justify-between">
@@ -144,7 +140,7 @@ const CaptureModal = ({ isOpen, onClose, onCapture }) => {
           )}
 
           {/* Overlay Guide */}
-          <div className="absolute inset-0 border-[40px] border-black/20 pointer-events-none rounded-[2rem]">
+          <div className="absolute inset-0 border-40 border-black/20 pointer-events-none rounded-4xl">
             <div className="w-full h-full border-2 border-white/40 border-dashed rounded-2xl relative">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-rose-500/50 rounded-full" />
             </div>

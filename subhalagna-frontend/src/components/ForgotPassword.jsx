@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.8 — Forgot Password
+ * @file        SubhaLagna v3.1.0 — Forgot Password
  * @description   Premium recovery interface for requesting password reset links.
  * - v3.0.4 changes:
  *   - Initial implementation with glassmorphism UI.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -63,7 +63,7 @@ const ForgotPassword = () => {
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* ── Background ── */}
       <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100/80" />
+        <div className="absolute inset-0 bg-linear-to-br from-rose-50 via-pink-50 to-rose-100/80" />
         {bgHearts.map((heart, i) => (
           <FloatingHeart
             key={i}
@@ -89,7 +89,7 @@ const ForgotPassword = () => {
               </svg>
             </div>
             <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">Forgot Password?</h2>
-            <p className="text-gray-400 text-sm">Enter your email and we'll send you a link to reset your password.</p>
+            <p className="text-gray-400 text-sm">Enter your email and we&apos;ll send you a link to reset your password.</p>
           </div>
 
           {message && (

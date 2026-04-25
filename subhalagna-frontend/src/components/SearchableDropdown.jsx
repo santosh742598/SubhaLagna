@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.8 — Searchable Dropdown
+ * @file        SubhaLagna v3.1.0 — Searchable Dropdown
  * @description   A reusable interactive dropdown with search filtering and manual entry support.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -78,7 +78,7 @@ const SearchableDropdown = ({
               ))
             : searchTerm.length > 0 && (
                 <div className="px-4 py-2.5 text-xs text-gray-400 italic">
-                  "{searchTerm}" not in list — using as manual entry.
+                  &quot;{searchTerm}&quot; not in list — using as manual entry.
                 </div>
               )}
         </div>

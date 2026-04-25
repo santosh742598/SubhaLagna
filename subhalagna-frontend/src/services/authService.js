@@ -1,20 +1,17 @@
 /**
- * @file        SubhaLagna v3.0.8 — Auth Service
- * @description   All authentication-related API calls. Components should call
- *                these service functions instead of calling fetch/axios directly.
- *
- *                v2.4.0 changes:
- *                  - Added resendOTP service method.
- *
- * @author        SubhaLagna Team
- * @version      3.0.8
+ * @file        SubhaLagna v3.1.0 — Auth Service
+ * @description  All authentication-related API calls. Components should call
+ *               these service functions instead of calling fetch/axios directly.
+ *               - v2.4.0 changes: Added resendOTP service method.
+ * @author       SubhaLagna Team
+ * @version      3.1.0
  */
 
 import api, { getErrorMessage } from './api';
 
 /**
  * Register a new user account.
- * @param {{ name: string, email: string, password: string }} userData
+ * @param {object} userData - { name, email, password }
  * @returns {Promise<object>} Response data (accessToken, refreshToken, user info)
  * @throws {string} Error message
  */
@@ -29,8 +26,8 @@ export const register = async (userData) => {
 
 /**
  * Verify email with OTP.
- * @param {{ email: string, otp: string }} params
- * @returns {Promise<void>}
+ * @param {object} params - { email, otp }
+ * @returns {Promise<object>} API response
  */
 export const verifyEmail = async (params) => {
   try {
@@ -43,8 +40,8 @@ export const verifyEmail = async (params) => {
 
 /**
  * Resend verification OTP.
- * @param {string} email
- * @returns {Promise<object>}
+ * @param {string} email - Target email
+ * @returns {Promise<object>} API response
  */
 export const resendOTP = async (email) => {
   try {
@@ -57,7 +54,7 @@ export const resendOTP = async (email) => {
 
 /**
  * Log in with email and password.
- * @param {{ email: string, password: string }} credentials
+ * @param {object} credentials - { email, password }
  * @returns {Promise<object>} Response data (accessToken, refreshToken, user info)
  */
 export const login = async (credentials) => {
@@ -76,7 +73,7 @@ export const login = async (credentials) => {
 export const logout = async () => {
   try {
     await api.post('/auth/logout');
-  } catch (_) {
+  } catch {
     // Always clear local storage even if server call fails
   } finally {
     localStorage.removeItem('accessToken');
@@ -86,8 +83,8 @@ export const logout = async () => {
 
 /**
  * Request password reset email.
- * @param {string} email
- * @returns {Promise<object>}
+ * @param {string} email - Registered email address
+ * @returns {Promise<object>} API response
  */
 export const forgotPassword = async (email) => {
   try {
@@ -100,9 +97,9 @@ export const forgotPassword = async (email) => {
 
 /**
  * Reset password using the token from email link.
- * @param {string} token
- * @param {string} password
- * @returns {Promise<object>}
+ * @param {string} token - The reset token from email
+ * @param {string} password - New password
+ * @returns {Promise<object>} API response
  */
 export const resetPassword = async (token, password) => {
   try {
@@ -115,7 +112,7 @@ export const resetPassword = async (token, password) => {
 
 /**
  * Fetch the currently authenticated user and their profile.
- * @returns {Promise<{ user: object, profile: object|null, hasProfile: boolean }>}
+ * @returns {Promise<object>} The user and profile data
  */
 export const getMe = async () => {
   try {

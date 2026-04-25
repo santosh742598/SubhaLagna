@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.8 — Profile Service
- * @description   All profile-related API calls. Handles FormData for file uploads.
- * @author        SubhaLagna Team
- * @version      3.0.8
+ * @file        SubhaLagna v3.1.0 — Profile Service
+ * @description  All profile-related API calls. Handles FormData for file uploads.
+ * @author       SubhaLagna Team
+ * @version      3.1.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -25,22 +25,21 @@ export const setupProfile = async (formData) => {
 
 /**
  * Get paginated match results with optional filters and smart scoring.
- *
- * @param {object} params
- * @param {string}  params.gender
- * @param {number}  [params.page=1]
- * @param {number}  [params.limit=12]
- * @param {string}  [params.location]
- * @param {number}  [params.minAge]
- * @param {number}  [params.maxAge]
- * @param {string}  [params.religion]
- * @param {string}  [params.education]
- * @returns {Promise<{ data: object[], pagination: object }>}
+ * @param {object} params - Search filters
+ * @param {string} params.gender - Target gender
+ * @param {number} [params.page] - Page number
+ * @param {number} [params.limit] - Items per page
+ * @param {string} [params.location] - City filter
+ * @param {number} [params.minAge] - Minimum age
+ * @param {number} [params.maxAge] - Maximum age
+ * @param {string} [params.religion] - Religion filter
+ * @param {string} [params.education] - Education filter
+ * @returns {Promise<object>} API response with data and pagination
  */
 export const getMatches = async (params) => {
   try {
     const { data } = await api.get('/profiles', { params });
-    return data; // { data, pagination }
+    return data;
   } catch (err) {
     throw getErrorMessage(err, 'Failed to fetch matches');
   }
@@ -49,7 +48,7 @@ export const getMatches = async (params) => {
 /**
  * Get a single profile by its MongoDB ID.
  * @param {string} id - Profile MongoDB ObjectId
- * @returns {Promise<object>}
+ * @returns {Promise<object>} Profile data
  */
 export const getProfileById = async (id) => {
   try {
@@ -62,7 +61,7 @@ export const getProfileById = async (id) => {
 
 /**
  * Get the current user's own profile.
- * @returns {Promise<object>}
+ * @returns {Promise<object>} Profile data
  */
 export const getMyProfile = async () => {
   try {
@@ -75,9 +74,9 @@ export const getMyProfile = async () => {
 
 /**
  * Update a profile by ID (must be the owner).
- * @param {string}   id       - Profile MongoDB ObjectId
+ * @param {string} id - Profile MongoDB ObjectId
  * @param {FormData} formData - Fields to update + optional new photos
- * @returns {Promise<object>}
+ * @returns {Promise<object>} Updated profile
  */
 export const updateProfile = async (id, formData) => {
   try {
@@ -92,7 +91,7 @@ export const updateProfile = async (id, formData) => {
 
 /**
  * Get who viewed your profile (premium: full list; free: count only).
- * @returns {Promise<{ total: number, views: object[], isPremium: boolean }>}
+ * @returns {Promise<object>} Views and total count
  */
 export const getProfileViews = async () => {
   try {
@@ -106,7 +105,7 @@ export const getProfileViews = async () => {
 /**
  * Unlock contact information for a specific profile (Premium only).
  * @param {string} id - Profile MongoDB ObjectId
- * @returns {Promise<object>}
+ * @returns {Promise<object>} API response
  */
 export const unlockContact = async (id) => {
   try {

@@ -3,18 +3,11 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 
 /**
- * @file        SubhaLagna v3.0.8 — System Status Indicator
+ * @file        SubhaLagna v3.1.0 — System Status Indicator
  * @description   Real-time health monitor that checks API and Database availability.
- *                States:
- *                - Green: API & DB Online
- *                - Orange: API Online, DB Offline
- *                - Green: API & DB Online
- *                - Orange: API Online, DB Offline
- *                - Red: API Offline (Backend down)
- * - v3.0.4 changes:
- *   - Initial implementation of the health monitor.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
+ * @returns {JSX.Element} The status indicator component
  */
 const SystemStatus = () => {
   const [status, setStatus] = useState('checking'); // checking, ok, db_down, backend_down
@@ -28,7 +21,7 @@ const SystemStatus = () => {
       } else {
         setStatus('db_down');
       }
-    } catch (err) {
+    } catch {
       setStatus('backend_down');
     }
   };
@@ -56,7 +49,7 @@ const SystemStatus = () => {
       </span>
 
       {/* Tooltip */}
-      <div className="absolute top-full left-0 mt-2 w-48 p-3 bg-white rounded-2xl shadow-2xl border border-slate-100 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-[60] transform origin-top-left scale-95 group-hover:scale-100">
+      <div className="absolute top-full left-0 mt-2 w-48 p-3 bg-white rounded-2xl shadow-2xl border border-slate-100 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-60 transform origin-top-left scale-95 group-hover:scale-100">
         <div className="flex items-center justify-between mb-2">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Health Report</p>
           <span className="text-xs">{current.label}</span>

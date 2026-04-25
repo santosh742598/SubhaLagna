@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — User Dashboard
+ * @file        SubhaLagna v3.1.0 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
  *                - [v3.0.0 changes]
@@ -8,7 +8,7 @@
  *                - Implemented strict JSDoc validation and standard headers.
  *                - Global UI consistency via unified Prettier tokens.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -129,7 +129,7 @@ const toInputDate = (date) => {
     const d = new Date(date);
     if (isNaN(d.getTime())) return '';
     return d.toISOString().split('T')[0];
-  } catch (e) {
+  } catch {
     return '';
   }
 };
@@ -951,7 +951,7 @@ const ProfileDashboard = () => {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
-                    <FormLabel>FATHER'S FULL NAME</FormLabel>
+                    <FormLabel>FATHER&apos;S FULL NAME</FormLabel>
                     <input
                       type="text"
                       name="fatherName"
@@ -961,7 +961,7 @@ const ProfileDashboard = () => {
                     />
                   </div>
                   <div>
-                    <FormLabel>MOTHER'S FULL NAME</FormLabel>
+                    <FormLabel>MOTHER&apos;S FULL NAME</FormLabel>
                     <input
                       type="text"
                       name="motherName"
@@ -1367,7 +1367,7 @@ const ProfileDashboard = () => {
                       </p>
                       {interest.message && (
                         <p className="text-gray-400 text-xs italic mt-1 line-clamp-1">
-                          "{interest.message}"
+                          &quot;{interest.message}&quot;
                         </p>
                       )}
                     </div>

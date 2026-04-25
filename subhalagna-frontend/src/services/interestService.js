@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.8 — Interest Service
- * @description   API calls for the interest/connection request system.
- * @author        SubhaLagna Team
- * @version      3.0.8
+ * @file        SubhaLagna v3.1.0 — Interest Service
+ * @description API calls for the interest/connection request system.
+ * @author       SubhaLagna Team
+ * @version      3.1.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -12,7 +12,7 @@ import api, { getErrorMessage } from './api';
 /**
  * Send an interest to another user.
  * @param {string} receiverId - MongoDB ObjectId of the receiver
- * @param {string} [message]  - Optional personal message (max 300 chars)
+ * @param {string} [message] - Optional personal message (max 300 chars)
  * @returns {Promise<object>} Created Interest document
  */
 export const sendInterest = async (receiverId, message = '') => {
@@ -29,8 +29,8 @@ export const sendInterest = async (receiverId, message = '') => {
 /**
  * Accept or reject a received interest.
  * @param {string} interestId - MongoDB ObjectId of the Interest document
- * @param {'accepted'|'rejected'} status
- * @returns {Promise<{ interest: object, conversation: object|null }>}
+ * @param {'accepted'|'rejected'} status - The response status
+ * @returns {Promise<object>} Updated interest and potential conversation data
  */
 export const respondToInterest = async (interestId, status) => {
   try {
@@ -43,9 +43,9 @@ export const respondToInterest = async (interestId, status) => {
 
 /**
  * Get my sent or received interests.
- * @param {'sent'|'received'} type
- * @param {InterestStatus}    [status] - Optional status filter
- * @returns {Promise<object[]>}
+ * @param {'sent'|'received'} type - Filter by sent or received
+ * @param {InterestStatus} [status] - Optional status filter
+ * @returns {Promise<object[]>} Array of interest objects
  */
 export const getMyInterests = async (type = 'received', status) => {
   try {
@@ -58,7 +58,7 @@ export const getMyInterests = async (type = 'received', status) => {
 
 /**
  * Withdraw a sent interest (only if pending).
- * @param {string} interestId
+ * @param {string} interestId - Interest ID to withdraw
  * @returns {Promise<void>}
  */
 export const withdrawInterest = async (interestId) => {
@@ -72,7 +72,7 @@ export const withdrawInterest = async (interestId) => {
 /**
  * Check interest status between current user and another user.
  * @param {string} userId - The other user's MongoDB ObjectId
- * @returns {Promise<{ status: InterestStatus|null, isMe: boolean, interest: object|null }>}
+ * @returns {Promise<object>} Current relationship status and interest data
  */
 export const getInterestStatus = async (userId) => {
   try {

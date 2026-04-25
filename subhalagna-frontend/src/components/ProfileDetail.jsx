@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — Profile Detail Page
+ * @file        SubhaLagna v3.1.0 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
  *
@@ -8,7 +8,7 @@
  *
  *                v2.1.0 changes:
 ...
- * @version      3.0.8
+ * @version      3.1.0
  * @author        SubhaLagna Team
  */
 
@@ -498,7 +498,7 @@ const ProfileDetail = () => {
                 }
               />
 
-              <p className="text-gray-600 italic text-lg leading-relaxed mb-8">"{profile.bio}"</p>
+              <p className="text-gray-600 italic text-lg leading-relaxed mb-8">&quot;{profile.bio}&quot;</p>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatBox

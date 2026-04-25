@@ -1,11 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.8 — Notification Bell Component
+ * @file        SubhaLagna v3.1.0 — Notification Bell Component
  * @description   Header notification icon with unread badge. Shows a dropdown
  *                with the latest notifications. Integrates with NotificationContext
  *                for real-time updates.
- *
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { useState, useRef, useEffect, useContext } from 'react';
@@ -14,7 +13,12 @@ import { NotificationContext } from '../context/NotificationContext';
 
 // ── Icon Components ───────────────────────────────────────────────────────────
 
-/** Bell icon SVG */
+/**
+ * Bell icon SVG
+ * @param {object} props Component props
+ * @param {string} props.className Optional CSS class
+ * @returns {React.ReactElement} The bell icon
+ */
 const BellIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
@@ -40,11 +44,10 @@ const TYPE_CONFIG = {
 
 /**
  * NotificationBell — renders the bell icon with badge + dropdown.
- *
- * @returns {JSX.Element}
+ * @returns {React.ReactElement} The notification bell component
  */
 const NotificationBell = () => {
-  const { notifications, unreadCount, markRead, markAllRead, remove } =
+  const { notifications, unreadCount, markRead, markAllRead } =
     useContext(NotificationContext);
 
   const navigate = useNavigate();
@@ -64,8 +67,7 @@ const NotificationBell = () => {
 
   /**
    * Handle clicking a notification — marks it read and navigates to its link.
-   *
-   * @param {object} notification
+   * @param {object} notification The notification object clicked
    */
   const handleNotificationClick = async (notification) => {
     await markRead(notification._id);
@@ -77,9 +79,8 @@ const NotificationBell = () => {
 
   /**
    * Format a relative time string (e.g., "2 minutes ago").
-   *
    * @param {string} dateStr - ISO date string
-   * @returns {string}
+   * @returns {string} The formatted relative time string
    */
   const formatRelativeTime = (dateStr) => {
     const seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
@@ -146,7 +147,7 @@ const NotificationBell = () => {
                   >
                     {/* Icon */}
                     <div
-                      className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base ${config.color}`}
+                      className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base ${config.color}`}
                     >
                       {config.emoji}
                     </div>
@@ -165,7 +166,7 @@ const NotificationBell = () => {
 
                     {/* Unread dot */}
                     {!notification.isRead && (
-                      <div className="flex-shrink-0 w-2 h-2 rounded-full bg-rose-500 mt-1.5" />
+                      <div className="shrink-0 w-2 h-2 rounded-full bg-rose-500 mt-1.5" />
                     )}
                   </div>
                 );

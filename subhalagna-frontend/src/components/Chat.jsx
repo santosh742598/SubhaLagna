@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — Real-Time Premium Chat
+ * @file        SubhaLagna v3.1.0 — Real-Time Premium Chat
  * @description   Full-featured chat UI with glassmorphism, real-time sync,
  *                and optimized mobile flows.
  *                v2.0.0 changes:
@@ -8,10 +8,10 @@
  *                  - Improved typing indicator visibility
  *                  - Fixed Participant naming logic
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
@@ -73,37 +73,49 @@ const Chat = () => {
       }
     };
     load();
-  }, [conversationId]);
+  }, [conversationId, openConversation]);
 
   // Scroll to bottom
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const openConversation = async (conv) => {
-    setActiveConversation(conv);
-    setIsSidebarOpen(false);
-    setLoadingMessages(true);
-    setMessages([]); // clear old
+  const openConversation = useCallback(
+    async (conv) => {
+      setActiveConversation(conv);
+      setIsSidebarOpen(false);
+      setLoadingMessages(true);
+      setMessages([]); // clear old
 
-    try {
-      const { data } = await getMessages(conv._id);
-      setMessages(data);
-      joinConversation(conv._id);
-      await markConversationRead(conv._id);
+      try {
+        const { data } = await getMessages(conv._id);
+        setMessages(data);
+        joinConversation(conv._id);
+        await markConversationRead(conv._id);
 
-      setConversations((prev) =>
-        prev.map((c) => (c._id === conv._id ? { ...c, unreadCount: 0 } : c)),
-      );
+        setConversations((prev) =>
+          prev.map((c) => (c._id === conv._id ? { ...c, unreadCount: 0 } : c)),
+        );
 
-      if (window.innerWidth < 768) setIsSidebarOpen(false);
-      navigate(`/chat/${conv._id}`, { replace: true });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingMessages(false);
-    }
-  };
+        if (window.innerWidth < 768) setIsSidebarOpen(false);
+        navigate(`/chat/${conv._id}`, { replace: true });
+      } catch (err) {
+        console.error('Fetch Messages Error:', err);
+        alert('Failed to load messages. Please try again.');
+      } finally {
+        setLoadingMessages(false);
+      }
+    },
+    [
+      joinConversation,
+      navigate,
+      setMessages,
+      setActiveConversation,
+      setIsSidebarOpen,
+      setLoadingMessages,
+      setConversations,
+    ],
+  );
 
   const handleTyping = (e) => {
     setInputText(e.target.value);
@@ -274,7 +286,7 @@ const Chat = () => {
                       className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-[75%] px-5 py-3 rounded-[1.5rem] shadow-sm text-sm leading-relaxed ${isOwn ? 'bg-gradient-to-br from-rose-500 to-pink-500 text-white rounded-br-md shadow-rose-200' : 'bg-white text-gray-700 rounded-bl-md border border-rose-50'}`}
+                        className={`max-w-[75%] px-5 py-3 rounded-3xl shadow-sm text-sm leading-relaxed ${isOwn ? 'bg-linear-to-br from-rose-500 to-pink-500 text-white rounded-br-md shadow-rose-200' : 'bg-white text-gray-700 rounded-bl-md border border-rose-50'}`}
                       >
                         {msg.content}
                         <div
@@ -306,7 +318,7 @@ const Chat = () => {
                 <button
                   type="submit"
                   disabled={!inputText.trim()}
-                  className="p-4 bg-gradient-to-r from-rose-600 to-pink-500 text-white rounded-2xl shadow-xl shadow-rose-200 hover:scale-105 active:scale-95 transition-all disabled:opacity-40"
+                  className="p-4 bg-linear-to-r from-rose-600 to-pink-500 text-white rounded-2xl shadow-xl shadow-rose-200 hover:scale-105 active:scale-95 transition-all disabled:opacity-40"
                 >
                   <SendIcon />
                 </button>
@@ -315,12 +327,13 @@ const Chat = () => {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-20 text-center">
-            <div className="w-24 h-24 bg-rose-50 rounded-[2rem] flex items-center justify-center text-5xl mb-6 shadow-inner ring-8 ring-white">
+            <div className="w-24 h-24 bg-rose-50 rounded-4xl flex items-center justify-center text-5xl mb-6 shadow-inner ring-8 ring-white">
               💬
             </div>
             <h3 className="text-2xl font-serif font-bold text-gray-800 mb-2">
               Private Secure Chat
             </h3>
+            <p className="text-gray-500 mt-1">What&apos;s new with you today?</p>
             <p className="text-gray-400 max-w-sm text-sm">
               Select a match to start your private conversation. All messages are encrypted for your
               security.

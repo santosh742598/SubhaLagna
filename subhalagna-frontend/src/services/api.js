@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.8 — Axios API Base Instance
+ * @file        SubhaLagna v3.1.0 — Axios API Base Instance
  * @description   Configures a single axios instance used by all service modules.
  *               - v3.0.5 changes:
  *                 - Added exception to 401 redirect logic for login endpoint to prevent vanishing error messages.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import axios from 'axios';
@@ -81,10 +81,9 @@ api.interceptors.response.use(
 
 /**
  * Extract a human-readable error message from an axios error.
- *
- * @param {import('axios').AxiosError} error
- * @param {string} [fallback='An error occurred']
- * @returns {string}
+ * @param {object} error - The axios error object
+ * @param {string} [fallback] - Fallback message if no error message is found
+ * @returns {string} The extracted error message
  */
 export const getErrorMessage = (error, fallback = 'An error occurred') => {
   return (

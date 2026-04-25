@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-04-26
+
+### Added
+- **🏆 Zero-Error Milestone**: Successfully cleared all project-wide ESLint errors and warnings, achieving a perfectly stable and clean codebase.
+- **💅 Tailwind v4 Modernization**: Performed a project-wide sweep to update styling to Tailwind v4 standards, including shorthand properties (`aspect-4/5`, `rounded-4xl`, `shrink-0`) and the new `bg-linear-to-*` gradient syntax.
+- **📝 JSDoc Standardization**: Resolved over 60 documentation warnings by providing proper `@param` descriptions, `@returns` tags, and ensuring perfect block alignment across all core components.
+
+### Fixed
+- **🚀 AdminDashboard Stability**: Resolved critical infinite re-render loops in the Admin Dashboard by wrapping core fetchers (`fetchData`, `fetchPlans`, etc.) in `useCallback` and optimizing dependency arrays.
+- **💬 Chat UI Polish**: Fixed a copy-paste typo in the chat error messages and stabilized the `openConversation` logic with proper reference tracking.
+- **🛠️ Service Refactoring**: Refactored `lookupService.js` and `shortlistService.js` to use the standardized Axios `api` instance, ensuring consistent token handling and error reporting.
+
+### Changed
+- **🚀 Version Bump**: Universal synchronization of the project to `v3.1.0`.
+
 ## [3.0.7] - 2026-04-25
 
 ### Added

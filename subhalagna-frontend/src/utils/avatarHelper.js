@@ -1,14 +1,13 @@
 /**
- * @file        SubhaLagna v3.0.8 — Avatar Utility
+ * @file        SubhaLagna v3.1.0 — Avatar Utility
  * @description Centralized logic for profile photo selection and fallbacks.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 /**
  * Returns the appropriate profile image URL.
  * Falls back to gender-specific placeholders if no profile photo is present.
- *
  * @param {object} profile - The profile object containing profilePhoto, gender, etc.
  * @returns {string} The image URL
  */

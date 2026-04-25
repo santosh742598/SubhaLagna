@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.0.8 — Shortlisted Profiles Page
+ * @file        SubhaLagna v3.1.0 — Shortlisted Profiles Page
  * @description   Displays a collection of profiles saved by the user.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { useState, useEffect, useContext } from 'react';
@@ -13,7 +13,7 @@ import Header from './Header';
 import { Link } from 'react-router-dom';
 
 const ShortlistedProfiles = () => {
-  const { user, token, refreshUser } = useContext(AuthContext);
+  const { token, refreshUser } = useContext(AuthContext);
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -60,7 +60,7 @@ const ShortlistedProfiles = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
           <div>
             <h1 className="text-3xl font-serif font-bold text-gray-800">Shortlisted Profiles</h1>
-            <p className="text-gray-500 mt-1">Profiles you've saved for future consideration.</p>
+            <p className="text-gray-500 mt-1">Profiles you&apos;ve saved for future consideration.</p>
           </div>
           <Link
             to="/matches"

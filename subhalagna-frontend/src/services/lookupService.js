@@ -1,27 +1,25 @@
 /**
- * @file        SubhaLagna v3.0.8 — Lookup Service
- * @description   Handles API calls for dynamic master data (Caste, City, etc.)
- * @author        SubhaLagna Team
- * @version      3.0.8
+ * @file        SubhaLagna v3.1.0 — Lookup Service
+ * @description Handles API calls for dynamic master data (Caste, City, etc.)
+ * @author       SubhaLagna Team
+ * @version      3.1.0
  */
 
-import { API_BASE_URL } from '../config';
+import api from './api';
 
 /**
  * Fetches unique options for a given master data type.
  * @param {string} type - 'caste', 'city', 'state', 'religion', 'motherTongue'
- * @param {string} group - Optional group (e.g. State name for a City)
+ * @param {string} [group] - Optional group (e.g. State name for a City)
+ * @returns {Promise<string[]>} Array of option values
  */
 export const fetchLookupOptions = async (type, group = '') => {
   try {
-    const url = new URL(`${API_BASE_URL}/api/lookup`);
-    url.searchParams.append('type', type);
-    if (group) url.searchParams.append('group', group);
+    const { data } = await api.get('/lookup', {
+      params: { type, group },
+    });
 
-    const res = await fetch(url.toString());
-    const data = await res.json();
-
-    if (res.ok) {
+    if (data && data.data) {
       return data.data.map((item) => item.value);
     }
     return [];

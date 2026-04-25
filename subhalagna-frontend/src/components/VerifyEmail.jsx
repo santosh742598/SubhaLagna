@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.0.8 — Email Verification Component
+ * @file        SubhaLagna v3.1.0 — Email Verification Component
  * @description   Handles 6-digit OTP entry and resend logic.
  *               - v3.0.5 changes:
  *                 - Implemented celebratory success banner for newly registered users.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { useState, useEffect, useContext, useRef } from 'react';
@@ -141,7 +141,7 @@ const VerifyEmail = () => {
           </div>
           <h2 className="text-2xl font-serif font-bold text-gray-800">Verify Your Email</h2>
           <p className="text-gray-500 text-sm mt-2">
-            We've sent a 6-digit code to{' '}
+            We&apos;ve sent a 6-digit code to{' '}
             <span className="font-semibold text-gray-700">{user?.email}</span>
           </p>
         </div>
@@ -187,7 +187,7 @@ const VerifyEmail = () => {
 
         <div className="mt-8 text-center text-sm">
           <p className="text-gray-500">
-            Didn't receive the code?{' '}
+            Didn&apos;t receive the code?{' '}
             <button
               onClick={handleResend}
               disabled={timer > 0}

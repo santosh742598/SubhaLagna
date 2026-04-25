@@ -1,56 +1,35 @@
 /**
- * @file        SubhaLagna v3.0.8 — Shortlist Service
- * @description   API wrappers for managing the user's private shortlist.
- * @author        SubhaLagna Team
- * @version      3.0.8
+ * @file        SubhaLagna v3.1.0 — Shortlist Service
+ * @description API wrappers for managing the user's private shortlist.
+ * @author       SubhaLagna Team
+ * @version      3.1.0
  */
 
-import { API_BASE_URL } from '../config';
+import api, { getErrorMessage } from './api';
 
 /**
  * Toggles a profile in the user's shortlist (adds if missing, removes if present).
- *
  * @param {string} profileId - The ID of the target profile
- * @param {string} token - User's authorization token
  * @returns {Promise<object>} { isShortlisted: boolean, message: string }
  */
-export const toggleShortlist = async (profileId, token) => {
+export const toggleShortlist = async (profileId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/profiles/shortlist/${profileId}`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw data.message || 'Failed to toggle shortlist';
+    const { data } = await api.post(`/profiles/shortlist/${profileId}`);
     return data.data;
   } catch (err) {
-    throw err;
+    throw getErrorMessage(err, 'Failed to toggle shortlist');
   }
 };
 
 /**
  * Retrieves the full list of profiles shortlisted by the current user.
- *
- * @param {string} token - User's authorization token
- * @returns {Promise<Array>} List of populated profile objects
+ * @returns {Promise<object[]>} List of populated profile objects
  */
-export const getShortlistedProfiles = async (token) => {
+export const getShortlistedProfiles = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/profiles/shortlisted`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw data.message || 'Failed to fetch shortlisted profiles';
+    const { data } = await api.get('/profiles/shortlisted');
     return data.data;
   } catch (err) {
-    throw err;
+    throw getErrorMessage(err, 'Failed to fetch shortlisted profiles');
   }
 };

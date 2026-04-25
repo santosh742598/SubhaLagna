@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — Main Application Router
+ * @file        SubhaLagna v3.1.0 — Main Application Router
  * @description   Entry point for all React routes. Wraps the application
  *                in required context providers (Auth → Notification → Chat)
  *                and configures all route guards.
@@ -13,7 +13,7 @@
  *                - Standardized ESLint & Prettier for premium code quality.
  *                - Enhanced JSDoc requirements for architectural integrity.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { useContext } from 'react';
@@ -47,6 +47,8 @@ import InterestButton from './components/InterestButton'; // exported for refere
 /**
  * GuestRoute — allows only unauthenticated users.
  * Redirects authenticated users with profiles to /matches.
+ * @param root0
+ * @param root0.children
  */
 const GuestRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
@@ -62,6 +64,8 @@ const GuestRoute = ({ children }) => {
 
 /**
  * OnboardRoute — for logged-in users who haven't set up their profile yet.
+ * @param root0
+ * @param root0.children
  */
 const OnboardRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
@@ -81,6 +85,8 @@ const OnboardRoute = ({ children }) => {
 
 /**
  * ProtectedRoute — requires: logged in + profile exists.
+ * @param root0
+ * @param root0.children
  */
 const ProtectedRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
@@ -101,6 +107,8 @@ const ProtectedRoute = ({ children }) => {
 
 /**
  * AdminRoute — requires: logged in + role === 'admin'.
+ * @param root0
+ * @param root0.children
  */
 const AdminRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
@@ -133,7 +141,6 @@ const AppLayout = () => (
 
 /**
  * App — configures context provider nesting and route tree.
- *
  * @returns {JSX.Element}
  */
 function App() {

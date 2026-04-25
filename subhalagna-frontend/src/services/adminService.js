@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — Admin Service
+ * @file        SubhaLagna v3.1.0 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
  * - v3.0.4 changes:
  *   - Added updateUserRole API wrapper for admin promotion/demotion.
@@ -7,8 +7,8 @@
  *   - Added getAllTransactions for comprehensive financial oversight. [v2.4.0]
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
- * @author SubhaLagna Team
- * @version      3.0.8
+ * @author       SubhaLagna Team
+ * @version      3.1.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -71,6 +71,7 @@ export const toggleVerifyProfile = async (id) => {
 /**
  * Delete a user and all associated data.
  * @param {string} id - User ID
+ * @returns {Promise<void>}
  */
 export const deleteUser = async (id) => {
   try {
@@ -82,7 +83,7 @@ export const deleteUser = async (id) => {
 
 /**
  * Get all available coupons.
- * @returns {Promise<object[]>}
+ * @returns {Promise<object[]>} List of coupons
  */
 export const getAllCoupons = async () => {
   try {
@@ -95,8 +96,8 @@ export const getAllCoupons = async () => {
 
 /**
  * Create a new discount coupon.
- * @param {object} couponData
- * @returns {Promise<object>}
+ * @param {object} couponData - Coupon details
+ * @returns {Promise<object>} Created coupon
  */
 export const createCoupon = async (couponData) => {
   try {
@@ -109,7 +110,8 @@ export const createCoupon = async (couponData) => {
 
 /**
  * Delete a coupon.
- * @param {string} id
+ * @param {string} id - Coupon ID
+ * @returns {Promise<void>}
  */
 export const deleteCoupon = async (id) => {
   try {
@@ -121,8 +123,9 @@ export const deleteCoupon = async (id) => {
 
 /**
  * Manually upgrade a user to premium.
- * @param {string} userId
+ * @param {string} userId - User ID
  * @param {object} upgradeData - { planId, durationDays }
+ * @returns {Promise<object>} Updated user
  */
 export const manualUpgradeUser = async (userId, upgradeData) => {
   try {
@@ -135,6 +138,7 @@ export const manualUpgradeUser = async (userId, upgradeData) => {
 
 /**
  * Get all pending bank transfer requests.
+ * @returns {Promise<object[]>} List of pending payments
  */
 export const getPendingBankPayments = async () => {
   try {
@@ -149,6 +153,7 @@ export const getPendingBankPayments = async () => {
  * Verify (Approve/Reject) a bank payment.
  * @param {string} id - Payment ID
  * @param {object} verifyData - { status, adminRemarks }
+ * @returns {Promise<object>} Updated payment
  */
 export const verifyBankPayment = async (id, verifyData) => {
   try {
@@ -161,6 +166,7 @@ export const verifyBankPayment = async (id, verifyData) => {
 
 /**
  * Get all membership plans (for admin management).
+ * @returns {Promise<object[]>} List of plans
  */
 export const getAdminPlans = async () => {
   try {
@@ -173,7 +179,8 @@ export const getAdminPlans = async () => {
 
 /**
  * Create a new user with profile data (Admin only).
- * @param {object} userData
+ * @param {object} userData - Full user and profile data
+ * @returns {Promise<object>} Created user object
  */
 export const adminAddUser = async (userData) => {
   try {
@@ -186,8 +193,9 @@ export const adminAddUser = async (userData) => {
 
 /**
  * Update an existing user and their profile (Admin only).
- * @param {string} id
- * @param {object} userData
+ * @param {string} id - User ID
+ * @param {object} userData - Fields to update
+ * @returns {Promise<object>} Updated user object
  */
 export const adminUpdateUser = async (id, userData) => {
   try {
@@ -201,7 +209,8 @@ export const adminUpdateUser = async (id, userData) => {
 /**
  * Update a membership plan.
  * @param {string} id - Plan ObjectID
- * @param {object} updateData
+ * @param {object} updateData - Plan fields to update
+ * @returns {Promise<object>} Updated plan
  */
 export const updateAdminPlan = async (id, updateData) => {
   try {
@@ -211,8 +220,12 @@ export const updateAdminPlan = async (id, updateData) => {
     throw getErrorMessage(err, 'Failed to update plan');
   }
 };
+
 /**
- * Admin: Upload profile and gallery photos for a user
+ * Admin: Upload profile and gallery photos for a user.
+ * @param {string} profileId - Target profile ID
+ * @param {FormData} formData - Image files
+ * @returns {Promise<object>} Updated profile
  */
 export const adminUploadPhotos = async (profileId, formData) => {
   try {
@@ -227,7 +240,7 @@ export const adminUploadPhotos = async (profileId, formData) => {
 
 /**
  * Retrieve all transactions (Razorpay & Manual) for the ledger.
- * @returns {Promise<object[]>}
+ * @returns {Promise<object[]>} Transaction history
  */
 export const getAllTransactions = async () => {
   try {

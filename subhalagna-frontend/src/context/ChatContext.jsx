@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — Chat Context
+ * @file        SubhaLagna v3.1.0 — Chat Context
  * @description   Manages the Socket.io connection and real-time chat state.
  *                Provides the socket instance and active message streams to
  *                all chat-related components.
@@ -7,9 +7,8 @@
  *                Usage:
  *                  const { socket, joinConversation, messages, sendSocketMessage } =
  *                    useContext(ChatContext);
- *
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { createContext, useState, useEffect, useContext, useRef, useCallback } from 'react';
@@ -47,9 +46,11 @@ export const ChatContext = createContext(
 
 /**
  * ChatProvider — must be inside both AuthProvider and NotificationProvider.
+ * @param root0
+ * @param root0.children
  */
 export const ChatProvider = ({ children }) => {
-  const { user, token, isAuthenticated } = useContext(AuthContext);
+  const { token, isAuthenticated } = useContext(AuthContext);
   const { addRealtime } = useContext(NotificationContext);
 
   const socketRef = useRef(null);
@@ -124,7 +125,6 @@ export const ChatProvider = ({ children }) => {
   /**
    * Join a conversation's Socket.io room.
    * Should be called when the user opens a specific conversation.
-   *
    * @param {string} conversationId
    */
   const joinConversation = useCallback((conversationId) => {
@@ -133,7 +133,6 @@ export const ChatProvider = ({ children }) => {
 
   /**
    * Emit a message via Socket.io (also triggers DB save server-side).
-   *
    * @param {string} conversationId
    * @param {string} content
    */
@@ -143,7 +142,6 @@ export const ChatProvider = ({ children }) => {
 
   /**
    * Emit a typing indicator to the conversation room.
-   *
    * @param {string} conversationId
    */
   const sendTyping = useCallback((conversationId) => {
@@ -152,7 +150,6 @@ export const ChatProvider = ({ children }) => {
 
   /**
    * Emit a stop-typing event.
-   *
    * @param {string} conversationId
    */
   const stopTyping = useCallback((conversationId) => {

@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — Interest Button Component
+ * @file        SubhaLagna v3.1.0 — Interest Button Component
  * @description   Smart button that shows the current interest status between
  *                the logged-in user and a profile owner. States:
  *                  - No interest    → "Send Interest" button
@@ -9,12 +9,11 @@
  *                  - Received       → "Respond" (accept/reject)
  *
  *                Fetches current status on mount. Handles all transitions.
- *
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   sendInterest,
@@ -25,6 +24,12 @@ import {
 
 // ── Icon helpers ──────────────────────────────────────────────────────────────
 
+/**
+ * Heart icon SVG
+ * @param {object} props Component props
+ * @param {string} props.className CSS class
+ * @returns {React.ReactElement} The heart icon
+ */
 const HeartIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
@@ -36,6 +41,12 @@ const HeartIcon = ({ className }) => (
   </svg>
 );
 
+/**
+ * Chat icon SVG
+ * @param {object} props Component props
+ * @param {string} props.className CSS class
+ * @returns {React.ReactElement} The chat icon
+ */
 const ChatIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
@@ -47,6 +58,12 @@ const ChatIcon = ({ className }) => (
   </svg>
 );
 
+/**
+ * Check icon SVG
+ * @param {object} props Component props
+ * @param {string} props.className CSS class
+ * @returns {React.ReactElement} The check icon
+ */
 const CheckIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -57,11 +74,10 @@ const CheckIcon = ({ className }) => (
 
 /**
  * InterestButton — shows contextual interest action buttons.
- *
- * @param {object}  props
+ * @param {object}  props Component properties
  * @param {string}  props.receiverUserId  - MongoDB ObjectId of the profile owner's user account
- * @param {string}  [props.conversationId] - Conversation ID (populated after acceptance)
- * @param {boolean} [props.compact=false]  - Compact mode for card view
+ * @param {boolean} [props.compact]  - Compact mode for card view
+ * @returns {React.ReactElement} The contextual interest button
  */
 const InterestButton = ({ receiverUserId, compact = false }) => {
   const navigate = useNavigate();
@@ -75,7 +91,7 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
   const [conversationId, setConversationId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message] = useState('');
   const [bursts, setBursts] = useState([]); // For heart particles
 
   // ── Fetch current interest status on mount ────────────────────────────────
@@ -96,7 +112,7 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
     };
 
     fetchStatus();
-  }, [receiverUserId]);
+  }, [receiverUserId, targetUserId]);
 
   // ── Action Handlers ────────────────────────────────────────────────────────
 
@@ -142,7 +158,7 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
   const handleRespond = async (newStatus) => {
     setActionLoading(true);
     try {
-      const { interest, conversation } = await respondToInterest(interestId, newStatus);
+      const { conversation } = await respondToInterest(interestId, newStatus);
       setStatus(newStatus);
       if (conversation) setConversationId(conversation._id);
     } catch (err) {
@@ -176,7 +192,7 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
       <button
         onClick={handleSendInterest}
         disabled={actionLoading}
-        className={`${baseClass} bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600 shadow-lg shadow-rose-200 hover:-translate-y-0.5`}
+        className={`${baseClass} bg-linear-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600 shadow-lg shadow-rose-200 hover:-translate-y-0.5`}
         id={`send-interest-${receiverUserId}`}
       >
         <HeartIcon className={compact ? 'w-3.5 h-3.5' : 'w-5 h-5'} />
@@ -266,7 +282,7 @@ const InterestButton = ({ receiverUserId, compact = false }) => {
     <button
       onClick={handleSendInterest}
       disabled={actionLoading}
-      className={`${baseClass} bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600`}
+      className={`${baseClass} bg-linear-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600`}
     >
       <HeartIcon className={compact ? 'w-3.5 h-3.5' : 'w-5 h-5'} />
       {actionLoading ? 'Sending...' : 'Send Interest'}

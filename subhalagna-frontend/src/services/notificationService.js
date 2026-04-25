@@ -1,17 +1,17 @@
 /**
- * @file        SubhaLagna v3.0.8 — Notification Service
- * @description   REST API calls for the in-app notifications system.
- * @author        SubhaLagna Team
- * @version      3.0.8
+ * @file        SubhaLagna v3.1.0 — Notification Service
+ * @description REST API calls for the in-app notifications system.
+ * @author       SubhaLagna Team
+ * @version      3.1.0
  */
 
 import api, { getErrorMessage } from './api';
 
 /**
  * Get all notifications for the current user.
- * @param {number} [page=1]
- * @param {number} [limit=20]
- * @returns {Promise<{ notifications: object[], total: number, unreadCount: number }>}
+ * @param {number} [page] - Page number
+ * @param {number} [limit] - Notifications per page
+ * @returns {Promise<object>} API response containing notifications and counts
  */
 export const getNotifications = async (page = 1, limit = 20) => {
   try {
@@ -24,7 +24,7 @@ export const getNotifications = async (page = 1, limit = 20) => {
 
 /**
  * Mark a single notification as read.
- * @param {string} notificationId
+ * @param {string} notificationId - The notification to update
  * @returns {Promise<void>}
  */
 export const markOneRead = async (notificationId) => {
@@ -49,7 +49,7 @@ export const markAllRead = async () => {
 
 /**
  * Delete a notification.
- * @param {string} notificationId
+ * @param {string} notificationId - The notification to delete
  * @returns {Promise<void>}
  */
 export const deleteNotification = async (notificationId) => {

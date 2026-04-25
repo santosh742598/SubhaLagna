@@ -1,11 +1,11 @@
 /**
- * @file        SubhaLagna v3.0.8 — Premium Membership & Payments
+ * @file        SubhaLagna v3.1.0 — Premium Membership & Payments
  * @description Dynamic membership selection with Coupon system and Razorpay integration.
  * - v2.3.1 changes:
  *   - Removed hardcoded duration strings in favor of plan-driven duration text.
  *   - Integrated dynamic Razorpay order metadata.
  *   - Fixed checkout initialization for dynamic plans.
- * @version      3.0.8
+ * @version      3.1.0
  * @author        SubhaLagna Team
  */
 
@@ -24,7 +24,7 @@ import {
 import { BANK_DETAILS, RAZORPAY_KEY_ID } from '../config';
 
 const PremiumMembership = () => {
-  const { user, token, refreshUser } = useContext(AuthContext);
+  const { user, refreshUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [plans, setPlans] = useState([]);
@@ -135,7 +135,7 @@ const PremiumMembership = () => {
               alert('✨ Upgrade Successful! Welcome to Premium.');
               navigate('/dashboard');
             }
-          } catch (err) {
+          } catch {
             alert('Payment verification failed. Please contact support.');
           }
         },
@@ -346,7 +346,7 @@ const PremiumMembership = () => {
                       : isDowngrade || (plan.planId === 'free' && user?.isPremium)
                         ? 'bg-gray-100 text-gray-400 cursor-default'
                         : plan.popular
-                          ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-xl shadow-rose-200'
+                          ? 'bg-linear-to-r from-rose-600 to-pink-600 text-white shadow-xl shadow-rose-200'
                           : 'bg-gray-900 text-white hover:bg-black'
                   } disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]`}
                 >
@@ -401,7 +401,7 @@ const PremiumMembership = () => {
 
       {/* Bank Transfer Modal */}
       {showBankForm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl animate-fade-in">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Payment Proof</h2>
 
@@ -471,7 +471,7 @@ const PremiumMembership = () => {
               <button
                 onClick={handleBankTransferSubmit}
                 disabled={processing}
-                className="flex-[2] py-4 bg-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-rose-100 hover:bg-rose-700 transition-all disabled:opacity-50"
+                className="flex-2 py-4 bg-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-rose-100 hover:bg-rose-700 transition-all disabled:opacity-50"
               >
                 {processing ? 'Wait...' : 'Submit Proof'}
               </button>

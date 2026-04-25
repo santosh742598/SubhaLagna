@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — Login Component
+ * @file        SubhaLagna v3.1.0 — Login Component
  * @description   Secure user authentication interface.
  *               - v3.0.5 changes:
  *                 - Resolved bug where 401 errors triggered accidental page refreshes.
@@ -8,7 +8,7 @@
  * - v3.0.4 changes:
  *   - Added navigation link to Forgot Password flow.
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
@@ -94,7 +94,7 @@ const Login = () => {
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* ── Background ──────────────────────────────────────────────────────── */}
       <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100/80" />
+        <div className="absolute inset-0 bg-linear-to-br from-rose-50 via-pink-50 to-rose-100/80" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-rose-200/15 rounded-full blur-3xl" />
 
         {bgHearts.map((heart, i) => (
@@ -227,7 +227,7 @@ const Login = () => {
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link to="/signup" className="text-rose-600 font-semibold hover:underline">
               Sign up
             </Link>

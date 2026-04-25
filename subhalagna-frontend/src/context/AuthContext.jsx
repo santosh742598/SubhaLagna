@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.0.8 — Auth Context
+ * @file        SubhaLagna v3.1.0 — Auth Context
  * @description   Global authentication state provider. Supplies `user`, `token`,
  *                and auth actions to all child components via React Context API.
  *
@@ -8,9 +8,8 @@
  *                  - Stores both accessToken and refreshToken in localStorage
  *                  - Handles token refresh transparently (via axios interceptor)
  *                  - Provides `isPremium` computed getter
- *
  * @author        SubhaLagna Team
- * @version      3.0.8
+ * @version      3.1.0
  */
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';
@@ -53,7 +52,6 @@ export const AuthContext = createContext(
 
 /**
  * AuthProvider — wrap the entire app with this to provide auth state globally.
- *
  * @param {object} props
  * @param {React.ReactNode} props.children
  */
@@ -91,7 +89,6 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Login action — stores tokens, sets user state.
-   *
    * @param {string} email
    * @param {string} password
    * @returns {Promise<object>} The full auth response data
@@ -121,7 +118,6 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Register action — creates account, stores tokens, sets user state.
-   *
    * @param {object} userData
    * @returns {Promise<object>}
    */
@@ -159,7 +155,6 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Update the profile field within user state (after profile edit).
-   *
    * @param {object} updatedProfile - New profile document
    */
   const updateProfileContext = useCallback((updatedProfile) => {
