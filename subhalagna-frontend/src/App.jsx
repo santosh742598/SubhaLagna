@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.1 — Main Application Router
+ * @file        SubhaLagna v3.2.3 — Main Application Router
  * @description   Entry point for all React routes. Wraps the application
  *                in required context providers (Auth → Notification → Chat)
  *                and configures all route guards.
@@ -13,14 +13,15 @@
  *                - Standardized ESLint & Prettier for premium code quality.
  *                - Enhanced JSDoc requirements for architectural integrity.
  * @author        SubhaLagna Team
- * @version      3.2.1
+ * @version      3.2.3
  */
 
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 
 /* ── Context Providers ─────────────────────────────────────────────────────── */
-import { AuthProvider, AuthContext } from './context/AuthContext';
+import { AuthContext } from './context/AuthContext';
+import { AuthProvider } from './context/AuthProvider';
 import { NotificationProvider } from './context/NotificationContext';
 import { ChatProvider } from './context/ChatContext';
 

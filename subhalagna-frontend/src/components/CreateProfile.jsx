@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.1 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.2.3 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
  *                - [v3.0.5 changes]
  *                - Fixed critical bug where API response was not unwrapped, causing profile data to appear missing.
@@ -11,7 +11,7 @@
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  * @author        SubhaLagna Team
- * @version      3.2.1
+ * @version      3.2.3
  */
 
 import React, { useState, useContext, useEffect } from 'react';

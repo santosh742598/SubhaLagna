@@ -1,18 +1,12 @@
 /**
- * @file        SubhaLagna v3.2.1 — Auth Context
- * @description   Global authentication state provider. Supplies `user`, `token`,
- *                and auth actions to all child components via React Context API.
- *
- *                v2.0.0 changes:
- *                  - Uses authService functions instead of raw fetch calls
- *                  - Stores both accessToken and refreshToken in localStorage
- *                  - Handles token refresh transparently (via axios interceptor)
- *                  - Provides `isPremium` computed getter
+ * @file        SubhaLagna v3.2.3 — Auth Provider
+ * @description   Global authentication state provider component.
+ *                Separated from the Context object to support Vite Fast Refresh.
  * @author        SubhaLagna Team
- * @version      3.2.1
+ * @version      3.2.3
  */
 
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   login as loginService,
   register as registerService,
@@ -21,40 +15,7 @@ import {
 } from '../services/authService';
 import { fetchPublicSettings } from '../services/lookupService';
 import api from '../services/api';
-
-/**
- * AuthContext shape:
- * @typedef {object} AuthContextValue
- * @property {object|null}   user                - Current user data
- * @property {string|null}   token               - Current JWT access token
- * @property {boolean}       loading             - Initial auth check in progress
- * @property {boolean}       isAuthenticated     - Whether user is logged in
- * @property {boolean}       isPremium           - Whether user has active premium
- * @property {Function}      loginContext        - Login action
- * @property {Function}      registerContext     - Register action
- * @property {Function}      logoutContext       - Logout action
- * @property {Function}      updateProfileContext - Update profile in state
- * @property {Function}      refreshUser         - Re-fetch user from server
- */
-
-export const AuthContext = createContext(
-  /** @type {AuthContextValue} */ ({
-    user: null,
-    token: null,
-    loading: true,
-    isAuthenticated: false,
-    isPremium: false,
-    loginContext: () => {},
-    registerContext: () => {},
-    logoutContext: () => {},
-    updateProfileContext: () => {},
-    refreshUser: () => {},
-    settings: null,
-    refreshSettings: () => {},
-    plans: [],
-    refreshPlans: () => {},
-  }),
-);
+import { AuthContext } from './AuthContext';
 
 /**
  * AuthProvider — wrap the entire app with this to provide auth state globally.

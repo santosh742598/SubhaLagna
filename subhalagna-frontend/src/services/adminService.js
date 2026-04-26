@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.1 — Admin Service
+ * @file        SubhaLagna v3.2.3 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
  * - v3.0.4 changes:
  *   - Added updateUserRole API wrapper for admin promotion/demotion.
@@ -8,7 +8,7 @@
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
  * @author       SubhaLagna Team
- * @version      3.2.1
+ * @version      3.2.3
  */
 
 import api, { getErrorMessage } from './api';

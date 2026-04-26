@@ -1,6 +1,6 @@
-# 💍 SubhaLagna Matrimony — v3.2.1
+# 💍 SubhaLagna Matrimony — v3.2.3
 
-[![Project Version](https://img.shields.io/badge/version-3.2.1-blue.svg)](CHANGELOG.md)
+[![Project Version](https://img.shields.io/badge/version-3.2.3-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![Stack](https://img.shields.io/badge/stack-MERN-green.svg)](#technology-stack)
 

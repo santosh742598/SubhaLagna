@@ -1,12 +1,12 @@
 /**
- * @file        SubhaLagna v3.2.1 — Email Verification Component
+ * @file        SubhaLagna v3.2.3 — Email Verification Component
  * @description   Handles 6-digit OTP entry and resend logic.
  *               - v3.1.4 changes:
  *                 - Modernized gradient syntax to Tailwind v4 (bg-linear-to-br).
  *               - v3.0.5 changes:
  *                 - Implemented celebratory success banner for newly registered users.
  * @author        SubhaLagna Team
- * @version      3.2.1
+ * @version      3.2.3
  */
 
 import React, { useState, useEffect, useContext, useRef } from 'react';
