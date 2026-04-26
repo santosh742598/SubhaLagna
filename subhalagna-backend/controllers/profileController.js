@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.1.6 — Profile Controller
+ * @file        SubhaLagna v3.1.7 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
  *                - Comprehensive profile setup (onboarding).
  *                - Paginated matches with Guna Milan scoring.
@@ -12,7 +12,7 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.1.6
+ * @version      3.1.7
  */
 
 const Profile = require('../models/Profile');

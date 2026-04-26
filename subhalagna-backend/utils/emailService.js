@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.6 — Email Service
+ * @file SubhaLagna v3.1.7 — Email Service
  * @description   Nodemailer-based email service with pre-built templates for:
  *                - Email verification (OTP)
  *                - Password reset link
@@ -12,8 +12,9 @@
  *                 - Integrated dynamic branding (appName, brandPrimary, brandSecondary) from environment variables.
  *                 - Fixed SyntaxError in buildEmailHTML template.
  *                 - Added ESLint overrides for intentional development console logging.
+ *                 - Resolved project-wide JSDoc documentation warnings by adding proper @returns descriptions.
  * @author        SubhaLagna Team
- * @version      3.1.6
+ * @version      3.1.7
  */
 
 const nodemailer = require('nodemailer');
@@ -29,7 +30,7 @@ let transporter = null;
 /**
  * Initialize the Nodemailer transporter.
  * Falls back to Ethereal test account in development if no SMTP config found.
- * @returns {import('nodemailer').Transporter}
+ * @returns {import('nodemailer').Transporter} The initialized Nodemailer transporter object.
  */
 const getTransporter = () => {
   if (transporter) return transporter;
@@ -109,7 +110,7 @@ const buildEmailHTML = (title, body) => `
  * @param {string} email      - Recipient email
  * @param {string} name       - Recipient name
  * @param {string} otp        - 6-digit OTP code
- * @returns {Promise<void>}
+ * @returns {Promise<void>} Resolves when the verification email is successfully sent.
  */
 const sendVerificationEmail = async (email, name, otp) => {
   const html = buildEmailHTML(
@@ -134,7 +135,7 @@ const sendVerificationEmail = async (email, name, otp) => {
  * @param {string} email      - Recipient email
  * @param {string} name       - Recipient name
  * @param {string} resetUrl   - Full reset URL with token
- * @returns {Promise<void>}
+ * @returns {Promise<void>} Resolves when the password reset email is successfully sent.
  */
 const sendPasswordResetEmail = async (email, name, resetUrl) => {
   const html = buildEmailHTML(
@@ -160,7 +161,7 @@ const sendPasswordResetEmail = async (email, name, resetUrl) => {
  * @param {string} email        - Recipient email
  * @param {string} name         - Recipient name
  * @param {string} senderName   - Name of the person who sent interest
- * @returns {Promise<void>}
+ * @returns {Promise<void>} Resolves when the interest notification email is successfully sent.
  */
 const sendInterestNotificationEmail = async (email, name, senderName) => {
   const html = buildEmailHTML(
@@ -186,7 +187,7 @@ const sendInterestNotificationEmail = async (email, name, senderName) => {
  * @param {string} planName   - Name of the plan (Gold/Platinum)
  * @param {number} amount     - Amount paid
  * @param {string} expiryDate - Formatted expiry date
- * @returns {Promise<void>}
+ * @returns {Promise<void>} Resolves when the payment success email is successfully sent.
  */
 const sendPaymentSuccessEmail = async (email, name, planName, amount, expiryDate) => {
   const html = buildEmailHTML(
