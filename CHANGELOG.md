@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.6] - 2026-04-26
+
+### Fixed (v3.3.6)
+
+- **🔄 Infinite Redirect Loop**: Resolved a critical issue where maintenance mode caused an infinite page refresh loop.
+- **🛡️ Maintenance Whitelisting**: Whitelisted `plans` and `public-settings` endpoints from the maintenance check to allow the frontend to boot and display the maintenance screen.
+- **🛠️ API Interceptor Safety**: Added a guard in the frontend API interceptor to prevent redundant redirects if the user is already on the `/maintenance` route.
+
+
 ## [3.3.5] - 2026-04-26
 
 ### Added (v3.3.5)

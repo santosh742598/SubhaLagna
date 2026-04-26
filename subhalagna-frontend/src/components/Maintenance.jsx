@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.3.5 — Maintenance Page
+ * @file        SubhaLagna v3.3.6 — Maintenance Page
  * @description Premium "Coming Back Soon" screen for maintenance windows.
  * @author       SubhaLagna Team
- * @version      3.3.5
+ * @version      3.3.6
  */
 
 import React from 'react';
@@ -54,7 +54,7 @@ const Maintenance = () => {
 
           <div className="mt-12 pt-12 border-t border-white/5">
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
-              SubhaLagna v3.3.5 — Stability Update
+              SubhaLagna v3.3.6 — Stability Update
             </p>
           </div>
         </div>

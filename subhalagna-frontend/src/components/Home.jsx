@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.3.5 — Interactive Landing Page
+ * @file        SubhaLagna v3.3.6 — Interactive Landing Page
  * @description Transitioned to session-aware UI. Component splitted.
  * @author        SubhaLagna Team
- * @version      3.3.5
+ * @version      3.3.6
  */
 import React from 'react';
 import { Helmet } from 'react-helmet-async';

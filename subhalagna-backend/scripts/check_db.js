@@ -3,12 +3,12 @@
 /* eslint-disable no-console */
 
 /**
- * @file        SubhaLagna v3.3.5 — Database Connectivity Diagnostic
+ * @file        SubhaLagna v3.3.6 — Database Connectivity Diagnostic
  * @description   CLI tool to verify MongoDB connection and collection counts.
  *                - v3.3.4 changes:
  *                  - Initial creation for server-side troubleshooting.
  * @author        SubhaLagna Team
- * @version      3.3.5
+ * @version      3.3.6
  */
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');

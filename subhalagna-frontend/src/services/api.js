@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.3.5 — Axios API Base Instance
+ * @file        SubhaLagna v3.3.6 — Axios API Base Instance
  * @description   Configures a single axios instance used by all service modules.
  *               - v3.0.5 changes:
  *                 - Added exception to 401 redirect logic for login endpoint to prevent vanishing error messages.
  * @author        SubhaLagna Team
- * @version      3.3.5
+ * @version      3.3.6
  */
 
 import axios from 'axios';
@@ -76,7 +76,7 @@ api.interceptors.response.use(
     }
 
     // ── Handle 503: Maintenance Mode ─────────────────────────────────────────
-    if (error.response?.status === 503) {
+    if (error.response?.status === 503 && window.location.pathname !== '/maintenance') {
       window.location.href = '/maintenance';
       return Promise.reject(error);
     }

@@ -1,4 +1,4 @@
-# 🤖 AGENTS.md — SubhaLagna v3.3.5 Best Practices & Coding Standards
+# 🤖 AGENTS.md — SubhaLagna v3.3.6 Best Practices & Coding Standards
 
 This document serves as the **Source of Truth** for any developer or AI Agent working on the SubhaLagna Matrimony project. Adherence to these standards is mandatory to maintain the project's premium quality, security, and architectural integrity.
 
@@ -137,7 +137,7 @@ Respect the guard hierarchy in `App.jsx`:
 
 ```javascript
 /**
- * @file        SubhaLagna v3.3.5 — Dynamic Branding & WhatsApp
+ * @file        SubhaLagna v3.3.6 — Dynamic Branding & WhatsApp
  * @description  Premium Matrimony Platform with real-time features.
  *               - v3.1.4 changes:
  *                 - Implemented Dynamic Branding (APP_NAME) across UI, Emails, and WhatsApp.
@@ -145,7 +145,7 @@ Respect the guard hierarchy in `App.jsx`:
  *               - v3.1.3 changes:
  *                 - Added Premium WhatsApp Connect feature with personalized messaging.
  * @author       SubhaLagna Team
- * @version      3.3.5
+ * @version      3.3.6
  * @example
  * [Usage example here]
  */

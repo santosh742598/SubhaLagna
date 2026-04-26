@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.3.5 — Chat Routes
+ * @file SubhaLagna v3.3.6 — Chat Routes
  * @description   Route definitions for the real-time messaging system.
  *                REST endpoints for persistence; Socket.io handles real-time delivery.
  *
@@ -12,7 +12,7 @@
  *   POST /conversations/:conversationId/messages   → send a message (saved to DB)
  *   PUT  /conversations/:conversationId/read       → mark all messages as read
  * @author SubhaLagna Team
- * @version      3.3.5
+ * @version      3.3.6
  */
 
 const express = require('express');

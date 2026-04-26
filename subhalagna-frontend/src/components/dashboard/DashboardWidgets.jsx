@@ -1,10 +1,10 @@
 /**  
- * @file        SubhaLagna v3.3.5 — Dashboard Widgets  
+ * @file        SubhaLagna v3.3.6 — Dashboard Widgets  
  * @description   Extracted widgets for Profile Dashboard.  
  *                - v3.3.3 changes:  
  *                  - Initial extraction from ProfileDashboard.jsx.  
  * @author        SubhaLagna Team  
- * @version      3.3.5  
+ * @version      3.3.6  
  */  
 import React from 'react';
 import { Check } from './DashboardIcons';

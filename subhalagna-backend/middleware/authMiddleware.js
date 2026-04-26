@@ -1,12 +1,12 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.3.5 — Auth & Role Middleware
+ * @file SubhaLagna v3.3.6 — Auth & Role Middleware
  * @description JWT-based route protection and system maintenance logic.
  *               - v3.3.5 changes:
  *                 - Implemented checkMaintenance with role-based bypass.
  * @author SubhaLagna Team
- * @version      3.3.5
+ * @version      3.3.6
  */
 
 const User = require('../models/User');
@@ -93,7 +93,14 @@ const checkMaintenance = async (req, res, next) => {
 
     if (settings?.isMaintenanceMode) {
       // 1. Allow Login and Status checks so admins can actually log in
-      const bypassRoutes = ['/api/users/login', '/api/users/me', '/api/admin/settings'];
+      // Also allow Plans and Public Settings so the app can boot to show maintenance page
+      const bypassRoutes = [
+        '/api/users/login',
+        '/api/users/me',
+        '/api/admin/settings',
+        '/api/payments/plans',
+        '/api/lookup/settings',
+      ];
       if (bypassRoutes.some((route) => req.originalUrl.includes(route))) {
         return next();
       }
