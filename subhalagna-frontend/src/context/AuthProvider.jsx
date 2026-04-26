@@ -21,7 +21,7 @@ import { AuthContext } from './AuthContext';
  * AuthProvider — wrap the entire app with this to provide auth state globally.
  * @param {object} props - Component properties.
  * @param {React.ReactNode} props.children - Child components to be wrapped.
- * @returns {JSX.Element}
+ * @returns {React.JSX.Element}
  */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
