@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
  
+## [3.2.7] - 2026-04-26
+### Changed
+- Optimized rate limits to accommodate production traffic and polling:
+    - Increased `globalLimiter` from 100 to **500** requests per 15 min.
+    - Increased `healthLimiter` from 300 to **1000** requests per 15 min.
+    - Increased `authLimiter` from 10 to **20** requests per 15 min.
+
 ## [3.2.6] - 2026-04-26
 ### Security
 - Hardened `/api/health` endpoint to prevent information disclosure (removed `version` and `environment` from public response).

@@ -1,15 +1,15 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.2.6 — Rate Limiting Middleware
+ * @file SubhaLagna v3.2.7 — Rate Limiting Middleware
  * @description   Defines multiple rate limiters:
- *                - `globalLimiter`  → applied to all routes (100 req / 15 min)
- *                - `authLimiter`    → applied to /api/auth/* (10 req / 15 min)
- *                - `healthLimiter`  → applied to /api/health (300 req / 15 min)
+ *                - `globalLimiter`  → applied to all routes (500 req / 15 min)
+ *                - `authLimiter`    → applied to /api/auth/* (20 req / 15 min)
+ *                - `healthLimiter`  → applied to /api/health (1000 req / 15 min)
  *                - `uploadLimiter`  → applied to photo upload routes
  *                All limits are configurable via environment variables.
  * @author        SubhaLagna Team
- * @version      3.2.6
+ * @version      3.2.7
  */
 
 const rateLimit = require('express-rate-limit');
@@ -23,7 +23,7 @@ const WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10);
  */
 const globalLimiter = rateLimit({
   windowMs: WINDOW_MS,
-  max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
+  max: parseInt(process.env.RATE_LIMIT_MAX || '500', 10),
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
@@ -38,7 +38,7 @@ const globalLimiter = rateLimit({
  */
 const healthLimiter = rateLimit({
   windowMs: WINDOW_MS,
-  max: 300, // 300 requests per 15 min (allows ~20 monitoring agents @ 1 min interval)
+  max: 1000, // 1000 requests per 15 min
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -53,7 +53,7 @@ const healthLimiter = rateLimit({
  */
 const authLimiter = rateLimit({
   windowMs: WINDOW_MS,
-  max: parseInt(process.env.AUTH_RATE_LIMIT_MAX || '10', 10),
+  max: parseInt(process.env.AUTH_RATE_LIMIT_MAX || '20', 10),
   standardHeaders: true,
   legacyHeaders: false,
   message: {

@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.2.6 — Forgot Password
+ * @file        SubhaLagna v3.2.7 — Forgot Password
  * @description   Premium recovery interface for requesting password reset links.
  * - v3.0.4 changes:
  *   - Initial implementation with glassmorphism UI.
  * @author        SubhaLagna Team
- * @version      3.2.6
+ * @version      3.2.7
  */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';

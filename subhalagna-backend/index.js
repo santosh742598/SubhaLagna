@@ -1,9 +1,14 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.2.6 — Main Server Entry Point
+ * @file        SubhaLagna v3.2.7 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
+ *                - [v3.2.7 changes]
+ *                - Optimized rate limits for production traffic:
+ *                  - global: 100 -> 500
+ *                  - health: 300 -> 1000
+ *                  - auth: 10 -> 20
  *                - [v3.2.6 changes]
  *                - Hardened /api/health endpoint: stripped sensitive info (version, environment).
  *                - Applied dedicated rate limiting to /api/health to prevent abuse.
@@ -15,7 +20,7 @@
  *                - Enhanced JSDoc documentation requirements.
  *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version      3.2.6
+ * @version      3.2.7
  *
  * @description Architecture:
  *  ┌──────────────────────────────────────────┐

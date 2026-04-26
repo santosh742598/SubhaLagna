@@ -1,9 +1,9 @@
 /**
- * @file        SubhaLagna v3.2.6 — Auth Provider
+ * @file        SubhaLagna v3.2.7 — Auth Provider
  * @description   Global authentication state provider component.
  *                Separated from the Context object to support Vite Fast Refresh.
  * @author        SubhaLagna Team
- * @version      3.2.6
+ * @version      3.2.7
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
