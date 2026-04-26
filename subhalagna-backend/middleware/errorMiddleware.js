@@ -1,13 +1,13 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.9 — Centralized Error Handling Middleware
+ * @file SubhaLagna v3.2.0 — Centralized Error Handling Middleware
  * @description   Two middleware functions:
  *                1. `notFound` — catches 404 for unregistered routes
  *                2. `errorHandler` — global error handler for all thrown errors,
  *                   including Mongoose validation errors and JWT errors.
  * @author        SubhaLagna Team
- * @version      3.1.9
+ * @version      3.2.0
  */
 
 /**

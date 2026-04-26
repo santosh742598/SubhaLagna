@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.9 — Chat Controller
+ * @file SubhaLagna v3.2.0 — Chat Controller
  * @description   REST endpoints for the messaging system.
  *                Real-time delivery is handled separately by Socket.io
  *                (see socket/socketHandler.js). These REST endpoints handle:
@@ -10,7 +10,7 @@
  *                  - sendMessage      → save message to DB (socket emits in real-time)
  *                  - markAsRead       → mark all messages in a conversation as read
  * @author        SubhaLagna Team
- * @version      3.1.9
+ * @version      3.2.0
  */
 
 const Conversation = require('../models/Conversation');

@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.1.9 — Admin Dashboard
+ * @file        SubhaLagna v3.2.0 — Admin Dashboard
  * @description Comprehensive management interface for users, plans, and system state.
  *               v3.1.0 changes:
  *                 - Stabilized fetch logic with useCallback/useEffect hooks
@@ -12,7 +12,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.1.9
+ * @version      3.2.0
  * @author        SubhaLagna Team
  */
 
@@ -821,7 +821,7 @@ const AdminDashboard = () => {
                                 className="w-full h-full object-cover"
                                 alt=""
                                 onError={(e) => {
-                                  e.target.src = '/man.jpg';
+                                  e.target.src = '/man.png';
                                 }}
                               />
                             </div>

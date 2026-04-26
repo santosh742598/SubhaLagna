@@ -1,9 +1,9 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.9 — System Controller (Public)
+ * @file SubhaLagna v3.2.0 — System Controller (Public)
  * @description Publicly accessible endpoints for system configuration (Branding, etc.).
- * @version      3.1.9
+ * @version      3.2.0
  * @author SubhaLagna Team
  */
 

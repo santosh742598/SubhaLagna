@@ -1,10 +1,10 @@
 // src/data/mockProfiles.js
 
 /**
- * @file        SubhaLagna v3.1.9 — Mock Profiles Data
+ * @file        SubhaLagna v3.2.0 — Mock Profiles Data
  * @description   Sample profile data used for demonstration and testing purposes.
  * @author        SubhaLagna Team
- * @version      3.1.9
+ * @version      3.2.0
  */
 export const CITIES = [
   'Bhubaneswar',
@@ -28,7 +28,7 @@ export const MOCK_PROFILES = [
     education: 'B.Tech in Computer Science',
     height: '5\' 10"',
     bio: 'Tech enthusiast by day, amateur photographer by night. Looking for an understanding partner who appreciates the little things.',
-    image: '/man.jpg',
+    image: '/man.png',
   },
   {
     id: 'm2',
@@ -40,7 +40,7 @@ export const MOCK_PROFILES = [
     education: 'MBA Finance',
     height: '5\' 9"',
     bio: 'Ambitious and family-oriented. Enjoy traveling and trying out new cuisines. Seeking a supportive life partner.',
-    image: '/man.jpg',
+    image: '/man.png',
   },
   {
     id: 'm3',
@@ -52,7 +52,7 @@ export const MOCK_PROFILES = [
     education: 'B.Sc Economics',
     height: '6\' 0"',
     bio: 'Love reading and playing tennis. Looking forward to finding someone who shares my values and modern outlook.',
-    image: '/man.jpg',
+    image: '/man.png',
   },
   {
     id: 'm4',
@@ -64,7 +64,7 @@ export const MOCK_PROFILES = [
     education: 'M.Tech',
     height: '5\' 8"',
     bio: 'Hardworking, caring, and grounded. Looking to settle down with a like-minded individual.',
-    image: '/man.jpg',
+    image: '/man.png',
   },
   {
     id: 'm5',
@@ -76,7 +76,7 @@ export const MOCK_PROFILES = [
     education: 'BFA',
     height: '5\' 11"',
     bio: 'Creative mind with a love for arts and culture. Seeking a partner who is easy-going and loves to explore.',
-    image: '/man.jpg',
+    image: '/man.png',
   },
   {
     id: 'm6',
@@ -88,7 +88,7 @@ export const MOCK_PROFILES = [
     education: 'MBBS, MD',
     height: '5\' 10"',
     bio: 'Dedicated medical professional. Deeply value family ties. Hoping to find a compassionate partner.',
-    image: '/man.jpg',
+    image: '/man.png',
   },
 
   // ---------------- FEMALE PROFILES ----------------
@@ -102,7 +102,7 @@ export const MOCK_PROFILES = [
     education: 'MBA',
     height: '5\' 5"',
     bio: 'Passionate about my career and deeply value family traditions. Love painting and weekend getaways.',
-    image: '/woman.jpg',
+    image: '/woman.png',
   },
   {
     id: 'f2',
@@ -114,7 +114,7 @@ export const MOCK_PROFILES = [
     education: 'MHRM',
     height: '5\' 4"',
     bio: 'A blend of modern thoughts and traditional values. Looking for a friend and a true partner.',
-    image: '/woman.jpg',
+    image: '/woman.png',
   },
   {
     id: 'f3',
@@ -126,7 +126,7 @@ export const MOCK_PROFILES = [
     education: 'B.Ed, M.A.',
     height: '5\' 3"',
     bio: 'Simple, loving, and family-oriented. Looking for a partner who values mutual respect and happiness.',
-    image: '/woman.jpg',
+    image: '/woman.png',
   },
   {
     id: 'f4',
@@ -138,7 +138,7 @@ export const MOCK_PROFILES = [
     education: 'M.Sc Statistics',
     height: '5\' 6"',
     bio: 'Independent and optimistic. I enjoy hiking and curling up with a good book. Seeking an ambitious and caring partner.',
-    image: '/woman.jpg',
+    image: '/woman.png',
   },
   {
     id: 'f5',
@@ -150,7 +150,7 @@ export const MOCK_PROFILES = [
     education: 'B.A. English Literature',
     height: '5\' 2"',
     bio: 'Creative, empathetic, and cheerful. Love exploring history and literature. Seeking a kind-hearted man.',
-    image: '/woman.jpg',
+    image: '/woman.png',
   },
   {
     id: 'f6',
@@ -162,6 +162,6 @@ export const MOCK_PROFILES = [
     education: 'B.Tech',
     height: '5\' 7"',
     bio: 'Structured in work, spontaneous in life. Looking for an equal partnership built on trust.',
-    image: '/woman.jpg',
+    image: '/woman.png',
   },
 ];
