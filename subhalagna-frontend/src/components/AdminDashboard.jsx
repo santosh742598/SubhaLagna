@@ -1671,6 +1671,11 @@ const AdminDashboard = () => {
                     <h4 className="text-xl font-serif font-bold text-gray-800">
                       {healthData?.server.memory.usage}% Used
                     </h4>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">
+                      {healthData
+                        ? `${((healthData.server.memory.total - healthData.server.memory.free) / 1024 / 1024 / 1024).toFixed(2)} GB / ${(healthData.server.memory.total / 1024 / 1024 / 1024).toFixed(2)} GB`
+                        : '...'}
+                    </p>
                     <div className="w-24 h-1 bg-gray-100 rounded-full mt-2 overflow-hidden">
                       <div
                         className="h-full bg-indigo-500 transition-all duration-1000"
