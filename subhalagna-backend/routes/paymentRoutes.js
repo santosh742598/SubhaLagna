@@ -1,9 +1,9 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.5 — Payment Routes
+ * @file SubhaLagna v3.1.6 — Payment Routes
  * @description   Endpoints for subscription management and payments.
- * @version      3.1.5
+ * @version      3.1.6
  * @author        SubhaLagna Team
  */
 

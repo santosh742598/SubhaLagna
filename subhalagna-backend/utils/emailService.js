@@ -1,15 +1,19 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.5 — Email Service
+ * @file SubhaLagna v3.1.6 — Email Service
  * @description   Nodemailer-based email service with pre-built templates for:
  *                - Email verification (OTP)
  *                - Password reset link
  *                - New interest received notification
  *                - Payment Success / Membership activation [v2.4.0]
  *                Gracefully degrades (logs to console) if SMTP is not configured.
+ *               - v3.1.5 changes:
+ *                 - Integrated dynamic branding (appName, brandPrimary, brandSecondary) from environment variables.
+ *                 - Fixed SyntaxError in buildEmailHTML template.
+ *                 - Added ESLint overrides for intentional development console logging.
  * @author        SubhaLagna Team
- * @version      3.1.5
+ * @version      3.1.6
  */
 
 const nodemailer = require('nodemailer');
@@ -47,6 +51,7 @@ const getTransporter = () => {
     });
   } else {
     // Development: log emails to console instead of sending
+    /* eslint-disable no-console */
     console.warn('⚠️  Email SMTP not configured. Emails will be logged to console only.');
     transporter = {
       sendMail: async (options) => {
@@ -57,6 +62,7 @@ const getTransporter = () => {
         return { messageId: 'dev-mode' };
       },
     };
+    /* eslint-enable no-console */
   }
 
   return transporter;
@@ -95,7 +101,6 @@ const buildEmailHTML = (title, body) => `
   </div>
 </body>
 </html>`;
-};
 
 // ── Email Senders ─────────────────────────────────────────────────────────────
 
