@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.4 — Profile Card
+ * @file        SubhaLagna v3.2.5 — Profile Card
  * @description   Brief overview card for the search results grid.
  *                v2.0.0 changes:
  *                  - Integration with InterestButton for quick interactions
@@ -9,7 +9,7 @@
  *                  - Guna Milan (Traditional Match) badge overlay
  *                  - Pulse animation on high-compatibility cards
  * @author        SubhaLagna Team
- * @version      3.2.4
+ * @version      3.2.5
  */
 
 import React from 'react';
@@ -100,7 +100,7 @@ const ProfileCard = ({ profile, index }) => {
         </div>
 
         {/* Name & Basic Info Overlay */}
-        <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+        <div className="absolute inset-x-0 bottom-0 p-6 bg-linear-to-t from-black/80 via-black/40 to-transparent">
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-serif font-bold text-white drop-shadow-md">
               {profile.name}, <span className="text-pink-300">{age}</span>
@@ -171,7 +171,7 @@ const ProfileCard = ({ profile, index }) => {
       </div>
 
       {/* Premium Decorative Line */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-pink-400/20 to-transparent absolute bottom-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="h-1.5 w-full bg-linear-to-r from-transparent via-pink-400/20 to-transparent absolute bottom-0 opacity-0 group-hover:opacity-100 transition-opacity" />
     </div>
   );
 };

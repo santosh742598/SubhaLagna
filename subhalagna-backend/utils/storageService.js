@@ -1,14 +1,14 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.2.4 — Unified Storage Service
+ * @file SubhaLagna v3.2.5 — Unified Storage Service
  * @description   Abstracts file storage logic between Local Disk and AWS S3.
  *                Enables seamless cloud migration via .env toggle.
  *                v2.2.0 changes:
  *                  - Initial implementation with lazy-loaded AWS SDK
  *                  - Support for local filesystem fallback
  * @author        SubhaLagna Team
- * @version      3.2.4
+ * @version      3.2.5
  */
 
 const fs = require('fs');

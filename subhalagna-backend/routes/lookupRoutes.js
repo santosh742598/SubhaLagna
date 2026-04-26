@@ -1,10 +1,10 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.2.4 — MasterData Routes
+ * @file SubhaLagna v3.2.5 — MasterData Routes
  * @description   Public endpoints for fetching dynamic dropdown options.
  * @author        SubhaLagna Team
- * @version      3.2.4
+ * @version      3.2.5
  */
 
 

@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.4 — Interactive Landing Page
+ * @file        SubhaLagna v3.2.5 — Interactive Landing Page
  * @description Transitioned to session-aware UI.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0 with automated coding standards.
@@ -7,7 +7,7 @@
  *                - Standardized Prettier formatting and Tailwind class sorting.
  *                - Verified responsive layouts across mobile/desktop views.
  * @author        SubhaLagna Team
- * @version      3.2.4
+ * @version      3.2.5
  */
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -118,7 +118,7 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-400 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-rose-300/50 transition-all duration-300 group-hover:scale-110">
+          <div className="w-10 h-10 bg-linear-to-br from-rose-500 to-pink-400 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-rose-300/50 transition-all duration-300 group-hover:scale-110">
             <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
@@ -161,7 +161,7 @@ const Header = () => {
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-6 py-2.5 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-black hover:to-black text-white font-semibold rounded-xl shadow-lg transition-all duration-300"
+                className="px-6 py-2.5 bg-linear-to-r from-slate-800 to-slate-900 hover:from-black hover:to-black text-white font-semibold rounded-xl shadow-lg transition-all duration-300"
               >
                 Logout
               </button>
@@ -178,7 +178,7 @@ const Header = () => {
               </Link>
               <Link
                 to="/signup"
-                className="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-0.5 transition-all duration-300"
+                className="px-6 py-2.5 bg-linear-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-0.5 transition-all duration-300"
               >
                 Register Free
               </Link>
@@ -284,12 +284,12 @@ const HeroSection = () => {
         <img
           src={heroImage}
           alt="Indian wedding celebration"
-          className={`w-full h-full object-cover transition-opacity duration-[2000ms] ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-full h-full object-cover transition-opacity duration-2000 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setImgLoaded(true)}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-r from-rose-900/30 via-transparent to-pink-900/20" />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-black/70" />
+        <div className="absolute inset-0 bg-linear-to-r from-rose-900/30 via-transparent to-pink-900/20" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-white to-transparent" />
       </div>
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -323,7 +323,7 @@ const HeroSection = () => {
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-6 leading-[1.1] tracking-tight">
           Find Your{' '}
           <span className="relative inline-block">
-            <span className="relative z-10 bg-gradient-to-r from-rose-300 via-pink-400 to-pink-300 bg-clip-text text-transparent">
+            <span className="relative z-10 bg-linear-to-r from-rose-300 via-pink-400 to-pink-300 bg-clip-text text-transparent">
               Forever
             </span>
             <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
@@ -355,7 +355,7 @@ const HeroSection = () => {
           {token ? (
             <Link
               to="/matches"
-              className="group px-10 py-5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+              className="group px-10 py-5 bg-linear-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
             >
               Go to Dashboard
               <svg
@@ -376,7 +376,7 @@ const HeroSection = () => {
             <>
               <Link
                 to="/signup"
-                className="group px-10 py-5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                className="group px-10 py-5 bg-linear-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 Begin Your Journey
                 <svg
@@ -417,7 +417,7 @@ const StatsSection = () => {
   ];
 
   return (
-    <section className="relative py-10 bg-gradient-to-r from-rose-50 via-pink-50 to-rose-50 border-y border-rose-100/60 overflow-hidden">
+    <section className="relative py-10 bg-linear-to-r from-rose-50 via-pink-50 to-rose-50 border-y border-rose-100/60 overflow-hidden">
       <div className="absolute inset-0 opacity-30">
         <div
           className="absolute inset-0"
@@ -520,7 +520,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section id="about" className="py-24 bg-gradient-to-b from-white to-rose-50/30">
+    <section id="about" className="py-24 bg-linear-to-b from-white to-rose-50/30">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
           <span className="inline-block px-4 py-1.5 bg-rose-100 text-rose-600 rounded-full text-sm font-semibold mb-4 tracking-wide">
@@ -528,7 +528,7 @@ const HowItWorks = () => {
           </span>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-gray-800 mb-6">
             Your Journey to{' '}
-            <span className="bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
               Happily Ever After
             </span>
           </h2>
@@ -547,7 +547,7 @@ const HowItWorks = () => {
                 {step.num}
               </div>
               <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-rose-500 to-pink-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-rose-500/20 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 bg-linear-to-br from-rose-500 to-pink-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-rose-500/20 group-hover:scale-110 transition-transform duration-300">
                   {step.icon}
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-3">{step.title}</h3>
@@ -568,6 +568,7 @@ const HowItWorks = () => {
 
 // ─── Success Stories ─────────────────────────────────────────────────────────
 const SuccessStories = () => {
+  const { settings } = useContext(AuthContext);
   const stories = [
     {
       couple: 'Rahul & Priya',
@@ -608,7 +609,7 @@ const SuccessStories = () => {
   return (
     <section
       id="success-stories"
-      className="py-24 bg-gradient-to-b from-rose-50/30 to-white overflow-hidden"
+      className="py-24 bg-linear-to-b from-rose-50/30 to-white overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
@@ -617,7 +618,7 @@ const SuccessStories = () => {
           </span>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-gray-800 mb-6">
             Matches Made in{' '}
-            <span className="bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
               Heaven
             </span>
           </h2>
@@ -633,7 +634,7 @@ const SuccessStories = () => {
               style={{ transform: `translateX(-${current * 100}%)` }}
             >
               {stories.map((story, i) => (
-                <div key={i} className="w-full flex-shrink-0">
+                <div key={i} className="w-full shrink-0">
                   <div className="bg-white rounded-3xl shadow-xl shadow-rose-100/50 overflow-hidden border border-rose-50">
                     <div className="grid md:grid-cols-2">
                       <div className="relative h-72 md:h-96">
@@ -642,7 +643,7 @@ const SuccessStories = () => {
                           alt={story.couple}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent md:bg-gradient-to-r md:from-transparent md:to-black/10" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent md:bg-linear-to-r md:from-transparent md:to-black/10" />
                         <div className="absolute bottom-4 left-4 md:hidden">
                           <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-semibold text-rose-600">
                             {story.couple}
@@ -651,7 +652,7 @@ const SuccessStories = () => {
                       </div>
                       <div className="p-8 md:p-12 flex flex-col justify-center">
                         <svg
-                          className="w-10 h-10 text-rose-200 mb-6 flex-shrink-0"
+                          className="w-10 h-10 text-rose-200 mb-6 shrink-0"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
@@ -715,7 +716,6 @@ const SuccessStories = () => {
 
 // ─── Marriage Experience Section ──────────────────────────────────────────────
 const MarriageExperience = () => {
-  const { settings } = useContext(AuthContext);
   const experiences = [
     {
       title: 'A Sacred Bond',
@@ -738,7 +738,7 @@ const MarriageExperience = () => {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white to-rose-50/50">
+    <section className="py-24 bg-linear-to-b from-white to-rose-50/50">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
           <span className="inline-block px-4 py-1.5 bg-rose-100 text-rose-600 rounded-full text-sm font-semibold mb-4 tracking-wide">
@@ -746,7 +746,7 @@ const MarriageExperience = () => {
           </span>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-gray-800 mb-6">
             The Experience of{' '}
-            <span className="bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
               Marriage
             </span>
           </h2>
@@ -764,19 +764,19 @@ const MarriageExperience = () => {
               <div className="w-full md:w-1/2">
                 <div className="relative group">
                   <div
-                    className={`absolute -inset-4 bg-gradient-to-r ${i === 0 ? 'from-rose-400 to-pink-400' : i === 1 ? 'from-pink-400 to-rose-400' : 'from-rose-500 to-pink-400'} rounded-3xl opacity-20 group-hover:opacity-30 blur-xl transition-opacity duration-500`}
+                    className={`absolute -inset-4 bg-linear-to-r ${i === 0 ? 'from-rose-400 to-pink-400' : i === 1 ? 'from-pink-400 to-rose-400' : 'from-rose-500 to-pink-400'} rounded-3xl opacity-20 group-hover:opacity-30 blur-xl transition-opacity duration-500`}
                   />
                   <img
                     src={exp.image}
                     alt={exp.title}
                     className="relative w-full h-72 sm:h-80 md:h-96 object-cover rounded-3xl shadow-2xl group-hover:scale-[1.02] transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-black/20 to-transparent" />
+                  <div className="absolute inset-0 rounded-3xl bg-linear-to-t from-black/20 to-transparent" />
                 </div>
               </div>
               <div className="w-full md:w-1/2">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-1 bg-gradient-to-r from-rose-500 to-pink-400 rounded-full" />
+                  <div className="w-12 h-1 bg-linear-to-r from-rose-500 to-pink-400 rounded-full" />
                   <span className="text-rose-400 font-medium text-sm tracking-wider uppercase">
                     Chapter {String(i + 1).padStart(2, '0')}
                   </span>
@@ -961,7 +961,7 @@ const CTASection = () => {
   return (
     <section className="py-20 bg-white">
       <div className="max-w-5xl mx-auto px-6">
-        <div className="relative bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100/80 rounded-[2.5rem] px-8 py-16 md:px-16 md:py-20 shadow-xl shadow-rose-100/40 border border-rose-100/60 overflow-hidden">
+        <div className="relative bg-linear-to-br from-rose-50 via-pink-50 to-rose-100/80 rounded-[2.5rem] px-8 py-16 md:px-16 md:py-20 shadow-xl shadow-rose-100/40 border border-rose-100/60 overflow-hidden">
           {/* Floating Hearts */}
           {hearts.map((heart, i) => (
             <FloatingHeart
@@ -988,7 +988,7 @@ const CTASection = () => {
 
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-gray-800 mb-6 leading-tight">
               Your Love Story <br />
-              <span className="bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent italic">
+              <span className="bg-linear-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent italic">
                 Awaits
               </span>
             </h2>
@@ -1002,7 +1002,7 @@ const CTASection = () => {
               {token ? (
                 <Link
                   to="/matches"
-                  className="group px-10 py-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                  className="group px-10 py-4 bg-linear-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   Go to Dashboard
                   <svg
@@ -1023,7 +1023,7 @@ const CTASection = () => {
                 <>
                   <Link
                     to="/signup"
-                    className="group px-10 py-4 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                    className="group px-10 py-4 bg-linear-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl text-lg shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
                   >
                     Register Free Today
                     <svg
@@ -1065,7 +1065,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-400 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-linear-to-br from-rose-500 to-pink-400 rounded-xl flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                 </svg>
@@ -1150,7 +1150,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-start gap-3">
               <svg
-                className="w-5 h-5 text-rose-400 mt-0.5 flex-shrink-0"
+                className="w-5 h-5 text-rose-400 mt-0.5 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1172,7 +1172,7 @@ const Footer = () => {
             </div>
             <div className="flex items-center gap-3">
               <svg
-                className="w-5 h-5 text-rose-400 flex-shrink-0"
+                className="w-5 h-5 text-rose-400 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1188,7 +1188,7 @@ const Footer = () => {
             </div>
             <div className="flex items-center gap-3">
               <svg
-                className="w-5 h-5 text-rose-400 flex-shrink-0"
+                className="w-5 h-5 text-rose-400 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1212,7 +1212,7 @@ const Footer = () => {
                 placeholder="Enter email"
                 className="flex-1 min-w-0 px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-l-xl text-sm focus:outline-none focus:border-rose-500 text-white placeholder-gray-500"
               />
-              <button className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-r-xl transition-colors flex-shrink-0">
+              <button className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-r-xl transition-colors shrink-0">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"

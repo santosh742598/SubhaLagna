@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.2.4 — Notification Service
+ * @file        SubhaLagna v3.2.5 — Notification Service
  * @description REST API calls for the in-app notifications system.
  * @author       SubhaLagna Team
- * @version      3.2.4
+ * @version      3.2.5
  */
 
 import api, { getErrorMessage } from './api';

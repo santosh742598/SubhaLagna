@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
  
+## [3.2.5] - 2026-04-26
+### Changed
+- Migrated all legacy Tailwind CSS gradient classes to modern v4 syntax (`bg-linear-to-*`).
+- Updated `flex-shrink` utilities to concise `shrink-*` shorthand.
+- Simplified arbitrary duration classes (e.g., `duration-[2000ms]` to `duration-2000`).
+
+### Fixed
+- Resolved `ReferenceError: settings is not defined` in `Home.jsx` > `SuccessStories`.
+- Removed unused `settings` context extraction from `MarriageExperience` component.
+
 ## [3.2.4] - 2026-04-26
 ### Fixed
 - Fixed missing JSDoc `@returns` and `@param` issues in `App.jsx`.

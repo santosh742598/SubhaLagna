@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.4 — User Dashboard
+ * @file        SubhaLagna v3.2.5 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
  *                - [v3.0.0 changes]
@@ -8,7 +8,7 @@
  *                - Implemented strict JSDoc validation and standard headers.
  *                - Global UI consistency via unified Prettier tokens.
  * @author        SubhaLagna Team
- * @version      3.2.4
+ * @version      3.2.5
  */
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -526,7 +526,7 @@ const ProfileDashboard = () => {
 
             return (
               <div
-                className={`bg-gradient-to-br ${s.bg} rounded-[2.5rem] p-8 text-white shadow-xl ${s.glow} relative overflow-hidden group border ${s.border}`}
+                className={`bg-linear-to-br ${s.bg} rounded-[2.5rem] p-8 text-white shadow-xl ${s.glow} relative overflow-hidden group border ${s.border}`}
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
 
@@ -1422,7 +1422,7 @@ const ProfileDashboard = () => {
                     key={interest._id}
                     className="bg-white p-5 rounded-3xl border border-rose-100 shadow-sm flex items-center gap-6 hover:shadow-md transition-all group animate-fade-in"
                   >
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
+                    <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0">
                       <img
                         src={interest.sender.profile?.profilePhoto || '/placeholder-profile.png'}
                         className="w-full h-full object-cover"

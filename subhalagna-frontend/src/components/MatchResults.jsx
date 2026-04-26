@@ -1,12 +1,12 @@
 /**
- * @file        SubhaLagna v3.2.4 — Match Results
+ * @file        SubhaLagna v3.2.5 — Match Results
  * @description   Displays compatible profiles based on user's preferences.
  *                v2.0.0 changes:
  *                  - Centralized data fetching via profileService
  *                  - Server-side pagination and sorting
  *                  - Unified Header component
  * @author        SubhaLagna Team
- * @version      3.2.4
+ * @version      3.2.5
  */
 
 import React, { useState, useEffect, useContext, useCallback } from 'react';
@@ -178,7 +178,7 @@ const MatchResults = () => {
       <Header />
 
       {/* ── Hero Banner ── */}
-      <div className="bg-gradient-to-br from-pink-500 to-rose-600 text-white relative overflow-hidden">
+      <div className="bg-linear-to-br from-pink-500 to-rose-600 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_2px_2px,white_1px,transparent_0)] bg-[size:24px_24px]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
@@ -448,7 +448,7 @@ const MatchResults = () => {
 
             {/* Personalized Banner */}
             {hasPreferences && (
-              <div className="mb-6 px-6 py-3 bg-gradient-to-r from-rose-500/10 to-pink-500/5 rounded-2xl border border-rose-100 flex items-center justify-between">
+              <div className="mb-6 px-6 py-3 bg-linear-to-r from-rose-500/10 to-pink-500/5 rounded-2xl border border-rose-100 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-rose-500 text-white rounded-xl flex items-center justify-center animate-pulse">
                     <Sparkles className="w-5 h-5" />

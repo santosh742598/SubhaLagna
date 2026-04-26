@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.2.4 — Reset Password
+ * @file        SubhaLagna v3.2.5 — Reset Password
  * @description   Secure interface for setting a new password via recovery token.
  * - v3.0.4 changes:
  *   - Initial implementation with premium validation UI.
  * @author        SubhaLagna Team
- * @version      3.2.4
+ * @version      3.2.5
  */
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
@@ -37,7 +37,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center px-4 bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100/80">
+    <div className="fixed inset-0 flex flex-col items-center justify-center px-4 bg-linear-to-br from-rose-50 via-pink-50 to-rose-100/80">
       <div className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-xl border border-rose-100/60 animate-fade-in">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-4">

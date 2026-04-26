@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.4 — Profile Detail Page
+ * @file        SubhaLagna v3.2.5 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
  *
@@ -8,7 +8,7 @@
  *
  *                v2.1.0 changes:
 ...
- * @version      3.2.4
+ * @version      3.2.5
  * @author        SubhaLagna Team
  */
 
@@ -294,7 +294,7 @@ const ProfileDetail = () => {
 
                 {isBlurred && <PrivacyShield />}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 
                 {/* Visual Badges */}
                 <div className="absolute bottom-6 left-6 text-white z-10 w-full pr-12">
@@ -355,7 +355,7 @@ const ProfileDetail = () => {
                       <button
                         key={i}
                         onClick={() => !isBlurred && setActivePhoto(img)}
-                        className={`w-16 h-16 rounded-2xl flex-shrink-0 overflow-hidden border-2 transition-all ${activePhoto === img ? 'border-rose-500 scale-105 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'} ${isBlurred ? 'blur-md grayscale cursor-not-allowed' : ''}`}
+                        className={`w-16 h-16 rounded-2xl shrink-0 overflow-hidden border-2 transition-all ${activePhoto === img ? 'border-rose-500 scale-105 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'} ${isBlurred ? 'blur-md grayscale cursor-not-allowed' : ''}`}
                       >
                         <img src={img} className="w-full h-full object-cover" alt="" />
                       </button>
@@ -481,7 +481,7 @@ const ProfileDetail = () => {
                   <button
                     onClick={handleUnlock}
                     disabled={unlocking}
-                    className="px-10 py-4 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-rose-200 hover:scale-[1.02] transition-all disabled:opacity-50"
+                    className="px-10 py-4 bg-linear-to-r from-rose-600 to-pink-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-rose-200 hover:scale-[1.02] transition-all disabled:opacity-50"
                   >
                     {unlocking
                       ? 'Unlocking...'
