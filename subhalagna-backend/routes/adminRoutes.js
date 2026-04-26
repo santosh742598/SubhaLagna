@@ -45,6 +45,7 @@ const {
   updateSystemSettings,
   getAnalyticsData,
   getSystemHealth,
+  clearSystemCollection,
 } = require('../controllers/adminController');
 
 const { protect, adminOnly } = require('../middleware/authMiddleware');
