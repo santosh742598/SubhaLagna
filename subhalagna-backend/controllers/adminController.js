@@ -1065,12 +1065,12 @@ const getSystemHealth = async (req, res, next) => {
     let smtpStatus = 'unknown';
     try {
       const transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
-        secure: process.env.EMAIL_PORT === '465',
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT || 587),
+        secure: (process.env.SMTP_PORT || 587) == 465,
         auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
         },
       });
       await transporter.verify();
