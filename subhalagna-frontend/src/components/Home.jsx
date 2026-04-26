@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.0 — Interactive Landing Page
+ * @file        SubhaLagna v3.2.1 — Interactive Landing Page
  * @description Transitioned to session-aware UI.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0 with automated coding standards.
@@ -7,7 +7,7 @@
  *                - Standardized Prettier formatting and Tailwind class sorting.
  *                - Verified responsive layouts across mobile/desktop views.
  * @author        SubhaLagna Team
- * @version      3.2.0
+ * @version      3.2.1
  */
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -440,6 +440,7 @@ const StatsSection = () => {
 
 // ─── About / How It Works ────────────────────────────────────────────────────
 const HowItWorks = () => {
+  const { settings } = useContext(AuthContext);
   const steps = [
     {
       num: '01',
@@ -714,6 +715,7 @@ const SuccessStories = () => {
 
 // ─── Marriage Experience Section ──────────────────────────────────────────────
 const MarriageExperience = () => {
+  const { settings } = useContext(AuthContext);
   const experiences = [
     {
       title: 'A Sacred Bond',
@@ -1055,24 +1057,27 @@ const CTASection = () => {
 };
 
 // ─── Footer ──────────────────────────────────────────────────────────────────
-const Footer = () => (
-  <footer id="contact" className="bg-gray-900 text-gray-400">
-    <div className="max-w-7xl mx-auto px-6 py-16">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-        <div className="lg:col-span-1">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-400 rounded-xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
+const Footer = () => {
+  const { settings } = useContext(AuthContext);
+  return (
+    <footer id="contact" className="bg-gray-900 text-gray-400">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          <div className="lg:col-span-1">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-400 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+              </div>
+              <span className="text-2xl font-serif font-bold text-white">
+                {settings?.brandPrimary || 'Subha'}
+                <span className="text-rose-400">{settings?.brandSecondary || 'Lagna'}</span>
+              </span>
             </div>
-            <span className="text-2xl font-serif font-bold text-white">
-              Subha<span className="text-rose-400">Lagna</span>
-            </span>
-          </div>
-          <p className="text-gray-500 leading-relaxed mb-6">
-            The most trusted matrimonial platform. Building beautiful families since 2020.
-          </p>
+            <p className="text-gray-500 leading-relaxed mb-6">
+              The most trusted matrimonial platform. Building beautiful families since 2020.
+            </p>
           <div className="flex gap-4">
             {['facebook', 'twitter', 'instagram', 'youtube'].map((social) => (
               <a
@@ -1242,8 +1247,9 @@ const Footer = () => (
         </div>
       </div>
     </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 // ─── Main Home Component ─────────────────────────────────────────────────────
 const Home = () => {

@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.2.0 — Admin Controller
+ * @file        SubhaLagna v3.2.1 — Admin Controller
  * @description   Administrative tools for platform management:
  *                - User and Profile moderation (suspend, delete).
  *                - System-wide statistics and matchmaking analytics.
@@ -15,7 +15,7 @@
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.2.0
+ * @version      3.2.1
  */
 
 const User = require('../models/User');
