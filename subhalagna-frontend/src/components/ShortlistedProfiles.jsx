@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.3.1 — Shortlisted Profiles Page
+ * @file        SubhaLagna v3.3.2 — Shortlisted Profiles Page
  * @description   Displays a collection of profiles saved by the user.
  * @author        SubhaLagna Team
- * @version      3.3.1
+ * @version      3.3.2
  */
 
 import React, { useState, useEffect, useContext } from 'react';

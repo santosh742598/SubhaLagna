@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.3.1 — React Main Entry
+ * @file        SubhaLagna v3.3.2 — React Main Entry
  * @description   Initializes the React application and mounts it to the DOM.
  * @author        SubhaLagna Team
- * @version      3.3.1
+ * @version      3.3.2
  */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

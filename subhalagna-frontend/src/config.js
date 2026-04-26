@@ -1,11 +1,11 @@
 /**
- * @file        SubhaLagna v3.3.1 — Global Frontend Configuration
+ * @file        SubhaLagna v3.3.2 — Global Frontend Configuration
  * @description Centralizes all environment-dependent configuration values.
  *               - v3.0.5 changes:
  *                 - Implemented Smart Config for auto-detection of bahaghara.in vs localhost.
  *                 - Forced HTTPS protocols for production domain stability.
  * @author SubhaLagna Team
- * @version      3.3.1
+ * @version      3.3.2
  */
 
 // ── CORE CONFIGURATION (Change these for different websites) ────────────────

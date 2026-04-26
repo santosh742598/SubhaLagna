@@ -1,7 +1,10 @@
 /**
- * @file        SubhaLagna v3.3.1 — Profile Detail Page
+ * @file        SubhaLagna v3.3.2 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
+ *                - v3.3.2 changes:
+ *                  - Resolved Temporal Dead Zone (TDZ) ReferenceError by fixing hook declaration order.
+ *                - v3.3.0 changes:
  *                  - Refined Guna Milan Breakdown with detailed factor descriptions and tooltips.
  *                  - Implemented Dynamic SEO using React Helmet for better shareability.
  *                  - Integrated circular compatibility gauge.
@@ -13,7 +16,7 @@
  *
  *                v2.1.0 changes:
 ...
- * @version      3.3.1
+ * @version      3.3.2
  * @author        SubhaLagna Team
  */
 
@@ -211,10 +214,6 @@ const ProfileDetail = () => {
   const [isShortlisted, setIsShortlisted] = useState(false);
   const [shortlisting, setShortlisting] = useState(false);
 
-  useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
-
   const loadProfile = useCallback(async () => {
     try {
       setLoading(true);
@@ -232,6 +231,10 @@ const ProfileDetail = () => {
       setLoading(false);
     }
   }, [id, currentUser]);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   const handleUnlock = async () => {
     if (!currentUser?.isPremium) {
