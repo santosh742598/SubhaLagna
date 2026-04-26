@@ -1651,7 +1651,11 @@ const AdminDashboard = () => {
                       {healthData?.database.status || 'Checking...'}
                     </h4>
                     <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">
-                      {healthData?.database.dbName}
+                      {healthData?.database.dbName} (
+                      {healthData
+                        ? (healthData.database.size / 1024 / 1024).toFixed(1)
+                        : '0'}{' '}
+                      MB)
                     </p>
                   </div>
                 </div>

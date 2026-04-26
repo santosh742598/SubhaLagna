@@ -1053,12 +1053,13 @@ const getSystemHealth = async (req, res, next) => {
     const os = require('os');
     const nodemailer = require('nodemailer');
 
-    const [logs, settings, logCount, notifCount, msgCount] = await Promise.all([
+    const [logs, settings, logCount, notifCount, msgCount, dbStats] = await Promise.all([
       SystemLog.find({}).sort({ createdAt: -1 }).limit(50).lean(),
       SystemSetting.findOne({}),
       SystemLog.countDocuments({}),
       Notification.countDocuments({}),
       Message.countDocuments({}),
+      mongoose.connection.db.stats(),
     ]);
 
     // Service Connectivity Checks
@@ -1087,6 +1088,7 @@ const getSystemHealth = async (req, res, next) => {
         status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
         readyState: mongoose.connection.readyState,
         dbName: mongoose.connection.name,
+        size: dbStats.storageSize, // Size in bytes
         counts: {
           logs: logCount,
           notifications: notifCount,
