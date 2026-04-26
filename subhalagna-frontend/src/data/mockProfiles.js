@@ -1,10 +1,10 @@
 // src/data/mockProfiles.js
 
 /**
- * @file        SubhaLagna v3.1.7 — Mock Profiles Data
+ * @file        SubhaLagna v3.1.8 — Mock Profiles Data
  * @description   Sample profile data used for demonstration and testing purposes.
  * @author        SubhaLagna Team
- * @version      3.1.7
+ * @version      3.1.8
  */
 export const CITIES = [
   'Bhubaneswar',

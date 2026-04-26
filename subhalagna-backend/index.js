@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.1.7 — Main Server Entry Point
+ * @file        SubhaLagna v3.1.8 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
  *                - [v3.0.4 changes]
@@ -12,7 +12,7 @@
  *                - Enhanced JSDoc documentation requirements.
  *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version      3.1.7
+ * @version      3.1.8
  *
  * @description Architecture:
  *  ┌──────────────────────────────────────────┐
@@ -32,6 +32,7 @@ const http = require('http');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const mongoose = require('mongoose');
 const { Server } = require('socket.io');
 
 const appName = process.env.APP_NAME || 'SubhaLagna';

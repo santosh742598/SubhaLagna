@@ -1,9 +1,9 @@
 /**
- * @file        SubhaLagna v3.1.7 — Razorpay & Bank Payment Integration Service
+ * @file        SubhaLagna v3.1.8 — Razorpay & Bank Payment Integration Service
  * @description Handles Razorpay orders, Bank Transfers, and dynamic plan fetching.
  * - v2.3.0 changes:
  *   - Implemented dynamic plan fetching from the database for checkout selection.
- * @version      3.1.7
+ * @version      3.1.8
  * @author       SubhaLagna Team
  */
 

@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.1.7 — Payment & Subscription Controller
+ * @file        SubhaLagna v3.1.8 — Payment & Subscription Controller
  * @description   Handles Razorpay orders, payment verification, and membership logic:
  *                - Integrated Razorpay order creation and signature verification.
  *                - Automated subscription activation and quota management.
@@ -12,7 +12,7 @@
  *                - Implemented strict JSDoc validation and security checkpoints.
  *                - Verified audit logging for manual bank transfers.
  * @author        SubhaLagna Team
- * @version      3.1.7
+ * @version      3.1.8
  */
 
 const Razorpay = require('razorpay');

@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.1.7 — Interactive Landing Page
+ * @file        SubhaLagna v3.1.8 — Interactive Landing Page
  * @description Transitioned to session-aware UI.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0 with automated coding standards.
@@ -7,7 +7,7 @@
  *                - Standardized Prettier formatting and Tailwind class sorting.
  *                - Verified responsive layouts across mobile/desktop views.
  * @author        SubhaLagna Team
- * @version      3.1.7
+ * @version      3.1.8
  */
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';

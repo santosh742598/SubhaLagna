@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.1.7 — Global Header
+ * @file        SubhaLagna v3.1.8 — Global Header
  * @description   Modern, responsive navigation bar with real-time notifications and chat triggers.
  *               - Restored original gender-based default avatar image (/man.png, /woman.png).
  *               - Integrated SystemStatus indicator for real-time infrastructure monitoring.
  * @author        SubhaLagna Team
- * @version      3.1.7
+ * @version      3.1.8
  */
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
