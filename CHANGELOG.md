@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.7] - 2026-04-26
+
+### Added (v3.3.7)
+
+- **🏢 Dynamic Office Address**: Transitioned the hardcoded office address in the footer to a database-driven administrative setting.
+- **⚙️ Address Management**: Added a new "Office Address" input field in the Admin Dashboard System Settings.
+
+
 ## [3.3.6] - 2026-04-26
 
 ### Fixed (v3.3.6)

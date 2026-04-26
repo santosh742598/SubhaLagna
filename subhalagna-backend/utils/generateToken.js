@@ -1,12 +1,12 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.3.6 — JWT Token Utilities
+ * @file SubhaLagna v3.3.7 — JWT Token Utilities
  * @description   Centralized functions for generating short-lived access tokens
  *                and long-lived refresh tokens. Tokens are verified against
  *                their respective secrets for added security.
  * @author        SubhaLagna Team
- * @version      3.3.6
+ * @version      3.3.7
  */
 
 const jwt = require('jsonwebtoken');

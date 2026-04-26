@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.6 — Admin Dashboard
+ * @file        SubhaLagna v3.3.7 — Admin Dashboard
  *                 - Stabilized fetch logic with useCallback/useEffect hooks
  *                 - Resolved infinite render loops
  *                 - Modernized Tailwind v4 shorthand syntax
@@ -10,7 +10,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.3.6
+ * @version      3.3.7
  * @author        SubhaLagna Team
  */
 
@@ -1513,6 +1513,20 @@ const AdminDashboard = () => {
                         value={systemSettings.contactPhone}
                         onChange={(e) =>
                           setSystemSettings({ ...systemSettings, contactPhone: e.target.value })
+                        }
+                        className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                        Office Address
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={systemSettings.officeAddress}
+                        onChange={(e) =>
+                          setSystemSettings({ ...systemSettings, officeAddress: e.target.value })
                         }
                         className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
                       />

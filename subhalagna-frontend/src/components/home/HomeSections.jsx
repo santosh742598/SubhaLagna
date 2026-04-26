@@ -1,12 +1,12 @@
 /**  
- * @file        SubhaLagna v3.3.6 — Home Sections Components  
+ * @file        SubhaLagna v3.3.7 — Home Sections Components  
  * @description   Extracted section components for the landing page.  
  *                - v3.3.4 changes:
  *                  - Connected footer support contact details to dynamic system settings.
  *                - v3.3.3 changes:
  *                  - Initial extraction from Home.jsx.  
  * @author        SubhaLagna Team  
- * @version      3.3.6  
+ * @version      3.3.7  
  */  
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
@@ -1000,7 +1000,7 @@ const Footer = () => {
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                <span>Saheed Nagar, Bhubaneswar 751007, Odisha</span>
+                <span>{settings?.officeAddress || 'Saheed Nagar, Bhubaneswar 751007, Odisha'}</span>
               </div>
               <div className="flex items-center gap-3">
                 <svg

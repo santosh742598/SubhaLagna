@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.3.6 — SVG Icons Library
+ * @file        SubhaLagna v3.3.7 — SVG Icons Library
  * @description   Unified repository for all SVG icons used in the premium UI.
  * @author        SubhaLagna Team
- * @version      3.3.6
+ * @version      3.3.7
  */
 import React from 'react';
 

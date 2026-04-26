@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.6 — User Dashboard
+ * @file        SubhaLagna v3.3.7 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
  *                - v3.3.0 changes:
@@ -14,7 +14,7 @@
  *                - Implemented strict JSDoc validation and standard headers.
  *                - Global UI consistency via unified Prettier tokens.
  * @author        SubhaLagna Team
- * @version      3.3.6
+ * @version      3.3.7
  */
 
 import React, { useState, useContext, useEffect, useMemo, useCallback } from 'react';

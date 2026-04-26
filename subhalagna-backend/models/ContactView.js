@@ -1,14 +1,14 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.3.6 — Contact View Model
+ * @file        SubhaLagna v3.3.7 — Contact View Model
  * @description   Tracks which contacts a user has unlocked (premium feature).
  *                Replaces the unbounded `contactsViewed` array on the User model
  *                for better scalability with high-usage Platinum members.
  *                - v3.3.2 changes:
  *                  - Initial creation as part of scalability refactor (P2-13).
  * @author        SubhaLagna Team
- * @version      3.3.6
+ * @version      3.3.7
  */
 
 const mongoose = require('mongoose');

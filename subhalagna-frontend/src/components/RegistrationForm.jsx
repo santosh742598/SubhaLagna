@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.3.6 — Quick Registration Form
+ * @file        SubhaLagna v3.3.7 — Quick Registration Form
  * @description   Initial lead generation form for new guests to quickly find matches.
  * @author        SubhaLagna Team
- * @version      3.3.6
+ * @version      3.3.7
  */
 import React, { useState } from 'react';
 import { CITIES } from '../data/mockProfiles';

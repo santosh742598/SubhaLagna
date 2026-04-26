@@ -1,10 +1,10 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.3.6 — System Log Model
+ * @file        SubhaLagna v3.3.7 — System Log Model
  * @description Stores system events, errors, and audit logs for the Admin Health Center.
  * @author        SubhaLagna Team
- * @version      3.3.6
+ * @version      3.3.7
  */
 
 const mongoose = require('mongoose');

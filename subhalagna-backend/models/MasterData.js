@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.3.6 — MasterData Model
+ * @file SubhaLagna v3.3.7 — MasterData Model
  * @description   Stores unique, normalized values for common dropdown fields:
  *                - Caste
  *                - City/State
@@ -9,7 +9,7 @@
  *                - Mother Tongue
  *                Enables "Smart Learning" and deduplication logic.
  * @author        SubhaLagna Team
- * @version      3.3.6
+ * @version      3.3.7
  */
 
 const mongoose = require('mongoose');
