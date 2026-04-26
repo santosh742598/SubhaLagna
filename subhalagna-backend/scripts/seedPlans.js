@@ -1,16 +1,21 @@
-'use strict';
+"use strict";
+
+/* eslint-disable no-console */
 
 /**
- * @file SubhaLagna v3.3.3 — Membership Plan Seeder
+ * @file SubhaLagna v3.3.5 — Membership Plan Seeder
  * @description   Initializes the database with standard Gold and Platinum plans.
+ *                - v3.3.4 changes:
+ *                  - Fixed relative paths for remote server execution.
+ *                  - Standardized ESLint no-console overrides.
  * @author        SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  */
 
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const MembershipPlan = require('./models/MembershipPlan');
-const hardcodedPlans = require('./config/plans');
+const MembershipPlan = require('../models/MembershipPlan');
+const hardcodedPlans = require('../config/plans');
 
 dotenv.config();
 

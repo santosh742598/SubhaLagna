@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
 /**
- * @file SubhaLagna v3.3.3 — System Setting Model
+ * @file SubhaLagna v3.3.5 — System Setting Model
  * @description Stores global platform configuration (Branding, WhatsApp, etc.)
  *              editable via Admin Dashboard.
- * @version      3.3.3
+ * @version      3.3.5
  * @author SubhaLagna Team
  */
 
@@ -50,6 +50,10 @@ const systemSettingSchema = new mongoose.Schema(
     contactPhone: {
       type: String,
       default: '+91 1234567890',
+    },
+    isMaintenanceMode: {
+      type: Boolean,
+      default: false,
     },
   },
   {

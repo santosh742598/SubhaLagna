@@ -1,13 +1,16 @@
-'use strict';
+"use strict";
 
 /**
- * @file SubhaLagna v3.3.3 — Auth & Role Middleware
- * @description JWT-based route protection middleware. [v2.4.0]
+ * @file SubhaLagna v3.3.5 — Auth & Role Middleware
+ * @description JWT-based route protection and system maintenance logic.
+ *               - v3.3.5 changes:
+ *                 - Implemented checkMaintenance with role-based bypass.
  * @author SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  */
 
 const User = require('../models/User');
+const SystemSetting = require('../models/SystemSetting');
 const { verifyAccessToken } = require('../utils/generateToken');
 
 /**
@@ -77,4 +80,49 @@ const adminOnly = (req, res, next) => {
   next(error);
 };
 
-module.exports = { protect, adminOnly };
+/**
+ * Maintenance Check Middleware.
+ * Rejects non-admin users if maintenance mode is enabled.
+ * @param {import('express').Request}  req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const checkMaintenance = async (req, res, next) => {
+  try {
+    const settings = await SystemSetting.findOne({}).lean();
+
+    if (settings?.isMaintenanceMode) {
+      // 1. Allow Login and Status checks so admins can actually log in
+      const bypassRoutes = ['/api/users/login', '/api/users/me', '/api/admin/settings'];
+      if (bypassRoutes.some((route) => req.originalUrl.includes(route))) {
+        return next();
+      }
+
+      // 2. Allow if user is already logged in as Admin
+      // Note: We try to decode the token manually here if protect hasn't run yet
+      let isAdmin = false;
+      const authHeader = req.headers.authorization;
+      if (authHeader?.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.split(' ')[1];
+          const decoded = verifyAccessToken(token);
+          const user = await User.findById(decoded.id).select('role');
+          if (user?.role === 'admin') isAdmin = true;
+        } catch (e) {
+          /* Token invalid, continue to block */
+        }
+      }
+
+      if (!isAdmin) {
+        const error = new Error('The platform is currently under maintenance. Please try again later.');
+        error.statusCode = 503; // Service Unavailable
+        return next(error);
+      }
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { protect, adminOnly, checkMaintenance };

@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.5] - 2026-04-26
+
+### Added (v3.3.5)
+
+- **🛡️ Smart Maintenance Mode**: Implemented platform-wide maintenance toggle with "Admin Bypass" logic, allowing administrators to manage the site while it's offline for regular users.
+- **🏥 Admin Health Center**: Added a diagnostic dashboard with live server metrics (Uptime, Memory, DB Status) and a glassmorphism system log viewer.
+- **📋 Automated Error Logging**: Integrated database-backed system logs that automatically capture server-side crashes and stack traces for administrative review.
+- **🚧 Maintenance UX**: Created a premium, branded "Under Maintenance" screen for public-facing windows.
+
+### Changed (v3.3.5)
+
+- **🚀 Version Bump**: Universal synchronization to `v3.3.5`.
+- **🛠️ API Error Handling**: Updated response interceptors to automatically detect and handle HTTP 503 Maintenance redirects.
+
+
+## [3.3.4] - 2026-04-26
+
+### Added (v3.3.4)
+
+- **🛠️ Diagnostic Tools**: Added `check_db.js` script to verify database connectivity and collection status on the server.
+- **📞 Dynamic Support Contact**: Linked the public website footer to the Admin Dashboard settings, allowing real-time updates of support email and phone number without code changes.
+
+### Changed (v3.3.4)
+
+- **⚙️ Seeder Reliability**: Fixed relative paths in `seedPlans.js` to support cross-directory execution on remote servers.
+- **🛡️ ESLint Standardization**: Applied project-wide `no-console` overrides to maintenance and migration scripts.
+- **🚀 Version Bump**: Universal synchronization to `v3.3.4`.
+
 ## [3.3.3] - 2026-04-26
 
 ### Added (v3.3.3)

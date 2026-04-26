@@ -1,19 +1,10 @@
 /**
- * @file        SubhaLagna v3.3.3 — Main Application Router
- * @description   Entry point for all React routes. Wraps the application
- *                in required context providers (Auth → Notification → Chat)
- *                and configures all route guards.
- *                - [v3.0.5 changes]
- *                - Fixed circular redirect bug in OnboardRoute for email verification.
- *                - Registered Forgot Password and Reset Password routes.
- *                - Integrated GuestRoute guarding for recovery flows.
- *                - [v3.0.0 changes]
- *                - Upgraded to Version 3.0.0.
- *                - Implemented automated Class Sorting for Tailwind CSS.
- *                - Standardized ESLint & Prettier for premium code quality.
- *                - Enhanced JSDoc requirements for architectural integrity.
+ * @file        SubhaLagna v3.3.5 — Main Application Router
+ * @description   Entry point for all React routes.
+ *                - v3.3.5 changes:
+ *                  - Registered /maintenance route for platform downtime handling.
  * @author        SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  */
 
 import React, { useContext, Suspense } from 'react';
@@ -52,6 +43,7 @@ const Chat = React.lazy(() => import('./components/Chat'));
 const AdminDashboard = React.lazy(() => import('./components/AdminDashboard'));
 const VerifyEmail = React.lazy(() => import('./components/VerifyEmail'));
 const ShortlistedProfiles = React.lazy(() => import('./components/ShortlistedProfiles'));
+const Maintenance = React.lazy(() => import('./components/Maintenance'));
 
 /**
  * SuspenseFallback — Full-page loading spinner shown while lazy chunks load.
@@ -327,6 +319,9 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+
+                {/* ── Maintenance Page ────────────────────────────────── */}
+                <Route path="/maintenance" element={<Maintenance />} />
 
                 {/* ── Catch-all 404 ─────────────────────────────────────── */}
                 <Route path="*" element={<Navigate to="/" replace />} />

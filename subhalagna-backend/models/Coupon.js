@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
 /**
- * @file SubhaLagna v3.3.3 — Coupon Model
+ * @file SubhaLagna v3.3.5 — Coupon Model
  * @description   Schema for managing discount coupons.
  *                Supports percentage and fixed-amount discounts.
  * @author        SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  */
 
 const mongoose = require('mongoose');
@@ -55,7 +55,7 @@ const couponSchema = new mongoose.Schema(
 
 /**
  * Check if the coupon is currently valid.
- * @returns {boolean}
+ * @returns {boolean} True if the coupon is active, not expired, and below usage limit.
  */
 couponSchema.methods.isValid = function () {
   const now = new Date();

@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
 /**
- * @file        SubhaLagna v3.3.3 — Admin Controller
+ * @file        SubhaLagna v3.3.5 — Admin Controller
  * @description   Administrative tools for platform management:
  *                - v3.3.0 changes:
  *                  - Implemented getAnalyticsData for time-series growth tracking (30 days).
@@ -18,7 +18,7 @@
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  */
 
 const User = require('../models/User');
@@ -32,6 +32,7 @@ const Message = require('../models/Message');
 const Notification = require('../models/Notification');
 const Payment = require('../models/Payment');
 const SystemSetting = require('../models/SystemSetting');
+const SystemLog = require('../models/SystemLog');
 const { upgradeUserSubscription } = require('./paymentController');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 
@@ -1035,6 +1036,53 @@ const updateSystemSettings = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Get system health diagnostics and logs
+// @route   GET /api/admin/system/health
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Aggregates server diagnostics and recent error logs.
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const getSystemHealth = async (req, res, next) => {
+  try {
+    const mongoose = require('mongoose');
+    const os = require('os');
+
+    const [logs, settings] = await Promise.all([
+      SystemLog.find({}).sort({ createdAt: -1 }).limit(50).lean(),
+      SystemSetting.findOne({}),
+    ]);
+
+    const health = {
+      database: {
+        status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+        readyState: mongoose.connection.readyState,
+        dbName: mongoose.connection.name,
+      },
+      server: {
+        uptime: os.uptime(),
+        memory: {
+          free: os.freemem(),
+          total: os.totalmem(),
+          usage: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100),
+        },
+        platform: os.platform(),
+        cpuCount: os.cpus().length,
+      },
+      maintenanceMode: settings?.isMaintenanceMode || false,
+      recentLogs: logs,
+    };
+
+    return sendSuccess(res, health, 'System health retrieved');
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllUsers,
@@ -1058,4 +1106,5 @@ module.exports = {
   getSystemSettings,
   updateSystemSettings,
   getAnalyticsData,
+  getSystemHealth,
 };

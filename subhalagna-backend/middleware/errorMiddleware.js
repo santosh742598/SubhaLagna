@@ -1,14 +1,15 @@
-'use strict';
+"use strict";
 
 /**
- * @file SubhaLagna v3.3.3 — Centralized Error Handling Middleware
- * @description   Two middleware functions:
- *                1. `notFound` — catches 404 for unregistered routes
- *                2. `errorHandler` — global error handler for all thrown errors,
- *                   including Mongoose validation errors and JWT errors.
- * @author        SubhaLagna Team
- * @version      3.3.3
+ * @file        SubhaLagna v3.3.5 — Centralized Error Middleware
+ * @description   Handles 404s and global exceptions with DB logging.
+ *               - v3.3.5 changes:
+ *                 - Implemented automatic SystemLog recording for all API failures.
+ * @author       SubhaLagna Team
+ * @version      3.3.5
  */
+
+const SystemLog = require('../models/SystemLog');
 
 /**
  * 404 Not Found Middleware.
@@ -75,6 +76,22 @@ const errorHandler = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     console.error(`❌ [${statusCode}] ${message}`);
     if (statusCode === 500) console.error(err.stack);
+  }
+
+  // ── Save to Database (Admin Dashboard Health Center) ───────────────────────
+  if (statusCode >= 400) {
+    SystemLog.create({
+      level: statusCode >= 500 ? 'error' : 'warn',
+      message: message,
+      stack: statusCode >= 500 ? err.stack : null,
+      metadata: {
+        path: req.originalUrl,
+        method: req.method,
+        statusCode,
+        userId: req.user?._id || 'guest',
+        ip: req.ip,
+      },
+    }).catch((logErr) => console.error('Failed to save system log:', logErr.message));
   }
 
   return res.status(statusCode).json({

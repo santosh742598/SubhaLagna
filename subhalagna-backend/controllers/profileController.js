@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
 /**
- * @file        SubhaLagna v3.3.3 — Profile Controller
+ * @file        SubhaLagna v3.3.5 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
  *                - v3.3.0 changes:
  *                  - Implemented real-time Profile View notifications with Socket.io.
@@ -16,7 +16,7 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  */
 
 const Profile = require('../models/Profile');

@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.3 — Admin Service
+ * @file        SubhaLagna v3.3.5 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
  * - v3.3.0 changes:
  *   - Added getAnalyticsData API wrapper for growth tracking.
@@ -9,8 +9,10 @@
  *   - Added getAllTransactions for comprehensive financial oversight. [v2.4.0]
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
+ * - v3.3.4 changes:
+ *   - Added getSystemHealth for platform diagnostics and log retrieval.
  * @author       SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  */
 
 import api, { getErrorMessage } from './api';
@@ -305,5 +307,18 @@ export const getAnalyticsData = async () => {
     return data.data;
   } catch (err) {
     throw getErrorMessage(err, 'Failed to fetch analytics data');
+  }
+};
+
+/**
+ * Get platform health diagnostics and recent system logs.
+ * @returns {Promise<object>} Health diagnostics and logs
+ */
+export const getSystemHealth = async () => {
+  try {
+    const { data } = await api.get('/admin/system/health');
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to fetch system health');
   }
 };

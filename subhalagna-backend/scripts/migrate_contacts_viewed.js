@@ -1,7 +1,9 @@
-'use strict';
+"use strict";
+
+/* eslint-disable no-console */
 
 /**
- * @file        SubhaLagna v3.3.3 — ContactsViewed Migration Script
+ * @file        SubhaLagna v3.3.5 — ContactsViewed Migration Script
  * @description   One-time migration: reads all users with `contactsViewed` entries
  *                and creates corresponding `ContactView` documents in the new collection.
  *                Safe to run multiple times (uses upsert to prevent duplicates).
@@ -9,10 +11,12 @@
  *                Usage: node scripts/migrate_contacts_viewed.js
  *
  *                Requires MONGO_URI in .env or as environment variable.
+ *                - v3.3.4 changes:
+ *                  - Standardized ESLint no-console overrides.
  *                - v3.3.2 changes:
  *                  - Initial creation as part of scalability refactor (P2-13).
  * @author        SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  */
 
 const mongoose = require('mongoose');

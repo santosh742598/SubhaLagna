@@ -1,9 +1,12 @@
-'use strict';
+"use strict";
 
 /**
- * @file        SubhaLagna v3.3.3 — Main Server Entry Point
+ * @file        SubhaLagna v3.3.5 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
+ *                - v3.3.5 changes:
+ *                  - Integrated Smart Maintenance Mode middleware.
+ *                  - Whitelisted critical auth routes for maintenance bypass.
  *                - [v3.3.3 changes]
  *                - Mounted Razorpay webhook endpoint BEFORE JSON body parser to allow raw signature verification.
  *                - [v3.2.8 changes]
@@ -27,7 +30,7 @@
  *                - Enhanced JSDoc documentation requirements.
  *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  * @description Architecture:
  *  ┌──────────────────────────────────────────┐
  *  │  Express HTTP Server + Socket.io          │
@@ -59,6 +62,7 @@ const { version } = require('./package.json');
 
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const { globalLimiter, authLimiter } = require('./middleware/rateLimitMiddleware');
+const { checkMaintenance } = require('./middleware/authMiddleware');
 
 // ── Validate critical env vars on startup ────────────────────────────────────
 // Including Razorpay and SMTP secrets to prevent silent security failures
@@ -172,6 +176,9 @@ app.use(mongoSanitize());
 
 // ── Static Files (uploaded images) ───────────────────────────────────────────
 app.use('/uploads', express.static('uploads'));
+
+// ── Maintenance Mode Check ──────────────────────────────────────────────────
+app.use(checkMaintenance);
 
 // ── API Routes ────────────────────────────────────────────────────────────────
 // Auth routes get a stricter rate limiter (brute-force protection)

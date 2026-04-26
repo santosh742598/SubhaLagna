@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.3.3 — Shortlist Service
+ * @file        SubhaLagna v3.3.5 — Shortlist Service
  * @description API wrappers for managing the user's private shortlist.
  * @author       SubhaLagna Team
- * @version      3.3.3
+ * @version      3.3.5
  */
 
 import api, { getErrorMessage } from './api';

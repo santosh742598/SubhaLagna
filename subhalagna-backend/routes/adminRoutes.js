@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
 /**
- * @file SubhaLagna v3.3.3 — Admin Routes
+ * @file SubhaLagna v3.3.5 — Admin Routes
  * @description Route definitions for the admin dashboard.
  * - v3.3.0 changes:
  *   - Added GET /api/admin/analytics for time-series growth data.
@@ -12,7 +12,9 @@
  * - v2.3.0 changes:
  *   - Added GET /api/admin/plans and PUT /api/admin/plans/:id for dynamic membership control.
  *   - Integrated plan management into the administrative API surface.
- * @version      3.3.3
+ * - v3.3.4 changes:
+ *   - Added GET /api/admin/system/health for platform diagnostic monitoring.
+ * @version      3.3.5
  * @author        SubhaLagna Team
  */
 
@@ -42,6 +44,7 @@ const {
   getSystemSettings,
   updateSystemSettings,
   getAnalyticsData,
+  getSystemHealth,
 } = require('../controllers/adminController');
 
 const { protect, adminOnly } = require('../middleware/authMiddleware');
@@ -84,5 +87,8 @@ router.put('/plans/:id', updatePlan);
 // Global System Settings
 router.get('/settings', getSystemSettings);
 router.put('/settings', updateSystemSettings);
+
+// System Health & Diagnostics
+router.get('/system/health', getSystemHealth);
 
 module.exports = router;
