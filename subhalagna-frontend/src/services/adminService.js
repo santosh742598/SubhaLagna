@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.0 — Admin Service
+ * @file        SubhaLagna v3.3.1 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
  * - v3.3.0 changes:
  *   - Added getAnalyticsData API wrapper for growth tracking.
@@ -10,7 +10,7 @@
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
  * @author       SubhaLagna Team
- * @version      3.3.0
+ * @version      3.3.1
  */
 
 import api, { getErrorMessage } from './api';

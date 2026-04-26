@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.1] - 2026-04-26
+
+### Fixed (v3.3.1)
+
+- **⚛️ React Hook Dependencies**: Resolved missing and redundant dependency warnings in `useEffect`, `useMemo`, and `useCallback` hooks across `ProfileDashboard` and `ProfileDetail` to enforce the exhaustive-deps rule.
+- **💅 Tailwind CSS Standardization**: Modernized aspect ratio classes (e.g., `aspect-[3/4]` to `aspect-3/4`) and standardized arbitrary border-radius classes (e.g., `rounded-[1.5rem]` to `rounded-3xl` and `rounded-[2rem]` to `rounded-4xl`) for cleaner utility usage.
+
 ## [3.3.0] - 2026-04-26
 
 ### Added (v3.3.0)

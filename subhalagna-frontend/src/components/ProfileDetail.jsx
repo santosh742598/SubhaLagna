@@ -1,21 +1,23 @@
 /**
- * @file        SubhaLagna v3.3.0 — Profile Detail Page
+ * @file        SubhaLagna v3.3.1 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
- *                - v3.3.0 changes:
  *                  - Refined Guna Milan Breakdown with detailed factor descriptions and tooltips.
  *                  - Implemented Dynamic SEO using React Helmet for better shareability.
  *                  - Integrated circular compatibility gauge.
+ *                  - Modernized Tailwind aspect ratio classes to v4 standards.
+ *                  - Standardized arbitrary border-radius classes to modern shorthands.
+ *                  - Resolved React hook missing dependency warning for profile loading.
  *                - v2.4.0 changes:
  *                  - Updated Manglik badge to support dynamic 3-state styling (Yes, No, Unknown).
  *
  *                v2.1.0 changes:
 ...
- * @version      3.3.0
+ * @version      3.3.1
  * @author        SubhaLagna Team
  */
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { getProfileById, unlockContact } from '../services/profileService';
@@ -211,9 +213,9 @@ const ProfileDetail = () => {
 
   useEffect(() => {
     loadProfile();
-  }, [id]);
+  }, [loadProfile]);
 
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getProfileById(id);
@@ -229,7 +231,7 @@ const ProfileDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, currentUser]);
 
   const handleUnlock = async () => {
     if (!currentUser?.isPremium) {
@@ -326,7 +328,7 @@ const ProfileDetail = () => {
           <div className="lg:col-span-4 space-y-6">
             <div className="bg-white rounded-[2.5rem] overflow-hidden border border-rose-100 shadow-sm sticky top-28">
               {/* Active Photo Container */}
-              <div className="relative aspect-[3/4] group cursor-zoom-in overflow-hidden">
+              <div className="relative aspect-3/4 group cursor-zoom-in overflow-hidden">
                 <img
                   src={activePhoto}
                   alt={profile.name}
@@ -502,7 +504,7 @@ const ProfileDetail = () => {
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-6 text-center border-2 border-dashed border-rose-100 rounded-[2rem] bg-rose-50/20">
+                <div className="flex flex-col items-center justify-center py-6 text-center border-2 border-dashed border-rose-100 rounded-4xl bg-rose-50/20">
                   <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-rose-500 shadow-sm mb-4">
                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -603,7 +605,7 @@ const ProfileDetail = () => {
             {/* Career & Family */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Career */}
-              <div className="bg-white rounded-[2rem] p-8 border border-rose-100 shadow-sm">
+              <div className="bg-white rounded-4xl p-8 border border-rose-100 shadow-sm">
                 <SectionTitle
                   title="Career"
                   icon={
@@ -630,7 +632,7 @@ const ProfileDetail = () => {
               </div>
 
               {/* Family */}
-              <div className="bg-white rounded-[2rem] p-8 border border-rose-100 shadow-sm">
+              <div className="bg-white rounded-4xl p-8 border border-rose-100 shadow-sm">
                 <SectionTitle
                   title="Family Details"
                   icon={

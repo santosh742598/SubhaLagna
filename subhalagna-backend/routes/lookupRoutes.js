@@ -1,10 +1,10 @@
 'use strict';
 
 /**
- * @file SubhaLagna v3.3.0 — MasterData Routes
+ * @file SubhaLagna v3.3.1 — MasterData Routes
  * @description   Public endpoints for fetching dynamic dropdown options.
  * @author        SubhaLagna Team
- * @version      3.3.0
+ * @version      3.3.1
  */
 
 const express = require('express');

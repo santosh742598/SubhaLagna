@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.0 — Admin Dashboard
+ * @file        SubhaLagna v3.3.1 — Admin Dashboard
  * @description Comprehensive management interface for users, plans, and system state.
  *               - v3.3.0 changes:
  *                 - Integrated interactive growth charts (User Growth, Revenue) using Recharts.
@@ -16,13 +16,13 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.3.0
+ * @version      3.3.1
  * @author        SubhaLagna Team
  */
 
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import {
   getDashboardStats,

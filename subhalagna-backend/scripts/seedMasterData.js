@@ -1,10 +1,10 @@
 'use strict';
 
 /**
- * @file        SubhaLagna v3.3.0 — Master Data Seeder
+ * @file        SubhaLagna v3.3.1 — Master Data Seeder
  * @description   Populates the database with initial lookup data (Caste, Education, Occupation).
  * @author        SubhaLagna Team
- * @version      3.3.0
+ * @version      3.3.1
  */
 
 const mongoose = require('mongoose');

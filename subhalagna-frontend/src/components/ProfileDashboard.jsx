@@ -1,20 +1,23 @@
 /**
- * @file        SubhaLagna v3.3.0 — User Dashboard
+ * @file        SubhaLagna v3.3.1 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
  *                - v3.3.0 changes:
  *                  - Implemented gamified Profile Completeness Bar with dynamic messaging.
  *                  - Integrated circular progress gauge for visual strength tracking.
+ *                  - Resolved React hook missing dependency warnings for Rashi calculation and Profile Strength.
+ *                  - Modernized Tailwind aspect ratio classes to v4 standards.
+ *                  - Standardized arbitrary border-radius classes to modern shorthands.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0.
  *                - Standardized Premium CTA logic and quota displays.
  *                - Implemented strict JSDoc validation and standard headers.
  *                - Global UI consistency via unified Prettier tokens.
  * @author        SubhaLagna Team
- * @version      3.3.0
+ * @version      3.3.1
  */
 
-import React, { useState, useContext, useEffect, useMemo } from 'react';
+import React, { useState, useContext, useEffect, useMemo, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { updateProfile as updateProfileService } from '../services/profileService';
 import { getMyInterests, respondToInterest } from '../services/interestService';
@@ -318,7 +321,7 @@ const ProfileDashboard = () => {
         setFormData((prev) => ({ ...prev, rashi: correctRashi }));
       }
     }
-  }, [formData.nakshatra, formData.pada]);
+  }, [formData.nakshatra, formData.pada, formData.rashi]);
 
   useEffect(() => {
     if (activeTab === 'interests') {
@@ -457,7 +460,7 @@ const ProfileDashboard = () => {
     }
   };
 
-  const calculateProfileStrength = () => {
+  const calculateProfileStrength = useCallback(() => {
     if (!user?.profile) return 0;
     const fields = [
       user.profile.name,
@@ -475,9 +478,9 @@ const ProfileDashboard = () => {
     if (user.profile.additionalPhotos?.length > 0) score++;
 
     return Math.round((score / 11) * 100);
-  };
+  }, [user]);
 
-  const profileStrength = useMemo(() => calculateProfileStrength(), [user?.profile]);
+  const profileStrength = useMemo(() => calculateProfileStrength(), [calculateProfileStrength]);
 
   if (!user?.profile) {
     return (
@@ -700,7 +703,7 @@ const ProfileDashboard = () => {
           {activeTab === 'profile' ? (
             <div className="relative z-10">
               {/* Profile Completeness Bar (v3.3.0) */}
-              <div className="mb-10 bg-white/40 backdrop-blur-md rounded-[2rem] p-6 border border-white shadow-sm overflow-hidden relative group">
+              <div className="mb-10 bg-white/40 backdrop-blur-md rounded-4xl p-6 border border-white shadow-sm overflow-hidden relative group">
                 <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
                   <div className="relative w-20 h-20 shrink-0">
                     <svg className="w-full h-full -rotate-90">
@@ -819,7 +822,7 @@ const ProfileDashboard = () => {
                   {/* Photo Section */}
                   <div className="lg:col-span-5 border-r border-rose-50/60 pr-0 lg:pr-10">
                     <div className="bg-slate-50/50 p-6 rounded-[2.5rem] border border-slate-100 flex flex-col items-center">
-                      <div className="w-full aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl relative group mb-6">
+                      <div className="w-full aspect-4/5 rounded-4xl overflow-hidden border-4 border-white shadow-2xl relative group mb-6">
                         <img
                           src={file ? URL.createObjectURL(file) : getProfileAvatar(user.profile)}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -1008,7 +1011,7 @@ const ProfileDashboard = () => {
                     onChange={handleChange}
                     rows="3"
                     placeholder="Tell potential matches about your values, goals and what you're looking for..."
-                    className="w-full px-6 py-4 rounded-[1.5rem] border border-slate-100 bg-slate-50/30 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-rose-500/5 transition-all outline-none resize-none"
+                    className="w-full px-6 py-4 rounded-3xl border border-slate-100 bg-slate-50/30 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-rose-500/5 transition-all outline-none resize-none"
                   />
                 </div>
               </DashboardCard>
@@ -1384,7 +1387,7 @@ const ProfileDashboard = () => {
                   {existingGallery.map((photoUrl, idx) => (
                     <div
                       key={idx}
-                      className="relative aspect-square rounded-[1.5rem] overflow-hidden shadow-md group border border-slate-100"
+                      className="relative aspect-square rounded-3xl overflow-hidden shadow-md group border border-slate-100"
                     >
                       <img src={photoUrl} className="w-full h-full object-cover" alt="" />
                       <button
@@ -1399,7 +1402,7 @@ const ProfileDashboard = () => {
                   {galleryPreviews.map((src, idx) => (
                     <div
                       key={'new-' + idx}
-                      className="relative aspect-square rounded-[1.5rem] overflow-hidden shadow-md group border border-emerald-100 ring-2 ring-emerald-50"
+                      className="relative aspect-square rounded-3xl overflow-hidden shadow-md group border border-emerald-100 ring-2 ring-emerald-50"
                     >
                       <img src={src} className="w-full h-full object-cover" alt="" />
                       <div className="absolute top-2 left-2 bg-emerald-500 text-white text-[8px] px-2 py-0.5 rounded-md font-black">
@@ -1415,7 +1418,7 @@ const ProfileDashboard = () => {
                     </div>
                   ))}
                   {existingGallery.length + galleryFiles.length < 5 && (
-                    <label className="cursor-pointer aspect-square rounded-[1.5rem] border-2 border-dashed border-rose-100 flex flex-col items-center justify-center text-rose-300 hover:bg-rose-50 transition-all group">
+                    <label className="cursor-pointer aspect-square rounded-3xl border-2 border-dashed border-rose-100 flex flex-col items-center justify-center text-rose-300 hover:bg-rose-50 transition-all group">
                       <Plus className="w-6 h-6 mb-2 group-hover:scale-125 transition-transform" />
                       <span className="text-[10px] font-black uppercase tracking-widest">Add</span>
                       <input

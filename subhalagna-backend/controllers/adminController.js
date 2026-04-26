@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @file        SubhaLagna v3.3.0 — Admin Controller
+ * @file        SubhaLagna v3.3.1 — Admin Controller
  * @description   Administrative tools for platform management:
  *                - v3.3.0 changes:
  *                  - Implemented getAnalyticsData for time-series growth tracking (30 days).
@@ -18,7 +18,7 @@
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.3.0
+ * @version      3.3.1
  */
 
 const User = require('../models/User');

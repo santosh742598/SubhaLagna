@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @file        SubhaLagna v3.3.0 — Main Server Entry Point
+ * @file        SubhaLagna v3.3.1 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
  *                - [v3.2.8 changes]
@@ -25,7 +25,7 @@
  *                - Enhanced JSDoc documentation requirements.
  *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version      3.3.0
+ * @version      3.3.1
  * @description Architecture:
  *  ┌──────────────────────────────────────────┐
  *  │  Express HTTP Server + Socket.io          │

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @file SubhaLagna v3.3.0 — Admin Routes
+ * @file SubhaLagna v3.3.1 — Admin Routes
  * @description Route definitions for the admin dashboard.
  * - v3.3.0 changes:
  *   - Added GET /api/admin/analytics for time-series growth data.
@@ -12,7 +12,7 @@
  * - v2.3.0 changes:
  *   - Added GET /api/admin/plans and PUT /api/admin/plans/:id for dynamic membership control.
  *   - Integrated plan management into the administrative API surface.
- * @version      3.3.0
+ * @version      3.3.1
  * @author        SubhaLagna Team
  */
 

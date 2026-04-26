@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.0 — Profile Card
+ * @file        SubhaLagna v3.3.1 — Profile Card
  * @description   Brief overview card for the search results grid.
  *                v2.0.0 changes:
  *                  - Integration with InterestButton for quick interactions
@@ -9,7 +9,7 @@
  *                  - Guna Milan (Traditional Match) badge overlay
  *                  - Pulse animation on high-compatibility cards
  * @author        SubhaLagna Team
- * @version      3.3.0
+ * @version      3.3.1
  */
 
 import React from 'react';
@@ -39,7 +39,7 @@ const ProfileCard = ({ profile, index }) => {
   return (
     <div
       onClick={handleNavigate}
-      className={`group relative bg-white rounded-[2rem] border border-pink-100/60 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-pink-100/40 transition-all duration-500 cursor-pointer flex flex-col h-full animate-fade-in ${isBlurred ? 'grayscale-[0.3]' : ''}`}
+      className={`group relative bg-white rounded-4xl border border-pink-100/60 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-pink-100/40 transition-all duration-500 cursor-pointer flex flex-col h-full animate-fade-in ${isBlurred ? 'grayscale-[0.3]' : ''}`}
       style={{ animationDelay: `${index * 50}ms` }}
     >
       {/* ── Image Section ── */}
