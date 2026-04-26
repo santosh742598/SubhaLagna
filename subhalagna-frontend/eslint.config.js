@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.2.8 — ESLint Configuration
+ * @file        SubhaLagna v3.3.0 — ESLint Configuration
  * @description   Strict linting rules for frontend React code quality and security.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 import js from '@eslint/js';
 import globals from 'globals';
@@ -39,20 +39,20 @@ export default [
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
 
       // JSDoc Header Enforcement (Standardized for v3.0.0)
-      'jsdoc/require-jsdoc': ['error', {
-        publicOnly: true,
-        require: {
-          FunctionDeclaration: true,
-          MethodDefinition: true,
-        }
-      }],
+      'jsdoc/require-jsdoc': [
+        'error',
+        {
+          publicOnly: true,
+          require: {
+            FunctionDeclaration: true,
+            MethodDefinition: true,
+          },
+        },
+      ],
       'jsdoc/check-tag-names': ['error', { definedTags: ['fileoverview', 'version'] }],
     },
     settings: {

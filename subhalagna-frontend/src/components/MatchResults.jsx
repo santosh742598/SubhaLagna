@@ -1,12 +1,12 @@
 /**
- * @file        SubhaLagna v3.2.8 — Match Results
+ * @file        SubhaLagna v3.3.0 — Match Results
  * @description   Displays compatible profiles based on user's preferences.
  *                v2.0.0 changes:
  *                  - Centralized data fetching via profileService
  *                  - Server-side pagination and sorting
  *                  - Unified Header component
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 import React, { useState, useEffect, useContext, useCallback } from 'react';

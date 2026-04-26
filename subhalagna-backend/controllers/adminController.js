@@ -1,8 +1,11 @@
-"use strict";
+'use strict';
 
 /**
- * @file        SubhaLagna v3.2.8 — Admin Controller
+ * @file        SubhaLagna v3.3.0 — Admin Controller
  * @description   Administrative tools for platform management:
+ *                - v3.3.0 changes:
+ *                  - Implemented getAnalyticsData for time-series growth tracking (30 days).
+ *                  - Added MongoDB aggregation pipelines for user and revenue trends.
  *                - User and Profile moderation (suspend, delete).
  *                - System-wide statistics and matchmaking analytics.
  *                - Dynamic membership plan management (pricing/features).
@@ -15,7 +18,7 @@
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 const User = require('../models/User');
@@ -99,6 +102,75 @@ const getDashboardStats = async (req, res, next) => {
       totalRevenue: totalRevenue[0]?.total || 0,
       todayRevenue: todayRevenue[0]?.total || 0,
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Get platform growth analytics (Time-series)
+// @route   GET /api/admin/analytics
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Aggregates growth data for users and revenue over the last 30 days.
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const getAnalyticsData = async (req, res, next) => {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [userGrowth, revenueGrowth] = await Promise.all([
+      // User Growth by Day
+      User.aggregate([
+        { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+        {
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]),
+      // Revenue Growth by Day
+      Payment.aggregate([
+        {
+          $match: {
+            status: { $in: ['captured', 'manual'] },
+            createdAt: { $gte: thirtyDaysAgo },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+            amount: { $sum: '$amount' },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]),
+    ]);
+
+    // Format for Recharts (merge and fill gaps)
+    const analytics = [];
+    for (let i = 0; i < 30; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+
+      const userDay = userGrowth.find((u) => u._id === dateStr);
+      const revDay = revenueGrowth.find((r) => r._id === dateStr);
+
+      analytics.unshift({
+        date: dateStr,
+        users: userDay ? userDay.count : 0,
+        revenue: revDay ? revDay.amount : 0,
+      });
+    }
+
+    return sendSuccess(res, analytics);
   } catch (err) {
     next(err);
   }
@@ -963,7 +1035,6 @@ const updateSystemSettings = async (req, res, next) => {
   }
 };
 
-
 module.exports = {
   getDashboardStats,
   getAllUsers,
@@ -986,4 +1057,5 @@ module.exports = {
   createPlan,
   getSystemSettings,
   updateSystemSettings,
+  getAnalyticsData,
 };

@@ -1,14 +1,17 @@
 /**
- * @file        SubhaLagna v3.2.8 — Profile Detail Page
+ * @file        SubhaLagna v3.3.0 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
- *
- *                v2.4.0 changes:
+ *                - v3.3.0 changes:
+ *                  - Refined Guna Milan Breakdown with detailed factor descriptions and tooltips.
+ *                  - Implemented Dynamic SEO using React Helmet for better shareability.
+ *                  - Integrated circular compatibility gauge.
+ *                - v2.4.0 changes:
  *                  - Updated Manglik badge to support dynamic 3-state styling (Yes, No, Unknown).
  *
  *                v2.1.0 changes:
 ...
- * @version      3.2.8
+ * @version      3.3.0
  * @author        SubhaLagna Team
  */
 
@@ -21,6 +24,7 @@ import InterestButton from './InterestButton';
 import Header from './Header';
 import PrivacyShield from './PrivacyShield';
 import { getProfileAvatar } from '../utils/avatarHelper';
+import { Helmet } from 'react-helmet-async';
 import { APP_NAME, WHATSAPP_COUNTRY_CODE } from '../config';
 
 // ─── Stat Box Component ───────────────────────────────────────────────────────
@@ -58,112 +62,135 @@ const CompatibilitySection = ({ data }) => {
     { name: 'Nadi', score: breakdown.nadi, max: 8 },
   ];
 
-  return (
-    <div className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-rose-100 shadow-sm animate-fade-in mb-8">
-      <SectionTitle
-        title="Guna Milan Compatibility"
-        icon={
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-1.734 1.702-2.523 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.789.584-2.822-.196-2.522-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-            />
-          </svg>
-        }
-      />
+  const gunaInfo = {
+    Varna: 'Work & Ego Compatibility',
+    Vashya: 'Mutual Attraction & Control',
+    Tara: 'Destiny & Health Compatibility',
+    Yoni: 'Biological & Intimate Compatibility',
+    Maitri: 'Friendship & Intellectual Bond',
+    Gana: 'Temperament & Social Behavior',
+    Bhakoot: 'Wealth & Prosperity Compatibility',
+    Nadi: 'Genetic & Health Balance',
+  };
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
-        {/* Circular Gauge */}
-        <div className="md:col-span-4 flex flex-col items-center">
-          <div className="relative w-40 h-40 flex items-center justify-center">
-            <svg className="w-full h-full -rotate-90">
-              <circle
-                cx="80"
-                cy="80"
-                r="70"
-                className="stroke-rose-50 fill-none"
-                strokeWidth="12"
-              />
-              <circle
-                cx="80"
-                cy="80"
-                r="70"
-                className="stroke-rose-500 fill-none transition-all duration-1000"
-                strokeWidth="12"
-                strokeDasharray={440}
-                strokeDashoffset={440 - (440 * total) / max}
+  return (
+    <div className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-rose-100 shadow-sm animate-fade-in mb-8 relative overflow-hidden">
+      {/* Decorative Gradient Background */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-rose-50/50 rounded-full blur-3xl -mr-32 -mt-32" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-50/50 rounded-full blur-3xl -ml-32 -mb-32" />
+
+      <div className="relative z-10">
+        <SectionTitle
+          title="Guna Milan Compatibility"
+          icon={
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
                 strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-1.734 1.702-2.523 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.789.584-2.822-.196-2.522-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
               />
             </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-black text-gray-800">{total}</span>
-              <span className="text-gray-400 text-xs font-bold uppercase tracking-widest">
-                out of {max}
-              </span>
-            </div>
-          </div>
-          <div
-            className={`mt-4 px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm ${
-              total >= 25
-                ? 'bg-emerald-50 border-emerald-100 text-emerald-600'
-                : total >= 18
-                  ? 'bg-amber-50 border-amber-100 text-amber-600'
-                  : 'bg-rose-50 border-rose-100 text-rose-600'
-            }`}
-          >
-            {label} Match
-          </div>
-        </div>
+          }
+        />
 
-        {/* Factor Breakdown */}
-        <div className="md:col-span-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {factors.map((f) => (
-              <div
-                key={f.name}
-                className="flex flex-col gap-1 p-3 rounded-2xl bg-slate-50 border border-slate-100/50 transition-all hover:bg-white hover:shadow-md"
-              >
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">
-                  {f.name}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-center">
+          {/* Circular Gauge */}
+          <div className="md:col-span-4 flex flex-col items-center">
+            <div className="relative w-40 h-40 flex items-center justify-center">
+              <svg className="w-full h-full -rotate-90">
+                <circle
+                  cx="80"
+                  cy="80"
+                  r="70"
+                  className="stroke-rose-50 fill-none"
+                  strokeWidth="12"
+                />
+                <circle
+                  cx="80"
+                  cy="80"
+                  r="70"
+                  className="stroke-rose-500 fill-none transition-all duration-1000"
+                  strokeWidth="12"
+                  strokeDasharray={440}
+                  strokeDashoffset={440 - (440 * total) / max}
+                  strokeLinecap="round"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-4xl font-black text-gray-800">{total}</span>
+                <span className="text-gray-400 text-xs font-bold uppercase tracking-widest">
+                  out of {max}
                 </span>
-                <div className="flex items-end justify-between">
-                  <span className="text-sm font-black text-slate-700">{f.score}</span>
-                  <span className="text-[10px] text-slate-300">/ {f.max}</span>
-                </div>
-                <div className="w-full h-1.5 bg-slate-200 rounded-full mt-1 overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-1000 ${f.score === f.max ? 'bg-emerald-400' : f.score === 0 ? 'bg-rose-300' : 'bg-rose-400'}`}
-                    style={{ width: `${(f.score / f.max) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {cancellations?.length > 0 && (
-            <div className="mt-6 p-4 rounded-2xl bg-blue-50/50 border border-blue-100 flex items-start gap-4">
-              <div className="mt-1 text-blue-500 bg-white p-2 rounded-xl shadow-sm">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">
-                  Dosha Cancellations
-                </p>
-                <p className="text-xs text-blue-700/80 font-bold italic leading-relaxed">
-                  {cancellations.join(', ')}
-                </p>
               </div>
             </div>
-          )}
+            <div
+              className={`mt-4 px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm ${
+                total >= 25
+                  ? 'bg-emerald-50 border-emerald-100 text-emerald-600'
+                  : total >= 18
+                    ? 'bg-amber-50 border-amber-100 text-amber-600'
+                    : 'bg-rose-50 border-rose-100 text-rose-600'
+              }`}
+            >
+              {label} Match
+            </div>
+          </div>
+
+          {/* Factor Breakdown */}
+          <div className="md:col-span-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {factors.map((f) => (
+                <div
+                  key={f.name}
+                  className="group relative flex flex-col gap-1 p-3 rounded-2xl bg-slate-50 border border-slate-100/50 transition-all hover:bg-white hover:shadow-md cursor-help"
+                >
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">
+                    {f.name}
+                  </span>
+                  <div className="flex items-end justify-between">
+                    <span className="text-sm font-black text-slate-700">{f.score}</span>
+                    <span className="text-[10px] text-slate-300">/ {f.max}</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-slate-200 rounded-full mt-1 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-1000 ${f.score === f.max ? 'bg-emerald-400' : f.score === 0 ? 'bg-rose-300' : 'bg-rose-400'}`}
+                      style={{ width: `${(f.score / f.max) * 100}%` }}
+                    />
+                  </div>
+                  {/* Premium Tooltip */}
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 bg-slate-900 text-white text-[10px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
+                    <p className="font-bold border-b border-white/10 pb-1 mb-1">{f.name}</p>
+                    <p className="text-white/70 leading-relaxed">{gunaInfo[f.name]}</p>
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+
+        {cancellations?.length > 0 && (
+          <div className="mt-6 p-4 rounded-2xl bg-blue-50/50 border border-blue-100 flex items-start gap-4">
+            <div className="mt-1 text-blue-500 bg-white p-2 rounded-xl shadow-sm">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="space-y-1">
+              <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">
+                Dosha Cancellations
+              </p>
+              <p className="text-xs text-blue-700/80 font-bold italic leading-relaxed">
+                {cancellations.join(', ')}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -277,6 +304,20 @@ const ProfileDetail = () => {
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
       <Header />
+      <Helmet>
+        <title>{`${profile.name} — ${profile.profession || 'Profile'} from ${profile.location || 'SubhaLagna'}`}</title>
+        <meta
+          name="description"
+          content={`View ${profile.name}'s profile on ${APP_NAME}. ${profile.bio ? profile.bio.substring(0, 150) : `A ${profile.gender} from ${profile.location}.`}`}
+        />
+        <meta property="og:title" content={`${profile.name} | ${APP_NAME} Matrimony`} />
+        <meta
+          property="og:description"
+          content={`Meet ${profile.name}, a ${profile.profession || 'member'} from ${profile.location}. Verified profile on ${APP_NAME}.`}
+        />
+        <meta property="og:image" content={profile.profilePhoto} />
+        <meta property="og:type" content="profile" />
+      </Helmet>
 
       {/* ── Main Content Area ── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28">
@@ -514,7 +555,9 @@ const ProfileDetail = () => {
                 }
               />
 
-              <p className="text-gray-600 italic text-lg leading-relaxed mb-8">&quot;{profile.bio}&quot;</p>
+              <p className="text-gray-600 italic text-lg leading-relaxed mb-8">
+                &quot;{profile.bio}&quot;
+              </p>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatBox

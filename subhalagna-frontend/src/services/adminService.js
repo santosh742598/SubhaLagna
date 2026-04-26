@@ -1,6 +1,8 @@
 /**
- * @file        SubhaLagna v3.2.8 — Admin Service
+ * @file        SubhaLagna v3.3.0 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
+ * - v3.3.0 changes:
+ *   - Added getAnalyticsData API wrapper for growth tracking.
  * - v3.0.4 changes:
  *   - Added updateUserRole API wrapper for admin promotion/demotion.
  * - v2.4.0 changes:
@@ -8,7 +10,7 @@
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
  * @author       SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 import api, { getErrorMessage } from './api';
@@ -290,5 +292,18 @@ export const updateSystemSettings = async (settingsData) => {
     return data.data;
   } catch (err) {
     throw getErrorMessage(err, 'Failed to update system settings');
+  }
+};
+
+/**
+ * Get platform growth analytics (Users & Revenue growth).
+ * @returns {Promise<object[]>} Time-series analytics data
+ */
+export const getAnalyticsData = async () => {
+  try {
+    const { data } = await api.get('/admin/analytics');
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to fetch analytics data');
   }
 };

@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 /**
- * @file        SubhaLagna v3.2.8 — Payment & Subscription Controller
+ * @file        SubhaLagna v3.3.0 — Payment & Subscription Controller
  * @description   Handles Razorpay orders, payment verification, and membership logic:
  *                - Integrated Razorpay order creation and signature verification.
  *                - Automated subscription activation and quota management.
@@ -12,7 +12,7 @@
  *                - Implemented strict JSDoc validation and security checkpoints.
  *                - Verified audit logging for manual bank transfers.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 const Razorpay = require('razorpay');
@@ -299,8 +299,7 @@ const upgradeUserSubscription = async (userId, planId, couponCode, amount, razor
  * @param {import('express').Response} res - Express response object.
  */
 exports.requestBankTransfer = async (req, res) => {
-  const { planId, amount, utrNumber, senderUpiId, paymentDateTime, userRemarks } =
-    req.body;
+  const { planId, amount, utrNumber, senderUpiId, paymentDateTime, userRemarks } = req.body;
 
   try {
     const plan = await MembershipPlan.findOne({ planId });

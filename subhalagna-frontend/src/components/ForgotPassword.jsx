@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.2.8 — Forgot Password
+ * @file        SubhaLagna v3.3.0 — Forgot Password
  * @description   Premium recovery interface for requesting password reset links.
  * - v3.0.4 changes:
  *   - Initial implementation with glassmorphism UI.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -84,12 +84,24 @@ const ForgotPassword = () => {
         <div className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-xl border border-rose-100/60 animate-fade-in">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              <svg
+                className="w-8 h-8 text-rose-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                />
               </svg>
             </div>
             <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">Forgot Password?</h2>
-            <p className="text-gray-400 text-sm">Enter your email and we&apos;ll send you a link to reset your password.</p>
+            <p className="text-gray-400 text-sm">
+              Enter your email and we&apos;ll send you a link to reset your password.
+            </p>
           </div>
 
           {message && (
@@ -107,7 +119,9 @@ const ForgotPassword = () => {
           {!message && (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">Email Address</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   placeholder="you@example.com"
@@ -131,9 +145,17 @@ const ForgotPassword = () => {
           )}
 
           <div className="mt-8 text-center">
-            <Link to="/login" className="text-sm font-semibold text-rose-600 hover:underline flex items-center justify-center gap-2">
+            <Link
+              to="/login"
+              className="text-sm font-semibold text-rose-600 hover:underline flex items-center justify-center gap-2"
+            >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
               </svg>
               Back to Login
             </Link>

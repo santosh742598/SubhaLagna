@@ -1,11 +1,11 @@
 /**
- * @file        SubhaLagna v3.2.8 — Global Frontend Configuration
+ * @file        SubhaLagna v3.3.0 — Global Frontend Configuration
  * @description Centralizes all environment-dependent configuration values.
  *               - v3.0.5 changes:
  *                 - Implemented Smart Config for auto-detection of bahaghara.in vs localhost.
  *                 - Forced HTTPS protocols for production domain stability.
  * @author SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 // ── CORE CONFIGURATION (Change these for different websites) ────────────────
@@ -33,7 +33,7 @@ if (typeof window !== 'undefined') {
   if (host === PRODUCTION_DOMAIN || host === `www.${PRODUCTION_DOMAIN}`) {
     baseUrl = `https://${PRODUCTION_DOMAIN}`;
     socketUrl = `https://${PRODUCTION_DOMAIN}`;
-  } 
+  }
   // 💻 Local Development Case
   else if (host === 'localhost' || host === '127.0.0.1') {
     baseUrl = 'http://localhost:5000';

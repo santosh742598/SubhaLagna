@@ -3,10 +3,10 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 
 /**
- * @file        SubhaLagna v3.2.8 — System Status Indicator
+ * @file        SubhaLagna v3.3.0 — System Status Indicator
  * @description   Real-time health monitor that checks API and Database availability.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  * @returns {JSX.Element} The status indicator component
  */
 const SystemStatus = () => {
@@ -14,7 +14,9 @@ const SystemStatus = () => {
 
   const checkHealth = async () => {
     try {
-      const healthUrl = API_BASE_URL.endsWith('/api') ? `${API_BASE_URL}/health` : `${API_BASE_URL}/api/health`;
+      const healthUrl = API_BASE_URL.endsWith('/api')
+        ? `${API_BASE_URL}/health`
+        : `${API_BASE_URL}/api/health`;
       const { data } = await axios.get(healthUrl, { timeout: 5000 });
       if (data.database && data.database.connected) {
         setStatus('ok');
@@ -51,26 +53,32 @@ const SystemStatus = () => {
       {/* Tooltip */}
       <div className="absolute top-full left-0 mt-2 w-48 p-3 bg-white rounded-2xl shadow-2xl border border-slate-100 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-60 transform origin-top-left scale-95 group-hover:scale-100">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Health Report</p>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            Health Report
+          </p>
           <span className="text-xs">{current.label}</span>
         </div>
         <p className="text-xs font-bold text-slate-800 leading-tight mb-3">{current.text}</p>
-        
+
         <div className="space-y-2 pt-2 border-t border-slate-50">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-slate-500">API Gateway</span>
-            <span className={`text-[10px] font-black ${status === 'backend_down' ? 'text-rose-500' : 'text-emerald-500'}`}>
+            <span
+              className={`text-[10px] font-black ${status === 'backend_down' ? 'text-rose-500' : 'text-emerald-500'}`}
+            >
               {status === 'backend_down' ? 'OFFLINE' : 'ONLINE'}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-slate-500">Database</span>
-            <span className={`text-[10px] font-black ${status === 'db_down' || status === 'backend_down' ? 'text-rose-500' : 'text-emerald-500'}`}>
+            <span
+              className={`text-[10px] font-black ${status === 'db_down' || status === 'backend_down' ? 'text-rose-500' : 'text-emerald-500'}`}
+            >
               {status === 'ok' ? 'ONLINE' : 'OFFLINE'}
             </span>
           </div>
         </div>
-        
+
         <p className="mt-3 text-[9px] text-slate-400 text-center italic">Refreshes every 30s</p>
       </div>
     </div>

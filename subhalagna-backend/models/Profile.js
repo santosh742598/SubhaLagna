@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 /**
- * @file        SubhaLagna v3.2.8 — Profile Model
+ * @file        SubhaLagna v3.3.0 — Profile Model
  * @description   Detailed matrimony profile schema. Enforces:
  *                - One profile per user (unique index).
  *                - Comprehensive biographical and preference data.
@@ -12,7 +12,7 @@
  *                - JSDoc compliance for architectural clarity.
  *                - Standardized pre-save hooks for completeness scoring.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 const mongoose = require('mongoose');

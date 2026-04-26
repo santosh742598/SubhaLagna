@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.8 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.3.0 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
  *                - [v3.0.5 changes]
  *                - Fixed critical bug where API response was not unwrapped, causing profile data to appear missing.
@@ -11,7 +11,7 @@
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -471,7 +471,12 @@ const CreateProfile = () => {
                       <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">
                         Gender
                       </label>
-                      <select name="gender" value={formData.gender} onChange={handleChange} className={inputClasses}>
+                      <select
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        className={inputClasses}
+                      >
                         <option>Male</option>
                         <option>Female</option>
                       </select>
@@ -520,7 +525,12 @@ const CreateProfile = () => {
                         placeholder="10-digit number without +91"
                       />
                       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-500">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -550,7 +560,11 @@ const CreateProfile = () => {
                       </div>
                       <span className="text-sm font-bold text-gray-600 group-hover:text-emerald-600 transition-colors flex items-center gap-2">
                         WhatsApp available on this number?
-                        <svg className="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-4 h-4 text-emerald-500"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                         </svg>
                       </span>
@@ -566,7 +580,9 @@ const CreateProfile = () => {
             <div className="animate-fade-in-up space-y-10">
               <div>
                 <h2 className="text-3xl font-serif font-bold text-gray-800">Your Heritage</h2>
-                <p className="text-gray-500 mt-2">Family traditions and roots are the foundation of a lasting bond.</p>
+                <p className="text-gray-500 mt-2">
+                  Family traditions and roots are the foundation of a lasting bond.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -592,7 +608,9 @@ const CreateProfile = () => {
                   onChange={handleChange}
                 />
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Gotra</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">
+                    Gotra
+                  </label>
                   <input
                     type="text"
                     name="gotra"
@@ -610,29 +628,69 @@ const CreateProfile = () => {
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">Nakshatra</label>
-                    <select name="nakshatra" value={formData.nakshatra} onChange={handleChange} className={inputClasses}>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">
+                      Nakshatra
+                    </label>
+                    <select
+                      name="nakshatra"
+                      value={formData.nakshatra}
+                      onChange={handleChange}
+                      className={inputClasses}
+                    >
                       <option value="">Select</option>
-                      {NAKSHATRAS.map(n => <option key={n} value={n}>{n}</option>)}
+                      {NAKSHATRAS.map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">Pada</label>
-                    <select name="pada" value={formData.pada} onChange={handleChange} className={inputClasses}>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">
+                      Pada
+                    </label>
+                    <select
+                      name="pada"
+                      value={formData.pada}
+                      onChange={handleChange}
+                      className={inputClasses}
+                    >
                       <option value="">Select</option>
-                      {[1, 2, 3, 4].map(p => <option key={p} value={p}>{p}</option>)}
+                      {[1, 2, 3, 4].map((p) => (
+                        <option key={p} value={p}>
+                          {p}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">Rashi</label>
-                    <select name="rashi" value={formData.rashi} onChange={handleChange} className={inputClasses}>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">
+                      Rashi
+                    </label>
+                    <select
+                      name="rashi"
+                      value={formData.rashi}
+                      onChange={handleChange}
+                      className={inputClasses}
+                    >
                       <option value="">Select</option>
-                      {RASHIS.map(r => <option key={r} value={r}>{r}</option>)}
+                      {RASHIS.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">Manglik</label>
-                    <select name="manglik" value={formData.manglik} onChange={handleChange} className={inputClasses}>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">
+                      Manglik
+                    </label>
+                    <select
+                      name="manglik"
+                      value={formData.manglik}
+                      onChange={handleChange}
+                      className={inputClasses}
+                    >
                       <option>No</option>
                       <option>Yes</option>
                       <option>Anshik</option>
@@ -649,12 +707,16 @@ const CreateProfile = () => {
             <div className="animate-fade-in-up space-y-10">
               <div>
                 <h2 className="text-3xl font-serif font-bold text-gray-800">Life Journey</h2>
-                <p className="text-gray-500 mt-2">Share your achievements and professional aspirations.</p>
+                <p className="text-gray-500 mt-2">
+                  Share your achievements and professional aspirations.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Highest Education</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">
+                    Highest Education
+                  </label>
                   <input
                     type="text"
                     name="education"
@@ -665,7 +727,9 @@ const CreateProfile = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Current Profession</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">
+                    Current Profession
+                  </label>
                   <input
                     type="text"
                     name="profession"
@@ -676,7 +740,9 @@ const CreateProfile = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Residence City</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">
+                    Residence City
+                  </label>
                   <input
                     type="text"
                     name="location"
@@ -687,7 +753,9 @@ const CreateProfile = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Height (e.g. 5&apos;8&quot;)</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">
+                    Height (e.g. 5&apos;8&quot;)
+                  </label>
                   <input
                     type="text"
                     name="height"
@@ -700,15 +768,33 @@ const CreateProfile = () => {
               </div>
 
               <div className="p-8 bg-slate-50/50 rounded-[2.5rem] border border-slate-100">
-                <h3 className="font-serif font-bold text-gray-700 mb-6 flex items-center gap-2">Family Background</h3>
+                <h3 className="font-serif font-bold text-gray-700 mb-6 flex items-center gap-2">
+                  Family Background
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">Father&apos;s Name</label>
-                    <input type="text" name="fatherName" value={formData.fatherName} onChange={handleChange} className={inputClasses} />
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">
+                      Father&apos;s Name
+                    </label>
+                    <input
+                      type="text"
+                      name="fatherName"
+                      value={formData.fatherName}
+                      onChange={handleChange}
+                      className={inputClasses}
+                    />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">Mother&apos;s Name</label>
-                    <input type="text" name="motherName" value={formData.motherName} onChange={handleChange} className={inputClasses} />
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase mb-2">
+                      Mother&apos;s Name
+                    </label>
+                    <input
+                      type="text"
+                      name="motherName"
+                      value={formData.motherName}
+                      onChange={handleChange}
+                      className={inputClasses}
+                    />
                   </div>
                 </div>
               </div>
@@ -720,20 +806,24 @@ const CreateProfile = () => {
             <div className="animate-fade-in-up space-y-12">
               <div>
                 <h2 className="text-3xl font-serif font-bold text-gray-800">Your Vibe</h2>
-                <p className="text-gray-500 mt-2">Let your personality shine through interests and traits.</p>
+                <p className="text-gray-500 mt-2">
+                  Let your personality shine through interests and traits.
+                </p>
               </div>
 
               <div className="space-y-8">
                 <div>
                   <FormLabel>MY TOP INTERESTS</FormLabel>
                   <div className="flex flex-wrap gap-2">
-                    {PREDEFINED_INTERESTS.map(i => (
+                    {PREDEFINED_INTERESTS.map((i) => (
                       <button
                         key={i}
                         type="button"
                         onClick={() => toggleInterest(i)}
                         className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                          interests.includes(i) ? 'bg-rose-600 text-white shadow-lg' : 'bg-white border border-gray-100 text-gray-500 hover:bg-rose-50'
+                          interests.includes(i)
+                            ? 'bg-rose-600 text-white shadow-lg'
+                            : 'bg-white border border-gray-100 text-gray-500 hover:bg-rose-50'
                         }`}
                       >
                         {i}
@@ -745,13 +835,15 @@ const CreateProfile = () => {
                 <div>
                   <FormLabel>PERSONALITY TRAITS</FormLabel>
                   <div className="flex flex-wrap gap-2">
-                    {PREDEFINED_TRAITS.map(t => (
+                    {PREDEFINED_TRAITS.map((t) => (
                       <button
                         key={t}
                         type="button"
                         onClick={() => toggleTrait(t)}
                         className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                          traits.includes(t) ? 'bg-slate-800 text-white shadow-lg' : 'bg-white border border-gray-100 text-gray-500 hover:bg-slate-50'
+                          traits.includes(t)
+                            ? 'bg-slate-800 text-white shadow-lg'
+                            : 'bg-white border border-gray-100 text-gray-500 hover:bg-slate-50'
                         }`}
                       >
                         {t}
@@ -762,7 +854,9 @@ const CreateProfile = () => {
 
                 <div className="pt-8 border-t border-gray-100">
                   <FormLabel>WHAT I AM LOOKING FOR</FormLabel>
-                  <p className="text-xs text-gray-400 mb-4 italic">Tell us what&apos;s most important to you in a life partner.</p>
+                  <p className="text-xs text-gray-400 mb-4 italic">
+                    Tell us what&apos;s most important to you in a life partner.
+                  </p>
                   <textarea
                     name="prefLocation"
                     value={formData.prefLocation}
@@ -781,7 +875,9 @@ const CreateProfile = () => {
             <div className="animate-fade-in-up space-y-10">
               <div>
                 <h2 className="text-3xl font-serif font-bold text-gray-800">Photo Gallery</h2>
-                <p className="text-gray-500 mt-2">Profiles with multiple photos get 10x more engagement.</p>
+                <p className="text-gray-500 mt-2">
+                  Profiles with multiple photos get 10x more engagement.
+                </p>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -790,18 +886,27 @@ const CreateProfile = () => {
                   <div className="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-500 mb-2 group-hover:scale-110 transition-transform">
                     <PlusIcon />
                   </div>
-                  <span className="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Add Photos</span>
+                  <span className="text-[10px] font-bold text-rose-400 uppercase tracking-widest">
+                    Add Photos
+                  </span>
                   <input type="file" multiple onChange={handleGalleryChange} className="hidden" />
                 </label>
 
                 {galleryPreviews.map((url, i) => (
-                  <div key={i} className="aspect-square rounded-3xl overflow-hidden relative group shadow-lg">
-                    <img src={url} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt="Gallery" />
+                  <div
+                    key={i}
+                    className="aspect-square rounded-3xl overflow-hidden relative group shadow-lg"
+                  >
+                    <img
+                      src={url}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                      alt="Gallery"
+                    />
                     <button
                       type="button"
                       onClick={() => {
-                        setGalleryFiles(prev => prev.filter((_, idx) => idx !== i));
-                        setGalleryPreviews(prev => prev.filter((_, idx) => idx !== i));
+                        setGalleryFiles((prev) => prev.filter((_, idx) => idx !== i));
+                        setGalleryPreviews((prev) => prev.filter((_, idx) => idx !== i));
                       }}
                       className="absolute top-2 right-2 p-2 bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-600"
                     >
@@ -812,7 +917,8 @@ const CreateProfile = () => {
               </div>
 
               <div className="bg-amber-50/50 p-6 rounded-3xl border border-amber-100 text-xs text-amber-700 leading-relaxed">
-                <strong>💡 Tip:</strong> Real photos help in building trust. We recommend uploading clear, recent photos without heavy filters.
+                <strong>💡 Tip:</strong> Real photos help in building trust. We recommend uploading
+                clear, recent photos without heavy filters.
               </div>
             </div>
           )}
@@ -822,7 +928,7 @@ const CreateProfile = () => {
             {currentStep > 1 ? (
               <button
                 type="button"
-                onClick={() => setCurrentStep(prev => prev - 1)}
+                onClick={() => setCurrentStep((prev) => prev - 1)}
                 className="flex items-center gap-2 px-6 py-3 text-gray-400 font-bold hover:text-gray-800 transition-all"
               >
                 <ChevronLeft /> Back
@@ -842,7 +948,9 @@ const CreateProfile = () => {
                       return;
                     }
                     if (!/^\d{10}$/.test(formData.phone)) {
-                      setErrorStr('Please enter a valid 10-digit mobile number without spaces or symbols.');
+                      setErrorStr(
+                        'Please enter a valid 10-digit mobile number without spaces or symbols.',
+                      );
                       return;
                     }
                   }
@@ -876,7 +984,9 @@ const CreateProfile = () => {
 };
 
 const FormLabel = ({ children }) => (
-  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">{children}</label>
+  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">
+    {children}
+  </label>
 );
 
 const PlusIcon = () => (

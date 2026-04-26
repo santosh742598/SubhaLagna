@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 /**
  * @file Migration Script: Transition Manglik status from Boolean to String Enum
  * @description   Converts existing true/false values to 'Yes'/'No'.
  *                Updates missing or null values to 'Unknown'.
- * @version      3.2.8
+ * @version      3.3.0
  * @author        SubhaLagna Team
  */
 

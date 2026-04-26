@@ -1,8 +1,12 @@
-"use strict";
+'use strict';
 
 /**
- * @file        SubhaLagna v3.2.8 — Profile Controller
+ * @file        SubhaLagna v3.3.0 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
+ *                - v3.3.0 changes:
+ *                  - Implemented real-time Profile View notifications with Socket.io.
+ *                  - Added 24-hour cooldown logic to prevent notification spam.
+ *                  - Updated profile projections to include WhatsApp visibility for owners.
  *                - Comprehensive profile setup (onboarding).
  *                - Paginated matches with Guna Milan scoring.
  *                - Privacy-first photo and contact visibility.
@@ -12,13 +16,15 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 const Profile = require('../models/Profile');
 const User = require('../models/User');
 const ProfileView = require('../models/ProfileView');
 const Interest = require('../models/Interest');
+const Notification = require('../models/Notification');
+const { emitNotification } = require('../socket/socketHandler');
 const sharp = require('sharp');
 const storageService = require('../utils/storageService');
 const { enrichWithMatchScores } = require('../utils/matchingAlgorithm');
@@ -300,7 +306,7 @@ const getMatches = async (req, res, next) => {
 
     const [candidates, total] = await Promise.all([
       Profile.find(query)
-        .populate('user', 'email isPremium premiumPlan')
+        .populate('user', 'email isPremium premiumPlan isWhatsappAvailable')
         .skip(skip)
         .limit(limitNum)
         .lean(),
@@ -375,7 +381,7 @@ const getProfileById = async (req, res, next) => {
   try {
     const profile = await Profile.findById(req.params.id).populate(
       'user',
-      'email name isPremium premiumPlan phone',
+      'email name isPremium premiumPlan phone isWhatsappAvailable',
     );
 
     if (!profile) {
@@ -391,8 +397,38 @@ const getProfileById = async (req, res, next) => {
           { upsert: true, new: true },
         );
         await Profile.findByIdAndUpdate(req.params.id, { $inc: { profileViews: 1 } });
-      } catch {
-        // Silently fail if view tracking fails
+
+        // ── Notification Logic: Only notify if not already notified in the last 24h ──
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const recentNotification = await Notification.findOne({
+          recipient: profile.user._id,
+          sender: req.user._id,
+          type: 'profile_view',
+          createdAt: { $gte: twentyFourHoursAgo },
+        });
+
+        // 4. Send real-time notification (v3.3.0)
+        // Fetch viewer's profile to get the ID for the link
+        const viewerProfile = await Profile.findOne({ user: req.user._id }).select('_id');
+
+        if (!recentNotification && viewerProfile) {
+          const notification = await Notification.create({
+            recipient: profile.user._id,
+            sender: req.user._id,
+            type: 'profile_view',
+            message: `${req.user.name} viewed your profile.`,
+            link: `/profile/${viewerProfile._id}`, // Link back to viewer's profile
+          });
+
+          // Emit via Socket.io
+          const io = req.app.get('io');
+          if (io) {
+            emitNotification(io, profile.user._id.toString(), notification);
+          }
+        }
+      } catch (err) {
+        // Silently fail if view tracking or notification fails
+        // console.error('Profile view notification error:', err.message);
       }
     }
 
@@ -493,7 +529,8 @@ const updateProfile = async (req, res, next) => {
       const userUpdate = {};
       if (req.body.phone !== undefined) userUpdate.phone = req.body.phone;
       if (req.body.isWhatsappAvailable !== undefined) {
-        userUpdate.isWhatsappAvailable = req.body.isWhatsappAvailable === 'true' || req.body.isWhatsappAvailable === true;
+        userUpdate.isWhatsappAvailable =
+          req.body.isWhatsappAvailable === 'true' || req.body.isWhatsappAvailable === true;
       }
       await User.findByIdAndUpdate(profile.user, userUpdate);
     }

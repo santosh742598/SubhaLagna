@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.8 — Notification Context
+ * @file        SubhaLagna v3.3.0 — Notification Context
  * @description   Provides real-time notification state to all components.
  *                Combines REST API polling with Socket.io push events for
  *                instant notification delivery.
@@ -8,7 +8,7 @@
  *                  const { notifications, unreadCount, markRead, markAllRead } =
  *                    useContext(NotificationContext);
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';

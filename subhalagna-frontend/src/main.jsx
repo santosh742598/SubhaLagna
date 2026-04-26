@@ -1,20 +1,19 @@
 /**
- * @file        SubhaLagna v3.2.8 — React Main Entry
+ * @file        SubhaLagna v3.3.0 — React Main Entry
  * @description   Initializes the React application and mounts it to the DOM.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
+import { HelmetProvider } from 'react-helmet-async';
 import App from './App.jsx';
-import { APP_NAME } from './config';
-
-// Dynamic Title
-document.title = APP_NAME;
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
   </StrictMode>,
 );

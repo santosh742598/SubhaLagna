@@ -1,7 +1,11 @@
 /**
- * @file        SubhaLagna v3.2.8 — Admin Dashboard
+ * @file        SubhaLagna v3.3.0 — Admin Dashboard
  * @description Comprehensive management interface for users, plans, and system state.
- *               v3.1.0 changes:
+ *               - v3.3.0 changes:
+ *                 - Integrated interactive growth charts (User Growth, Revenue) using Recharts.
+ *                 - Added dedicated Analytics tab for time-series insights.
+ *                 - Optimized stats fetching logic.
+ *               - v3.1.0 changes:
  *                 - Stabilized fetch logic with useCallback/useEffect hooks
  *                 - Resolved infinite render loops
  *                 - Modernized Tailwind v4 shorthand syntax
@@ -12,7 +16,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.2.8
+ * @version      3.3.0
  * @author        SubhaLagna Team
  */
 
@@ -41,7 +45,22 @@ import {
   updateAdminPlan,
   getSystemSettings,
   updateSystemSettings,
+  getAnalyticsData,
 } from '../services/adminService';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  Legend,
+} from 'recharts';
 import { getProfileAvatar } from '../utils/avatarHelper';
 import { fetchLookupOptions } from '../services/lookupService';
 import { RASHIS, NAKSHATRAS, PADAS, PADA_RASHI_MAP } from '../data/astrologyData';
@@ -108,13 +127,14 @@ StatCard.propTypes = {
 };
 
 const AdminDashboard = () => {
-  const { user, refreshSettings, refreshPlans } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { refreshSettings, refreshPlans } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('users');
   const [stats, setStats] = useState(null);
   // loading is not currently used for UI feedback, but fetched in fetchData
   // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(true);
+  const [analyticsData, setAnalyticsData] = useState([]);
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(false);
 
   // Users State
   const [users, setUsers] = useState([]);
@@ -391,7 +411,34 @@ const AdminDashboard = () => {
     if (activeTab === 'payments') fetchPayments();
     if (activeTab === 'membership_plans') fetchPlans();
     if (activeTab === 'settings') fetchSystemSettings();
-  }, [search, filterRole, activeTab, fetchData, fetchCoupons, fetchPayments, fetchPlans, fetchSystemSettings]);
+  }, [
+    search,
+    filterRole,
+    activeTab,
+    fetchData,
+    fetchCoupons,
+    fetchPayments,
+    fetchPlans,
+    fetchSystemSettings,
+  ]);
+
+  const fetchAnalytics = async () => {
+    setIsAnalyticsLoading(true);
+    try {
+      const data = await getAnalyticsData();
+      setAnalyticsData(data);
+    } catch (err) {
+      console.error('Analytics Error:', err);
+    } finally {
+      setIsAnalyticsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'analytics') {
+      fetchAnalytics();
+    }
+  }, [activeTab]);
 
   const handleAction = async (actionFn, id) => {
     if (
@@ -659,6 +706,12 @@ const AdminDashboard = () => {
               Users
             </button>
             <button
+              onClick={() => setActiveTab('analytics')}
+              className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'analytics' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}
+            >
+              Analytics
+            </button>
+            <button
               onClick={() => setActiveTab('payments')}
               className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'payments' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}
             >
@@ -748,7 +801,140 @@ const AdminDashboard = () => {
           />
         </div>
 
-        {activeTab === 'users' ? (
+        {activeTab === 'analytics' ? (
+          <div className="space-y-8 animate-fade-in">
+            {/* User Growth Chart */}
+            <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="text-xl font-serif font-bold text-gray-800">User Acquisition</h3>
+                  <p className="text-sm text-gray-400 mt-1">Growth trends over the last 30 days.</p>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                  Live Data
+                </div>
+              </div>
+              <div className="h-[350px] w-full">
+                {isAnalyticsLoading ? (
+                  <div className="h-full flex items-center justify-center">
+                    <div className="w-8 h-8 border-4 border-rose-600 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={analyticsData}>
+                      <defs>
+                        <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis
+                        dataKey="date"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }}
+                        dy={10}
+                        tickFormatter={(str) => {
+                          const date = new Date(str);
+                          return date.toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                          });
+                        }}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          borderRadius: '16px',
+                          border: 'none',
+                          boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                          fontSize: '12px',
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="users"
+                        stroke="#3b82f6"
+                        strokeWidth={3}
+                        fillOpacity={1}
+                        fill="url(#colorUsers)"
+                        name="New Registrations"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </div>
+
+            {/* Revenue Chart */}
+            <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="text-xl font-serif font-bold text-gray-800">Financial Growth</h3>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Daily revenue performance (Last 30 Days).
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                  ₹ Total Focus
+                </div>
+              </div>
+              <div className="h-[350px] w-full">
+                {isAnalyticsLoading ? (
+                  <div className="h-full flex items-center justify-center">
+                    <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analyticsData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis
+                        dataKey="date"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }}
+                        dy={10}
+                        tickFormatter={(str) => {
+                          const date = new Date(str);
+                          return date.toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                          });
+                        }}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }}
+                      />
+                      <Tooltip
+                        formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
+                        contentStyle={{
+                          borderRadius: '16px',
+                          border: 'none',
+                          boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                          fontSize: '12px',
+                        }}
+                      />
+                      <Bar
+                        dataKey="revenue"
+                        fill="#10b981"
+                        radius={[6, 6, 0, 0]}
+                        name="Daily Revenue"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : activeTab === 'users' ? (
           <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
             <div className="p-8 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <h3 className="text-xl font-serif font-bold text-gray-800">User Moderation</h3>
@@ -864,7 +1050,7 @@ const AdminDashboard = () => {
                             <span className="text-gray-300 text-xs font-medium">Free</span>
                           )}
                         </td>
-                         <td className="px-8 py-5 text-right flex items-center justify-end gap-2">
+                        <td className="px-8 py-5 text-right flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleRoleUpdate(user)}
                             className={`p-2 rounded-xl border transition-all ${
@@ -1160,7 +1346,9 @@ const AdminDashboard = () => {
               {/* Branding Section */}
               <div>
                 <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">🎨</span>
+                  <span className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
+                    🎨
+                  </span>
                   Visual Branding
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1172,31 +1360,37 @@ const AdminDashboard = () => {
                       type="text"
                       required
                       value={systemSettings.appName}
-                      onChange={(e) => setSystemSettings({ ...systemSettings, appName: e.target.value })}
+                      onChange={(e) =>
+                        setSystemSettings({ ...systemSettings, appName: e.target.value })
+                      }
                       className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                      Logo Primary (e.g. "Subha")
+                      Logo Primary (e.g. &quot;Subha&quot;)
                     </label>
                     <input
                       type="text"
                       required
                       value={systemSettings.brandPrimary}
-                      onChange={(e) => setSystemSettings({ ...systemSettings, brandPrimary: e.target.value })}
+                      onChange={(e) =>
+                        setSystemSettings({ ...systemSettings, brandPrimary: e.target.value })
+                      }
                       className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                      Logo Secondary (e.g. "Lagna")
+                      Logo Secondary (e.g. &quot;Lagna&quot;)
                     </label>
                     <input
                       type="text"
                       required
                       value={systemSettings.brandSecondary}
-                      onChange={(e) => setSystemSettings({ ...systemSettings, brandSecondary: e.target.value })}
+                      onChange={(e) =>
+                        setSystemSettings({ ...systemSettings, brandSecondary: e.target.value })
+                      }
                       className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500 text-rose-600"
                     />
                   </div>
@@ -1209,7 +1403,9 @@ const AdminDashboard = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <div className="space-y-6">
                   <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">⚙️</span>
+                    <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                      ⚙️
+                    </span>
                     Technical Config
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -1221,7 +1417,12 @@ const AdminDashboard = () => {
                         type="text"
                         required
                         value={systemSettings.whatsappCountryCode}
-                        onChange={(e) => setSystemSettings({ ...systemSettings, whatsappCountryCode: e.target.value })}
+                        onChange={(e) =>
+                          setSystemSettings({
+                            ...systemSettings,
+                            whatsappCountryCode: e.target.value,
+                          })
+                        }
                         className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
                       />
                     </div>
@@ -1233,7 +1434,9 @@ const AdminDashboard = () => {
                         type="text"
                         required
                         value={systemSettings.productionDomain}
-                        onChange={(e) => setSystemSettings({ ...systemSettings, productionDomain: e.target.value })}
+                        onChange={(e) =>
+                          setSystemSettings({ ...systemSettings, productionDomain: e.target.value })
+                        }
                         className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
                       />
                     </div>
@@ -1242,7 +1445,9 @@ const AdminDashboard = () => {
 
                 <div className="space-y-6">
                   <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">📞</span>
+                    <span className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+                      📞
+                    </span>
                     Support Contact
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -1254,7 +1459,9 @@ const AdminDashboard = () => {
                         type="email"
                         required
                         value={systemSettings.supportEmail}
-                        onChange={(e) => setSystemSettings({ ...systemSettings, supportEmail: e.target.value })}
+                        onChange={(e) =>
+                          setSystemSettings({ ...systemSettings, supportEmail: e.target.value })
+                        }
                         className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
                       />
                     </div>
@@ -1266,7 +1473,9 @@ const AdminDashboard = () => {
                         type="text"
                         required
                         value={systemSettings.contactPhone}
-                        onChange={(e) => setSystemSettings({ ...systemSettings, contactPhone: e.target.value })}
+                        onChange={(e) =>
+                          setSystemSettings({ ...systemSettings, contactPhone: e.target.value })
+                        }
                         className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
                       />
                     </div>

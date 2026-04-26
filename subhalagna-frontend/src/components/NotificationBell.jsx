@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.2.8 — Notification Bell Component
+ * @file        SubhaLagna v3.3.0 — Notification Bell Component
  * @description   Header notification icon with unread badge. Shows a dropdown
  *                with the latest notifications. Integrates with NotificationContext
  *                for real-time updates.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 import React, { useState, useRef, useEffect, useContext } from 'react';
@@ -47,8 +47,7 @@ const TYPE_CONFIG = {
  * @returns {React.ReactElement} The notification bell component
  */
 const NotificationBell = () => {
-  const { notifications, unreadCount, markRead, markAllRead } =
-    useContext(NotificationContext);
+  const { notifications, unreadCount, markRead, markAllRead } = useContext(NotificationContext);
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);

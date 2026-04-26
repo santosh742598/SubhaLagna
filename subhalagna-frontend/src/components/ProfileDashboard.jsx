@@ -1,17 +1,20 @@
 /**
- * @file        SubhaLagna v3.2.8 — User Dashboard
+ * @file        SubhaLagna v3.3.0 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
+ *                - v3.3.0 changes:
+ *                  - Implemented gamified Profile Completeness Bar with dynamic messaging.
+ *                  - Integrated circular progress gauge for visual strength tracking.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0.
  *                - Standardized Premium CTA logic and quota displays.
  *                - Implemented strict JSDoc validation and standard headers.
  *                - Global UI consistency via unified Prettier tokens.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { updateProfile as updateProfileService } from '../services/profileService';
 import { getMyInterests, respondToInterest } from '../services/interestService';
@@ -474,7 +477,7 @@ const ProfileDashboard = () => {
     return Math.round((score / 11) * 100);
   };
 
-  const profileStrength = calculateProfileStrength();
+  const profileStrength = useMemo(() => calculateProfileStrength(), [user?.profile]);
 
   if (!user?.profile) {
     return (
@@ -696,6 +699,64 @@ const ProfileDashboard = () => {
 
           {activeTab === 'profile' ? (
             <div className="relative z-10">
+              {/* Profile Completeness Bar (v3.3.0) */}
+              <div className="mb-10 bg-white/40 backdrop-blur-md rounded-[2rem] p-6 border border-white shadow-sm overflow-hidden relative group">
+                <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
+                  <div className="relative w-20 h-20 shrink-0">
+                    <svg className="w-full h-full -rotate-90">
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        className="stroke-rose-50 fill-none"
+                        strokeWidth="6"
+                      />
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        className="stroke-rose-500 fill-none transition-all duration-1000"
+                        strokeWidth="6"
+                        strokeDasharray={226}
+                        strokeDashoffset={226 - (226 * profileStrength) / 100}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xl font-black text-rose-600">{profileStrength}%</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <h3 className="text-lg font-serif font-black text-slate-800 mb-1">
+                      {profileStrength === 100
+                        ? 'Profile Masterpiece! ✨'
+                        : profileStrength >= 70
+                          ? 'Almost there, Stellar Profile! 🚀'
+                          : 'Unlock Your Match Potential 🔓'}
+                    </h3>
+                    <p className="text-slate-400 text-xs font-medium max-w-sm">
+                      {profileStrength === 100
+                        ? 'Your profile is perfect. You are 5x more likely to find your perfect match!'
+                        : 'Complete your profile details and add photos to appear in more search results.'}
+                    </p>
+                  </div>
+                  <div className="w-full md:w-auto">
+                    <div className="h-2 w-full md:w-48 bg-slate-100 rounded-full overflow-hidden mb-2">
+                      <div
+                        className="h-full bg-linear-to-r from-rose-500 to-pink-500 transition-all duration-1000 shadow-lg shadow-rose-200"
+                        style={{ width: `${profileStrength}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-slate-400">
+                      <span>Progress</span>
+                      <span className="text-rose-500">{profileStrength}/100</span>
+                    </div>
+                  </div>
+                </div>
+                {/* Background Decoration */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-rose-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50 group-hover:bg-rose-100 transition-colors" />
+              </div>
+
               {/* Hero Header with Public Profile Access */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 p-8 bg-slate-900 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 blur-[80px] -mr-32 -mt-32" />
@@ -704,8 +765,8 @@ const ProfileDashboard = () => {
                     Master Profile <span className="text-rose-500">Editor</span>
                   </h1>
                   <p className="text-slate-400 font-medium text-sm max-w-md">
-                    Edit sections individually for faster updates. Your profile is{' '}
-                    <span className="text-emerald-400 font-bold">{profileStrength}% complete</span>.
+                    Edit sections individually for faster updates. Keep your details fresh to
+                    attract the right partners.
                   </p>
                 </div>
                 <button
@@ -854,7 +915,12 @@ const ProfileDashboard = () => {
                           className="w-full px-5 py-3.5 pl-12 rounded-2xl border border-rose-100 bg-rose-50/10 text-sm font-bold focus:ring-4 focus:ring-rose-500/10 outline-none transition-all placeholder:text-slate-300"
                         />
                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-500">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"

@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
 /**
- * @file SubhaLagna v3.2.8 — Centralized Error Handling Middleware
+ * @file SubhaLagna v3.3.0 — Centralized Error Handling Middleware
  * @description   Two middleware functions:
  *                1. `notFound` — catches 404 for unregistered routes
  *                2. `errorHandler` — global error handler for all thrown errors,
  *                   including Mongoose validation errors and JWT errors.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 /**
@@ -35,7 +35,6 @@ const notFound = (req, res, next) => {
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 const errorHandler = (err, req, res, next) => {
-   
   let statusCode = err.statusCode || err.status || 500;
   let message = err.message || 'Internal Server Error';
 

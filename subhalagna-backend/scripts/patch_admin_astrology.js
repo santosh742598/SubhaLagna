@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 /**
  * @file patch_admin_astrology.js
  * @description Adds sample astrology data to the Test Admin profile for Guna Milana demo.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 const mongoose = require('mongoose');

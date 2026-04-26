@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
 /**
- * @file SubhaLagna v3.2.8 — System Controller (Public)
+ * @file SubhaLagna v3.3.0 — System Controller (Public)
  * @description Publicly accessible endpoints for system configuration (Branding, etc.).
- * @version      3.2.8
+ * @version      3.3.0
  * @author SubhaLagna Team
  */
 
@@ -18,7 +18,7 @@ const { sendSuccess } = require('../utils/apiResponse');
 const getPublicSettings = async (req, res, next) => {
   try {
     let settings = await SystemSetting.findOne({}).lean();
-    
+
     // If no settings exist, return defaults but don't create (lookup should be read-only for DB)
     if (!settings) {
       return sendSuccess(res, {
@@ -26,7 +26,7 @@ const getPublicSettings = async (req, res, next) => {
         brandPrimary: 'Subha',
         brandSecondary: 'Lagna',
         whatsappCountryCode: '91',
-        productionDomain: 'bahaghara.in'
+        productionDomain: 'bahaghara.in',
       });
     }
 

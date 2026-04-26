@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.2.8 — Reset Password
+ * @file        SubhaLagna v3.3.0 — Reset Password
  * @description   Secure interface for setting a new password via recovery token.
  * - v3.0.4 changes:
  *   - Initial implementation with premium validation UI.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
@@ -41,8 +41,18 @@ const ResetPassword = () => {
       <div className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-xl border border-rose-100/60 animate-fade-in">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <svg
+              className="w-8 h-8 text-rose-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
           </div>
           <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">Reset Password</h2>
@@ -52,10 +62,13 @@ const ResetPassword = () => {
         {success ? (
           <div className="text-center">
             <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-2xl text-sm font-bold">
-              Password reset successful! 🎉<br/>
+              Password reset successful! 🎉
+              <br />
               Redirecting to login...
             </div>
-            <Link to="/login" className="text-rose-600 font-bold hover:underline">Click here if not redirected</Link>
+            <Link to="/login" className="text-rose-600 font-bold hover:underline">
+              Click here if not redirected
+            </Link>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -66,7 +79,9 @@ const ResetPassword = () => {
             )}
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">New Password</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
+                New Password
+              </label>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -78,7 +93,9 @@ const ResetPassword = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">Confirm New Password</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
+                Confirm New Password
+              </label>
               <input
                 type="password"
                 placeholder="••••••••"

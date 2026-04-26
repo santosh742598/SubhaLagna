@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.8 — Main Application Router
+ * @file        SubhaLagna v3.3.0 — Main Application Router
  * @description   Entry point for all React routes. Wraps the application
  *                in required context providers (Auth → Notification → Chat)
  *                and configures all route guards.
@@ -13,11 +13,20 @@
  *                - Standardized ESLint & Prettier for premium code quality.
  *                - Enhanced JSDoc requirements for architectural integrity.
  * @author        SubhaLagna Team
- * @version      3.2.8
+ * @version      3.3.0
  */
 
 import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+  useLocation,
+} from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { APP_NAME } from './config';
 
 /* ── Context Providers ─────────────────────────────────────────────────────── */
 import { AuthContext } from './context/AuthContext';
@@ -161,6 +170,18 @@ function App() {
       <NotificationProvider>
         <ChatProvider>
           <Router>
+            <Helmet>
+              <title>{APP_NAME} — Find Your Perfect Life Partner</title>
+              <meta
+                name="description"
+                content={`Connect with verified profiles on ${APP_NAME}, the premium matrimony platform for modern Indian relationships.`}
+              />
+              <meta property="og:title" content={`${APP_NAME} — Verified Matrimony`} />
+              <meta
+                property="og:description"
+                content="Find your soulmate today with our smart matchmaking and secure connection features."
+              />
+            </Helmet>
             <div className="min-h-screen relative flex flex-col font-sans">
               <Routes>
                 {/* ── Public Marketing Landing ────────────────────────── */}

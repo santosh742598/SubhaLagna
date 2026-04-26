@@ -1,40 +1,53 @@
-# 💍 SubhaLagna Matrimony — v3.2.8
+# 💍 SubhaLagna Matrimony — v3.3.0
 
-[![Project Version](https://img.shields.io/badge/version-3.2.8-blue.svg)](CHANGELOG.md)
+[![Project Version](https://img.shields.io/badge/version-3.3.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![Stack](https://img.shields.io/badge/stack-MERN-green.svg)](#technology-stack)
+[![Status](https://img.shields.io/badge/status-Production--Ready-brightgreen.svg)](CHANGELOG.md)
 
-SubhaLagna is a high-fidelity, enterprise-grade matrimony platform designed for security, scalability, and cultural precision. Built on the modern **MERN stack**, v3.0.0 introduces a robust automated quality foundation, ensuring long-term maintainability and high-performance matching.
+SubhaLagna is an enterprise-grade, high-fidelity matrimony platform engineered for cultural precision, real-time engagement, and institutional security. Built on a modernized **MERN Stack**, v3.3.0 introduces advanced data analytics, gamified user onboarding, and a robust real-time notification infrastructure.
 
 ---
 
-## 📽️ Platform Capabilities
+## Platform Capabilities
+
+### 📊 Business Intelligence & Analytics
+
+SubhaLagna v3.3.0 empowers administrators with a high-fidelity **Analytics Dashboard**:
+
+- **Real-time Growth Tracking**: Interactive time-series charts for User Acquisition and Financial Performance.
+- **Financial Oversight**: Unified ledger for Razorpay transactions, bank transfers, and manual upgrades.
+- **Conversion Insights**: Granular data on membership distribution and revenue trends.
 
 ### 🔮 Matchmaking Intelligence (Guna Milan)
-SubhaLagna implements a **professional-grade Ashta Koota compatibility engine** for precise partner matching:
-- **108 Pada Mapping**: Automated Moon sign (Rashi) determination based on birth star quarters.
-- **36-Point Scoring**: Factor-by-factor breakdown of Varna, Vashya, Tara, Yoni, Maitri, Gana, Bhakoot, and Nadi.
-- **Dosha Cancellation**: Traditional Vedic logic for Nadi and Bhakoot cancellations based on planetary friendship.
 
-### 📊 Secure Financial Oversight
-A dedicated transparency hub for platform administrators:
-- **Unified Transaction Ledger**: Audit every payment across Razorpay, Bank transfers, and Coupons.
-- **Revenue Analytics**: Real-time insights into daily peak performance and lifetime revenue.
-- **Automated Invoicing**: Immediate premium HTML documentation sent to users upon payment.
+A professional-grade **Ashta Koota compatibility engine** designed for astronomical accuracy:
+
+- **108 Pada Mapping**: Automated Moon sign (Rashi) determination based on birth star quarters.
+- **36-Point Scoring**: Factor-by-factor breakdown (Varna, Vashya, Tara, Yoni, Maitri, Gana, Bhakoot, and Nadi).
+- **Dosha Cancellation**: Traditional Vedic logic for Nadi and Bhakoot cancellations based on planetary friendships.
+
+### 🕹️ Gamified Engagement & UX
+
+Designed to maximize user retention and profile quality:
+
+- **Profile Strength Meter**: A dynamic, gamified progress engine that incentivizes 100% data completion.
+- **Real-time Notifications**: Instant Socket.io alerts for profile views and connection interests.
+- **Intelligent Cooldowns**: 24-hour notification logic to maintain a premium, spam-free user experience.
 
 ### 🛡️ Privacy & Trust Infrastructure
-Advanced gating mechanisms to protect user identity and data:
-- **Privacy Frost**: Photos remain blurred with a frosted-glass effect until an interest is **Accepted**.
-- **Contact Masking**: Multi-layer redaction of phone and email for unauthorized viewers.
-- **Email Verification**: Identity verification via OTP (One-Time Password) before profile activation.
 
-- **Structured Documentation**: Strict JSDoc enforcement for all critical controllers, models, and UI components.
+Advanced gating mechanisms to protect user identity and data:
+
+- **Privacy Frost**: Photos remain blurred with a frosted-glass effect until an interest is **Accepted**.
+- **Contact Masking**: Multi-layer redaction of phone and WhatsApp data for unauthorized viewers.
+- **Secure Gating**: Identity verification via OTP (One-Time Password) before profile activation.
 
 ---
 
-## 📂 Project Architecture
+## Project Architecture
 
-SubhaLagna follows a **Modular Clean Architecture** to separate concerns and ensure scalability:
+SubhaLagna follows a **Modular Clean Architecture** to ensure industrial scalability:
 
 ```text
 📦 SubhaLagna-main
@@ -45,16 +58,15 @@ SubhaLagna follows a **Modular Clean Architecture** to separate concerns and ens
 │   ├── 📂 models               # Mongoose Data Schemas
 │   ├── 📂 routes               # API Endpoint Definitions
 │   ├── 📂 scripts              # Database & Maintenance Scripts
-│   ├── 📂 services             # External Integrations (Email/SMS)
+│   ├── 📂 services             # External Integrations (Email/S3)
 │   ├── 📂 socket               # Real-Time Communications (Socket.io)
-│   ├── 📂 uploads              # Local Multi-media Storage
 │   ├── 📂 utils                # Helpers (Matching/Logic)
 │   └── 📄 index.js             # Server Entry Point
 ├── 📂 subhalagna-frontend      # React / Vite Client
 │   ├── 📂 src
 │   │   ├── 📂 assets           # Global Media & Static Files
 │   │   ├── 📂 components       # UI Components (Glassmorphism)
-│   │   ├── 📂 context          # State Management (Auth/Chat)
+│   │   ├── 📂 context          # State Management (Auth/Analytics)
 │   │   ├── 📂 data             # Static Constants & Master Data
 │   │   ├── 📂 services         # API Communication Layer
 │   │   └── 📂 utils            # Frontend Helpers & Constants
@@ -64,76 +76,61 @@ SubhaLagna follows a **Modular Clean Architecture** to separate concerns and ens
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React 18, Vite, Tailwind CSS v4, Context API |
-| **Backend** | Node.js, Express 5, Socket.io |
-| **Database** | MongoDB (Mongoose ODM) |
-| **Payments** | Razorpay Gateway (Signature Verification) |
-| **Storage** | Hybrid (Local Disk / AWS S3 Abstraction) |
-| **Quality** | ESLint (Flat Config), Prettier, JSDoc |
+| Layer        | Technologies                                             |
+| :----------- | :------------------------------------------------------- |
+| **Frontend** | React 18, Vite, Tailwind CSS v4, Recharts, Framer Motion |
+| **Backend**  | Node.js, Express 5, Socket.io, Razorpay Node SDK         |
+| **Database** | MongoDB (Mongoose ODM), Redis (Optional Caching)         |
+| **Storage**  | Hybrid (Local Disk / AWS S3 Abstraction)                 |
+| **Security** | JWT (Access/Refresh), Helmet, Rate Limiting, OTP         |
+| **Quality**  | ESLint (Flat Config), Prettier, JSDoc Standardization    |
 
 ---
 
-## 🚀 Installation & Deployment
+## Installation & Deployment
 
 ### 1. Prerequisites
+
 - **Node.js**: v18.0.0 or higher
 - **MongoDB**: v6.0+ (Local or Atlas)
-- **Email**: SMTP access (for OTP and notifications)
+- **Email**: SMTP access for OTP and system notifications
 
 ### 2. Database Initialization
-Before starting the backend, ensure your MongoDB instance is running:
-- **Windows**: Run `net start MongoDB` in an Administrator terminal.
-- **macOS**: Run `brew services start mongodb-community`.
-- **Linux**: Run `sudo systemctl start mongod`.
-- **Cloud**: Verify your [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) cluster is active and your IP is whitelisted.
+
+Ensure your MongoDB instance is active before service startup:
+
+- **Windows**: `net start MongoDB` (Admin Terminal)
+- **macOS/Linux**: `sudo systemctl start mongod`
+- **Cloud**: Verify [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) cluster whitelist status.
 
 ### 3. Environment Configuration
-Create a `.env` file in the `subhalagna-backend/` directory based on the following template:
 
-| Key | Description |
-| :--- | :--- |
-| `MONGO_URI` | Your MongoDB connection string |
-| `JWT_SECRET` | Secret key for token generation |
-| `RAZORPAY_KEY_ID` | Razorpay public key |
-| `RAZORPAY_KEY_SECRET` | Razorpay secret key |
-| `SMTP_HOST` | Outgoing mail server (e.g., smtp.gmail.com) |
-| `SMTP_USER` | Email account username |
-| `SMTP_PASS` | Email app password |
-| `STORAGE_TYPE` | `local` (disk) or `s3` (AWS Cloud) |
-| `AWS_S3_BUCKET` | Your AWS S3 bucket name |
-| `AWS_REGION` | AWS region (e.g., ap-south-1) |
-| `AWS_ACCESS_KEY_ID` | AWS IAM access key |
-| `AWS_SECRET_ACCESS_KEY` | AWS IAM secret key |
+Populate `.env` files in both `subhalagna-backend/` and `subhalagna-frontend/` based on provided `.env.example` templates.
 
-### 3. Backend Setup
+### 4. Service Startup
+
 ```bash
-cd subhalagna-backend
-npm install
-npm run dev
-```
+# Backend
+cd subhalagna-backend && npm install && npm run dev
 
-### 4. Frontend Setup
-```bash
-cd subhalagna-frontend
-npm install
-npm run dev
+# Frontend
+cd subhalagna-frontend && npm install && npm run dev
 ```
 
 ---
 
-## 👔 Development Workflow
+## Development Workflow
 
-Maintain the platform's v3.0.0 standards using the following commands:
+Maintain the platform's **v3.3.0** quality standards using our automated toolchain:
 
-- **Linting**: `npm run lint` (Checks for documentation and security violations)
-- **Formatting**: `npm run format` (Global code alignment via Prettier)
-- **Dev Mode**: `npm run dev` (Hot-reloading development server)
+- **Quality Audit**: `npm run lint` (Comprehensive JSDoc and Security scan)
+- **Code Alignment**: `npm run format` (Global project-wide Prettier sync)
+- **Release Protocol**: Refer to `AGENTS.md` for AI-driven versioning mandates.
 
 ---
 
-## 🛡️ License
-Proprietary Intellectual Property of the **SubhaLagna Team**. Unauthorized distribution or modification is strictly prohibited.
+## License
+
+Proprietary Intellectual Property of the **SubhaLagna Team**. Unauthorized distribution, modification, or commercial exploitation is strictly prohibited.

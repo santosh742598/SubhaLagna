@@ -86,10 +86,12 @@ function syncFile(filePath) {
   }
 
   // 6. Pattern E: Parenthetical versions (vX.X.X) - specifically for markdown headers
+  // Only update if it's NOT in the middle of a historical changelog entry
   if (filePath.endsWith('.md')) {
-    const parenVersionRegex = /\(v(\d+\.\d+\.\d+)\)/g;
+    // Specifically target the top-level version shield or specific markers
+    const parenVersionRegex = /\[version-(\d+\.\d+\.\d+)-blue\]/g; // Matches shield badge specifically
     if (parenVersionRegex.test(content)) {
-      content = content.replace(parenVersionRegex, `(v${version})`);
+      content = content.replace(parenVersionRegex, `[version-${version}-blue]`);
       changed = true;
     }
   }
