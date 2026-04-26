@@ -1,10 +1,10 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.2.3 — System Setting Model
+ * @file SubhaLagna v3.2.4 — System Setting Model
  * @description Stores global platform configuration (Branding, WhatsApp, etc.)
  *              editable via Admin Dashboard.
- * @version      3.2.3
+ * @version      3.2.4
  * @author SubhaLagna Team
  */
 

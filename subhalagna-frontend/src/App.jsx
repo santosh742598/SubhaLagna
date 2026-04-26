@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.3 — Main Application Router
+ * @file        SubhaLagna v3.2.4 — Main Application Router
  * @description   Entry point for all React routes. Wraps the application
  *                in required context providers (Auth → Notification → Chat)
  *                and configures all route guards.
@@ -13,7 +13,7 @@
  *                - Standardized ESLint & Prettier for premium code quality.
  *                - Enhanced JSDoc requirements for architectural integrity.
  * @author        SubhaLagna Team
- * @version      3.2.3
+ * @version      3.2.4
  */
 
 import React, { useContext } from 'react';
@@ -48,8 +48,9 @@ import InterestButton from './components/InterestButton'; // exported for refere
 /**
  * GuestRoute — allows only unauthenticated users.
  * Redirects authenticated users with profiles to /matches.
- * @param root0
- * @param root0.children
+ * @param {object} props - Component properties.
+ * @param {React.ReactNode} props.children - Child elements.
+ * @returns {React.JSX.Element|null} The rendered route.
  */
 const GuestRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
@@ -65,8 +66,9 @@ const GuestRoute = ({ children }) => {
 
 /**
  * OnboardRoute — for logged-in users who haven't set up their profile yet.
- * @param root0
- * @param root0.children
+ * @param {object} props - Component properties.
+ * @param {React.ReactNode} props.children - Child elements.
+ * @returns {React.JSX.Element|null} The rendered route.
  */
 const OnboardRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
@@ -86,8 +88,9 @@ const OnboardRoute = ({ children }) => {
 
 /**
  * ProtectedRoute — requires: logged in + profile exists.
- * @param root0
- * @param root0.children
+ * @param {object} props - Component properties.
+ * @param {React.ReactNode} props.children - Child elements.
+ * @returns {React.JSX.Element} The rendered route.
  */
 const ProtectedRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
@@ -108,8 +111,9 @@ const ProtectedRoute = ({ children }) => {
 
 /**
  * AdminRoute — requires: logged in + role === 'admin'.
- * @param root0
- * @param root0.children
+ * @param {object} props - Component properties.
+ * @param {React.ReactNode} props.children - Child elements.
+ * @returns {React.JSX.Element|null} The rendered route.
  */
 const AdminRoute = ({ children }) => {
   const { token, user, loading } = useContext(AuthContext);
@@ -123,6 +127,7 @@ const AdminRoute = ({ children }) => {
 
 /**
  * AppLayout — wraps dashboard pages with the Header + gradient background blobs.
+ * @returns {React.JSX.Element} The rendered layout.
  */
 const AppLayout = () => (
   <>
@@ -142,7 +147,7 @@ const AppLayout = () => (
 
 /**
  * App — configures context provider nesting and route tree.
- * @returns {JSX.Element}
+ * @returns {React.JSX.Element} The rendered application root.
  */
 function App() {
   return (

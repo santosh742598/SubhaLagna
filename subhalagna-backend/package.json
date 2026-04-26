@@ -1,6 +1,6 @@
 {
   "name": "subhalagna-backend",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "SubhaLagna Matrimony Platform — RESTful API Backend with Socket.io",
   "main": "index.js",
   "scripts": {

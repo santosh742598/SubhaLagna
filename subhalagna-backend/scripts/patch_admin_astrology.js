@@ -4,7 +4,7 @@
  * @file patch_admin_astrology.js
  * @description Adds sample astrology data to the Test Admin profile for Guna Milana demo.
  * @author        SubhaLagna Team
- * @version      3.2.3
+ * @version      3.2.4
  */
 
 const mongoose = require('mongoose');

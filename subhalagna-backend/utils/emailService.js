@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.2.3 — Email Service
+ * @file SubhaLagna v3.2.4 — Email Service
  * @description   Nodemailer-based email service with pre-built templates for:
  *                - Email verification (OTP)
  *                - Password reset link
@@ -14,7 +14,7 @@
  *                 - Added ESLint overrides for intentional development console logging.
  *                 - Resolved project-wide JSDoc documentation warnings by adding proper @returns descriptions.
  * @author        SubhaLagna Team
- * @version      3.2.3
+ * @version      3.2.4
  */
 
 const nodemailer = require('nodemailer');

@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.2.3 — Signup Implementation
+ * @file        SubhaLagna v3.2.4 — Signup Implementation
  * @description   Handles new user account creation.
  *               - v3.0.5 changes:
  *                 - Enhanced signup success feedback with route state communication.
  * @author        SubhaLagna Team
- * @version      3.2.3
+ * @version      3.2.4
  */
 
 import React, { useState, useContext } from 'react';
