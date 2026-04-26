@@ -1,10 +1,10 @@
 /**  
- * @file        SubhaLagna v3.3.7 — Home Header Component  
+ * @file        SubhaLagna v3.3.8 — Home Header Component  
  * @description   Extracted Header component for the landing page.  
  *                - v3.3.3 changes:  
  *                  - Initial extraction from Home.jsx.  
  * @author        SubhaLagna Team  
- * @version      3.3.7  
+ * @version      3.3.8  
  */  
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';

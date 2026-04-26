@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.3.7 — Searchable Dropdown
+ * @file        SubhaLagna v3.3.8 — Searchable Dropdown
  * @description   A reusable interactive dropdown with search filtering and manual entry support.
  * @author        SubhaLagna Team
- * @version      3.3.7
+ * @version      3.3.8
  */
 
 import React, { useState, useRef, useEffect } from 'react';

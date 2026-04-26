@@ -1,9 +1,9 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.3.7 — Auth Integration Tests
+ * @file        SubhaLagna v3.3.8 — Auth Integration Tests
  * @description   Basic smoke tests for Authentication workflows.
- * @version      3.3.7
+ * @version      3.3.8
  * @author        SubhaLagna Team
  */
 

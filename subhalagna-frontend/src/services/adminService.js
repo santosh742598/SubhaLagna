@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.7 — Admin Service
+ * @file        SubhaLagna v3.3.8 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
  * - v3.3.0 changes:
  *   - Added getAnalyticsData API wrapper for growth tracking.
@@ -12,7 +12,7 @@
  * - v3.3.4 changes:
  *   - Added getSystemHealth for platform diagnostics and log retrieval.
  * @author       SubhaLagna Team
- * @version      3.3.7
+ * @version      3.3.8
  */
 
 import api, { getErrorMessage } from './api';
@@ -320,5 +320,19 @@ export const getSystemHealth = async () => {
     return data.data;
   } catch (err) {
     throw getErrorMessage(err, 'Failed to fetch system health');
+  }
+};
+
+/**
+ * Clear a specific system collection (Logs, Notifications, or Chats).
+ * @param {string} collection - 'logs', 'notifications', or 'chats'
+ * @returns {Promise<object>} { deletedCount }
+ */
+export const clearSystemCollection = async (collection) => {
+  try {
+    const { data } = await api.delete(`/admin/system/clear/${collection}`);
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, `Failed to clear ${collection}`);
   }
 };

@@ -3,7 +3,7 @@
 /* eslint-disable no-console */
 
 /**
- * @file        SubhaLagna v3.3.7 — ContactsViewed Migration Script
+ * @file        SubhaLagna v3.3.8 — ContactsViewed Migration Script
  * @description   One-time migration: reads all users with `contactsViewed` entries
  *                and creates corresponding `ContactView` documents in the new collection.
  *                Safe to run multiple times (uses upsert to prevent duplicates).
@@ -16,7 +16,7 @@
  *                - v3.3.2 changes:
  *                  - Initial creation as part of scalability refactor (P2-13).
  * @author        SubhaLagna Team
- * @version      3.3.7
+ * @version      3.3.8
  */
 
 const mongoose = require('mongoose');

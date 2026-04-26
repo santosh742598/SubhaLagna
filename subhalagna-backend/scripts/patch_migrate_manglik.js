@@ -4,7 +4,7 @@
  * @file Migration Script: Transition Manglik status from Boolean to String Enum
  * @description   Converts existing true/false values to 'Yes'/'No'.
  *                Updates missing or null values to 'Unknown'.
- * @version      3.3.7
+ * @version      3.3.8
  * @author        SubhaLagna Team
  */
 

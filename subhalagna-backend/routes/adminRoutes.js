@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.3.7 — Admin Routes
+ * @file SubhaLagna v3.3.8 — Admin Routes
  * @description Route definitions for the admin dashboard.
  * - v3.3.0 changes:
  *   - Added GET /api/admin/analytics for time-series growth data.
@@ -14,7 +14,7 @@
  *   - Integrated plan management into the administrative API surface.
  * - v3.3.4 changes:
  *   - Added GET /api/admin/system/health for platform diagnostic monitoring.
- * @version      3.3.7
+ * @version      3.3.8
  * @author        SubhaLagna Team
  */
 
@@ -90,5 +90,6 @@ router.put('/settings', updateSystemSettings);
 
 // System Health & Diagnostics
 router.get('/system/health', getSystemHealth);
+router.delete('/system/clear/:collection', clearSystemCollection);
 
 module.exports = router;

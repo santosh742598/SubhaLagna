@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.7 — Admin Dashboard
+ * @file        SubhaLagna v3.3.8 — Admin Dashboard
  *                 - Stabilized fetch logic with useCallback/useEffect hooks
  *                 - Resolved infinite render loops
  *                 - Modernized Tailwind v4 shorthand syntax
@@ -10,7 +10,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.3.7
+ * @version      3.3.8
  * @author        SubhaLagna Team
  */
 
@@ -41,6 +41,7 @@ import {
   updateSystemSettings,
   getAnalyticsData,
   getSystemHealth,
+  clearSystemCollection,
 } from '../services/adminService';
 import {
   LineChart,
@@ -1649,45 +1650,174 @@ const AdminDashboard = () => {
                     <h4 className="text-xl font-serif font-bold text-gray-800 capitalize">
                       {healthData?.database.status || 'Checking...'}
                     </h4>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                      Server Uptime
+                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">
+                      {healthData?.database.dbName}
                     </p>
-                    <h4 className="text-xl font-serif font-bold text-gray-800">
-                      {healthData
-                        ? `${Math.floor(healthData.server.uptime / 3600)}h ${Math.floor((healthData.server.uptime % 3600) / 60)}m`
-                        : 'Calculating...'}
-                    </h4>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                      Memory Usage
+                      Server Memory
                     </p>
                     <h4 className="text-xl font-serif font-bold text-gray-800">
-                      {healthData ? `${healthData.server.memory.usage}%` : 'Reading...'}
+                      {healthData?.server.memory.usage}% Used
                     </h4>
+                    <div className="w-24 h-1 bg-gray-100 rounded-full mt-2 overflow-hidden">
+                      <div
+                        className="h-full bg-indigo-500 transition-all duration-1000"
+                        style={{ width: `${healthData?.server.memory.usage}%` }}
+                      />
+                    </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      Server Uptime
+                    </p>
+                    <h4 className="text-lg font-serif font-bold text-gray-800">
+                      {healthData
+                        ? `${Math.floor(healthData.server.uptime / 3600)}h ${Math.floor((healthData.server.uptime % 3600) / 60)}m`
+                        : 'Calculated...'}
+                    </h4>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">
+                      Platform: {healthData?.server.platform}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Service & Collection Control Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* External Services */}
+              <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+                <h3 className="text-lg font-serif font-bold text-gray-800 mb-6 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-rose-500 rounded-full" />
+                  Service Connectivity
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                        <svg
+                          className="w-5 h-5 text-indigo-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-gray-700">Email Server (SMTP)</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-widest">
+                          Outbound Notifications
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${healthData?.services?.smtp === 'connected' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}
+                    >
+                      {healthData?.services?.smtp === 'connected' ? 'Connected' : 'Error'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                        <svg
+                          className="w-5 h-5 text-blue-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-gray-700">Razorpay API</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-widest">
+                          Payment Gateway
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${healthData?.services?.razorpay === 'configured' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'}`}
+                    >
+                      {healthData?.services?.razorpay === 'configured'
+                        ? 'Configured'
+                        : 'Missing Keys'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Collection Management */}
+              <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+                <h3 className="text-lg font-serif font-bold text-gray-800 mb-6 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-indigo-500 rounded-full" />
+                  Collection Management
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { id: 'logs', label: 'Logs', count: healthData?.database?.counts?.logs },
+                    {
+                      id: 'notifications',
+                      label: 'Alerts',
+                      count: healthData?.database?.counts?.notifications,
+                    },
+                    { id: 'chats', label: 'Chats', count: healthData?.database?.counts?.messages },
+                  ].map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-4 bg-slate-50 rounded-2xl border border-gray-100 flex flex-col items-center text-center"
+                    >
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                        {item.label}
+                      </span>
+                      <span className="text-xl font-serif font-bold text-gray-800">
+                        {item.count || 0}
+                      </span>
+                      <button
+                        onClick={async () => {
+                          if (
+                            window.confirm(
+                              `ARE YOU SURE? This will permanently delete ALL ${item.label}. This cannot be undone.`,
+                            )
+                          ) {
+                            try {
+                              const result = await clearSystemCollection(item.id);
+                              alert(`Successfully cleared ${result.deletedCount} items.`);
+                              fetchHealth(); // Refresh
+                            } catch (err) {
+                              alert(err.message);
+                            }
+                          }
+                        }}
+                        className="mt-4 px-4 py-1.5 bg-white hover:bg-rose-50 text-rose-500 text-[10px] font-black uppercase tracking-widest border border-gray-100 rounded-lg transition-all active:scale-95"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -1717,13 +1847,13 @@ const AdminDashboard = () => {
                 </button>
               </div>
               <div className="p-6 font-mono text-xs max-h-[500px] overflow-y-auto custom-scrollbar">
-                {healthData?.recentLogs.length === 0 ? (
+                {healthData?.recentLogs?.length === 0 ? (
                   <p className="text-gray-600 italic py-10 text-center">
                     No system logs recorded. Everything looks healthy! ✨
                   </p>
                 ) : (
                   <div className="space-y-3">
-                    {healthData?.recentLogs.map((log) => (
+                    {healthData?.recentLogs?.map((log) => (
                       <div
                         key={log._id}
                         className="p-4 rounded-xl bg-gray-800/50 border border-gray-800 hover:border-gray-700 transition-all group"
@@ -1739,17 +1869,19 @@ const AdminDashboard = () => {
                               {new Date(log.createdAt).toLocaleString()}
                             </span>
                           </div>
-                          <span className="text-[10px] text-gray-600 group-hover:text-gray-400 transition-all">
-                            {log.metadata?.method} {log.metadata?.path}
-                          </span>
                         </div>
                         <p className="text-gray-300 font-bold mb-1">{log.message}</p>
+                        {log.meta && (
+                          <pre className="mt-2 p-3 bg-black/40 rounded-lg text-rose-300/70 overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">
+                            {JSON.stringify(log.meta, null, 2)}
+                          </pre>
+                        )}
                         {log.stack && (
                           <details className="mt-2">
                             <summary className="text-gray-600 cursor-pointer hover:text-gray-400 transition-all select-none">
                               View Stack Trace
                             </summary>
-                            <pre className="mt-2 p-3 bg-black/40 rounded-lg text-rose-300/70 overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">
+                            <pre className="mt-2 p-3 bg-black/40 rounded-lg text-rose-300/70 overflow-x-auto whitespace-pre-wrap break-all leading-relaxed text-[10px]">
                               {log.stack}
                             </pre>
                           </details>

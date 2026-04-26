@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.3.7 — Admin Controller
+ * @file        SubhaLagna v3.3.8 — Admin Controller
  * @description   Administrative tools for platform management:
  *                - v3.3.0 changes:
  *                  - Implemented getAnalyticsData for time-series growth tracking (30 days).
@@ -18,7 +18,7 @@
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.3.7
+ * @version      3.3.8
  */
 
 const User = require('../models/User');
@@ -1051,17 +1051,51 @@ const getSystemHealth = async (req, res, next) => {
   try {
     const mongoose = require('mongoose');
     const os = require('os');
+    const nodemailer = require('nodemailer');
 
-    const [logs, settings] = await Promise.all([
+    const [logs, settings, logCount, notifCount, msgCount] = await Promise.all([
       SystemLog.find({}).sort({ createdAt: -1 }).limit(50).lean(),
       SystemSetting.findOne({}),
+      SystemLog.countDocuments({}),
+      Notification.countDocuments({}),
+      Message.countDocuments({}),
     ]);
+
+    // Service Connectivity Checks
+    let smtpStatus = 'unknown';
+    try {
+      const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        secure: process.env.EMAIL_PORT === '465',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+      await transporter.verify();
+      smtpStatus = 'connected';
+    } catch (err) {
+      smtpStatus = 'error';
+    }
+
+    const razorpayStatus =
+      process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET ? 'configured' : 'missing';
 
     const health = {
       database: {
         status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
         readyState: mongoose.connection.readyState,
         dbName: mongoose.connection.name,
+        counts: {
+          logs: logCount,
+          notifications: notifCount,
+          messages: msgCount,
+        },
+      },
+      services: {
+        smtp: smtpStatus,
+        razorpay: razorpayStatus,
       },
       server: {
         uptime: os.uptime(),
@@ -1078,6 +1112,47 @@ const getSystemHealth = async (req, res, next) => {
     };
 
     return sendSuccess(res, health, 'System health retrieved');
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Clears specific system-level collections.
+ * @desc    Clear Logs, Notifications, or Chats
+ * @route   DELETE /api/admin/system/clear/:collection
+ * @access  Admin
+ */
+const clearSystemCollection = async (req, res, next) => {
+  try {
+    const { collection } = req.params;
+    let deletedCount = 0;
+
+    switch (collection) {
+      case 'logs':
+        const logResult = await SystemLog.deleteMany({});
+        deletedCount = logResult.deletedCount;
+        break;
+      case 'notifications':
+        const notifResult = await Notification.deleteMany({});
+        deletedCount = notifResult.deletedCount;
+        break;
+      case 'chats':
+        const msgResult = await Message.deleteMany({});
+        deletedCount = msgResult.deletedCount;
+        break;
+      default:
+        return sendError(res, 'Invalid collection specified', 400);
+    }
+
+    // Log the manual clear action
+    await SystemLog.create({
+      level: 'warn',
+      message: `Administrator manually cleared the ${collection} collection (${deletedCount} records).`,
+      meta: { admin: req.user._id },
+    });
+
+    return sendSuccess(res, { deletedCount }, `Successfully cleared ${deletedCount} ${collection}`);
   } catch (err) {
     next(err);
   }
@@ -1107,4 +1182,5 @@ module.exports = {
   updateSystemSettings,
   getAnalyticsData,
   getSystemHealth,
+  clearSystemCollection,
 };
