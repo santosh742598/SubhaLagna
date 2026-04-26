@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+ 
+## [3.1.5] - 2026-04-26
+ 
+### Added
+- **⚙️ Admin-Managed Configuration**: Transitioned core platform settings (App Name, Branding, WhatsApp, Domain) from static files to a database-driven system managed via the Admin Dashboard.
+- **🌍 Global Context Integration**: Unified `settings` and `plans` into a centralized global context (`AuthContext`), ensuring high performance and real-time UI updates across all components.
+- **💅 Premium Settings UI**: Added a dedicated "System Settings" tab to the Admin Dashboard with a modern glassmorphism design for managing branding and support contacts.
+ 
+### Changed
+- **🚀 Version Bump**: Universal synchronization of the project to `v3.1.5`.
+- **🛠️ Config Refactor**: Simplified `src/config.js` to prioritize critical environment variables at the top of the file for easier management.
+- **📁 Environment Templates**: Updated `.env.example` in both backend and frontend with new configuration keys (`PRODUCTION_DOMAIN`, `WHATSAPP_COUNTRY_CODE`).
+ 
+### Fixed
+- **🔄 Sync Logic**: Standardized membership plan fetching across the platform, eliminating redundant API endpoints and ensuring consistent data.
 
 ## [3.1.0] - 2026-04-26
 

@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.1.0 — Global Header
+ * @file        SubhaLagna v3.1.5 — Global Header
  * @description   Modern, responsive navigation bar with real-time notifications and chat triggers.
  *               - Restored original gender-based default avatar image (/man.png, /woman.png).
  *               - Integrated SystemStatus indicator for real-time infrastructure monitoring.
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -12,9 +12,10 @@ import { AuthContext } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
 import SystemStatus from './SystemStatus';
 import { getProfileAvatar } from '../utils/avatarHelper';
+import { APP_NAME, BRAND_PRIMARY, BRAND_SECONDARY } from '../config';
 
 const Header = () => {
-  const { token, logoutContext, user } = useContext(AuthContext);
+  const { token, logoutContext, user, settings } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -73,7 +74,8 @@ const Header = () => {
             </div>
             <div>
               <h1 className="text-2xl font-serif font-bold tracking-tight text-slate-800">
-                Subha<span className="text-pink-500">Lagna</span>
+                {settings?.brandPrimary || BRAND_PRIMARY}
+                <span className="text-pink-500">{settings?.brandSecondary || BRAND_SECONDARY}</span>
               </h1>
               <p className="text-[10px] text-pink-400 font-bold uppercase tracking-[0.2em] -mt-1 opacity-80">
                 Premium Matrimony

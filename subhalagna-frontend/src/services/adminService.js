@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.1.0 — Admin Service
+ * @file        SubhaLagna v3.1.5 — Admin Service
  * @description API calls for the admin dashboard including user management and membership controls.
  * - v3.0.4 changes:
  *   - Added updateUserRole API wrapper for admin promotion/demotion.
@@ -8,7 +8,7 @@
  * - v2.3.0 changes:
  *   - Added getAdminPlans and updateAdminPlan for real-time membership management.
  * @author       SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 import api, { getErrorMessage } from './api';
@@ -263,5 +263,32 @@ export const updateUserRole = async (id, role) => {
     return data.data;
   } catch (err) {
     throw getErrorMessage(err, 'Failed to update user role');
+  }
+};
+
+/**
+ * Get global platform system settings.
+ * @returns {Promise<object>} Settings object
+ */
+export const getSystemSettings = async () => {
+  try {
+    const { data } = await api.get('/admin/settings');
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to fetch system settings');
+  }
+};
+
+/**
+ * Update global platform system settings.
+ * @param {object} settingsData - New settings
+ * @returns {Promise<object>} Updated settings
+ */
+export const updateSystemSettings = async (settingsData) => {
+  try {
+    const { data } = await api.put('/admin/settings', settingsData);
+    return data.data;
+  } catch (err) {
+    throw getErrorMessage(err, 'Failed to update system settings');
   }
 };

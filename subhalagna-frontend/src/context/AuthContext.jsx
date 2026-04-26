@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.1.0 — Auth Context
+ * @file        SubhaLagna v3.1.5 — Auth Context
  * @description   Global authentication state provider. Supplies `user`, `token`,
  *                and auth actions to all child components via React Context API.
  *
@@ -9,7 +9,7 @@
  *                  - Handles token refresh transparently (via axios interceptor)
  *                  - Provides `isPremium` computed getter
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';
@@ -19,6 +19,7 @@ import {
   logout as logoutService,
   getMe,
 } from '../services/authService';
+import { fetchPublicSettings } from '../services/lookupService';
 
 /**
  * AuthContext shape:
@@ -47,6 +48,10 @@ export const AuthContext = createContext(
     logoutContext: () => {},
     updateProfileContext: () => {},
     refreshUser: () => {},
+    settings: null,
+    refreshSettings: () => {},
+    plans: [],
+    refreshPlans: () => {},
   }),
 );
 
@@ -59,6 +64,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState(null);
+  const [plans, setPlans] = useState([]);
 
   // ── Rehydrate auth state on app boot ─────────────────────────────────────
   useEffect(() => {
@@ -86,6 +93,34 @@ export const AuthProvider = ({ children }) => {
 
     rehydrate();
   }, []);
+
+  // ── Fetch System Settings ────────────────────────────────────────────────
+  const refreshSettings = useCallback(async () => {
+    try {
+      const data = await fetchPublicSettings();
+      if (data) setSettings(data);
+    } catch (err) {
+      console.error('Settings Refresh Failed:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshSettings();
+  }, [refreshSettings]);
+
+  // ── Fetch Membership Plans ─────────────────────────────────────────────
+  const refreshPlans = useCallback(async () => {
+    try {
+      const { data } = await api.get('/payments/plans');
+      if (data) setPlans(data.data);
+    } catch (err) {
+      console.error('Plans Refresh Failed:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshPlans();
+  }, [refreshPlans]);
 
   /**
    * Login action — stores tokens, sets user state.
@@ -188,6 +223,10 @@ export const AuthProvider = ({ children }) => {
     logoutContext,
     updateProfileContext,
     refreshUser,
+    settings,
+    refreshSettings,
+    plans,
+    refreshPlans,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

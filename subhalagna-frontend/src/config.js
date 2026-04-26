@@ -1,12 +1,21 @@
 /**
- * @file        SubhaLagna v3.1.0 — Global Frontend Configuration
+ * @file        SubhaLagna v3.1.5 — Global Frontend Configuration
  * @description Centralizes all environment-dependent configuration values.
  *               - v3.0.5 changes:
  *                 - Implemented Smart Config for auto-detection of bahaghara.in vs localhost.
  *                 - Forced HTTPS protocols for production domain stability.
  * @author SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
+
+// ── CORE CONFIGURATION (Change these for different websites) ────────────────
+export const PRODUCTION_DOMAIN = 'bahaghara.in';
+export const APP_NAME = import.meta.env.VITE_APP_NAME || 'SubhaLagna';
+export const BRAND_PRIMARY = 'Subha';
+export const BRAND_SECONDARY = 'Lagna';
+export const WHATSAPP_COUNTRY_CODE = import.meta.env.VITE_WHATSAPP_COUNTRY_CODE || '91';
+
+// ── END CORE CONFIGURATION ──────────────────────────────────────────────────
 
 /**
  * Base URL for all REST API calls.
@@ -19,11 +28,11 @@ let socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
 // Smart Config: Detect Environment and set URLs automatically
 if (typeof window !== 'undefined') {
   const host = window.location.hostname;
-  
+
   // 🌍 Production Case
-  if (host === 'bahaghara.in' || host === 'www.bahaghara.in') {
-    baseUrl = 'https://bahaghara.in';
-    socketUrl = 'https://bahaghara.in';
+  if (host === PRODUCTION_DOMAIN || host === `www.${PRODUCTION_DOMAIN}`) {
+    baseUrl = `https://${PRODUCTION_DOMAIN}`;
+    socketUrl = `https://${PRODUCTION_DOMAIN}`;
   } 
   // 💻 Local Development Case
   else if (host === 'localhost' || host === '127.0.0.1') {
@@ -46,12 +55,6 @@ export const SOCKET_URL = socketUrl;
  * @type {string}
  */
 export const APP_VERSION = '2.4.0';
-
-/**
- * App name constant (used across the app for branding).
- * @type {string}
- */
-export const APP_NAME = 'SubhaLagna';
 
 /**
  * Razorpay publishable key.

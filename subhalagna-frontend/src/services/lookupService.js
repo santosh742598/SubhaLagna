@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.1.0 — Lookup Service
+ * @file        SubhaLagna v3.1.5 — Lookup Service
  * @description Handles API calls for dynamic master data (Caste, City, etc.)
  * @author       SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 import api from './api';
@@ -26,5 +26,19 @@ export const fetchLookupOptions = async (type, group = '') => {
   } catch (err) {
     console.error(`Lookup Error [${type}]:`, err);
     return [];
+  }
+};
+
+/**
+ * Fetches public system configuration (Branding, etc.).
+ * @returns {Promise<object>} Public settings object
+ */
+export const fetchPublicSettings = async () => {
+  try {
+    const { data } = await api.get('/lookup/settings');
+    return data.data;
+  } catch (err) {
+    console.error('System Settings Error:', err);
+    return null;
   }
 };

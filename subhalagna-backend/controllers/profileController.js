@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.1.0 — Profile Controller
+ * @file        SubhaLagna v3.1.5 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
  *                - Comprehensive profile setup (onboarding).
  *                - Paginated matches with Guna Milan scoring.
@@ -12,7 +12,7 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 const Profile = require('../models/Profile');
@@ -487,6 +487,16 @@ const updateProfile = async (req, res, next) => {
 
     // ── Build update payload ───────────────────────────────────────────────
     const updateData = { ...req.body };
+
+    // Handle Phone Number update (Sync to User model)
+    if (req.body.phone !== undefined || req.body.isWhatsappAvailable !== undefined) {
+      const userUpdate = {};
+      if (req.body.phone !== undefined) userUpdate.phone = req.body.phone;
+      if (req.body.isWhatsappAvailable !== undefined) {
+        userUpdate.isWhatsappAvailable = req.body.isWhatsappAvailable === 'true' || req.body.isWhatsappAvailable === true;
+      }
+      await User.findByIdAndUpdate(profile.user, userUpdate);
+    }
 
     // Handle profile photo update with Sharp
     if (req.files?.['profilePhoto']?.[0]) {

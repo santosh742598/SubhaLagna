@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.1.0 — Interactive Landing Page
+ * @file        SubhaLagna v3.1.5 — Interactive Landing Page
  * @description Transitioned to session-aware UI.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0 with automated coding standards.
@@ -7,7 +7,7 @@
  *                - Standardized Prettier formatting and Tailwind class sorting.
  *                - Verified responsive layouts across mobile/desktop views.
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -94,7 +94,7 @@ const useSlider = (length, interval = 5000) => {
 
 // ─── Header ─────────────────────────────────────────────────────────────────
 const Header = () => {
-  const { token, logoutContext } = useContext(AuthContext);
+  const { token, logoutContext, settings } = useContext(AuthContext);
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -128,7 +128,8 @@ const Header = () => {
               scrolled ? 'text-gray-800' : 'text-white'
             }`}
           >
-            Subha<span className="text-rose-500">Lagna</span>
+            {settings?.brandPrimary || 'Subha'}
+            <span className="text-rose-500">{settings?.brandSecondary || 'Lagna'}</span>
           </span>
         </Link>
 
@@ -531,7 +532,7 @@ const HowItWorks = () => {
             </span>
           </h2>
           <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-            Simple steps to finding your perfect life partner with SubhaLagna
+            Simple steps to finding your perfect life partner with {settings?.appName || 'SubhaLagna'}
           </p>
         </div>
 
@@ -620,7 +621,7 @@ const SuccessStories = () => {
             </span>
           </h2>
           <p className="text-gray-500 text-lg max-w-xl mx-auto">
-            Thousands of couples have found their soulmates through SubhaLagna
+            Thousands of couples have found their soulmates through {settings?.appName || 'SubhaLagna'}
           </p>
         </div>
 

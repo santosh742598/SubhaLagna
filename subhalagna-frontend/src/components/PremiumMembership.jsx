@@ -1,11 +1,11 @@
 /**
- * @file        SubhaLagna v3.1.0 — Premium Membership & Payments
+ * @file        SubhaLagna v3.1.5 — Premium Membership & Payments
  * @description Dynamic membership selection with Coupon system and Razorpay integration.
  * - v2.3.1 changes:
  *   - Removed hardcoded duration strings in favor of plan-driven duration text.
  *   - Integrated dynamic Razorpay order metadata.
  *   - Fixed checkout initialization for dynamic plans.
- * @version      3.1.0
+ * @version      3.1.5
  * @author        SubhaLagna Team
  */
 
@@ -24,11 +24,10 @@ import {
 import { BANK_DETAILS, RAZORPAY_KEY_ID } from '../config';
 
 const PremiumMembership = () => {
-  const { user, refreshUser } = useContext(AuthContext);
+  const { user, refreshUser, plans, refreshPlans } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
 
   // Coupon State
@@ -49,18 +48,10 @@ const PremiumMembership = () => {
 
   // ── Load Plans ─────────────────────────────────────────────────────────────
   useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const data = await getPlans();
-        setPlans(data);
-      } catch (err) {
-        console.error('Failed to load plans:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPlans();
-  }, []);
+    if (plans.length === 0) {
+      refreshPlans();
+    }
+  }, [plans, refreshPlans]);
 
   // ── Coupon Logic ───────────────────────────────────────────────────────────
   const handleApplyCoupon = async (planId) => {

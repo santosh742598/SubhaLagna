@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.1.0 — Admin Dashboard
+ * @file        SubhaLagna v3.1.5 — Admin Dashboard
  * @description Comprehensive management interface for users, plans, and system state.
  *               v3.1.0 changes:
  *                 - Stabilized fetch logic with useCallback/useEffect hooks
@@ -12,13 +12,14 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.1.0
+ * @version      3.1.5
  * @author        SubhaLagna Team
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import {
   getDashboardStats,
   getAllUsers,
@@ -38,6 +39,8 @@ import {
   adminUploadPhotos,
   updateUserRole,
   updateAdminPlan,
+  getSystemSettings,
+  updateSystemSettings,
 } from '../services/adminService';
 import { getProfileAvatar } from '../utils/avatarHelper';
 import { fetchLookupOptions } from '../services/lookupService';
@@ -105,6 +108,8 @@ StatCard.propTypes = {
 };
 
 const AdminDashboard = () => {
+  const { user, refreshSettings, refreshPlans } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('users');
   const [stats, setStats] = useState(null);
   // loading is not currently used for UI feedback, but fetched in fetchData
@@ -187,6 +192,18 @@ const AdminDashboard = () => {
   const [userModalTab, setUserModalTab] = useState('account');
   const [photoFiles, setPhotoFiles] = useState({ profilePhoto: null, additionalPhotos: [] });
   const [isUploading, setIsUploading] = useState(false);
+
+  // System Settings State
+  const [systemSettings, setSystemSettings] = useState({
+    appName: '',
+    brandPrimary: '',
+    brandSecondary: '',
+    whatsappCountryCode: '',
+    productionDomain: '',
+    supportEmail: '',
+    contactPhone: '',
+  });
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   // Master Data Options for Modals
   const [religionOptions, setReligionOptions] = useState([]);
@@ -292,6 +309,15 @@ const AdminDashboard = () => {
     }
   }, []);
 
+  const fetchSystemSettings = useCallback(async () => {
+    try {
+      const data = await getSystemSettings();
+      setSystemSettings(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchPlans(); // Fetch plans on mount for modals
   }, [fetchPlans]);
@@ -364,7 +390,8 @@ const AdminDashboard = () => {
     if (activeTab === 'coupons') fetchCoupons();
     if (activeTab === 'payments') fetchPayments();
     if (activeTab === 'membership_plans') fetchPlans();
-  }, [search, filterRole, activeTab, fetchData, fetchCoupons, fetchPayments, fetchPlans]);
+    if (activeTab === 'settings') fetchSystemSettings();
+  }, [search, filterRole, activeTab, fetchData, fetchCoupons, fetchPayments, fetchPlans, fetchSystemSettings]);
 
   const handleAction = async (actionFn, id) => {
     if (
@@ -399,9 +426,24 @@ const AdminDashboard = () => {
       await updateAdminPlan(selectedPlan._id, planForm);
       setIsPlanModalOpen(false);
       fetchPlans();
+      refreshPlans(); // Update global context
       alert('Plan updated successfully! ✨');
     } catch (err) {
       alert(err);
+    }
+  };
+
+  const handleSaveSettings = async (e) => {
+    e.preventDefault();
+    setIsSavingSettings(true);
+    try {
+      await updateSystemSettings(systemSettings);
+      refreshSettings(); // Update global context
+      alert('System settings updated successfully! ✨');
+    } catch (err) {
+      alert(err);
+    } finally {
+      setIsSavingSettings(false);
     }
   };
 
@@ -644,6 +686,12 @@ const AdminDashboard = () => {
               className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'transactions' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}
             >
               Transactions
+            </button>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'settings' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}
+            >
+              System Settings
             </button>
           </div>
         </div>
@@ -1099,6 +1147,143 @@ const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
+          </div>
+        ) : activeTab === 'settings' ? (
+          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden animate-fade-in">
+            <div className="p-8 border-b border-gray-50">
+              <h3 className="text-xl font-serif font-bold text-gray-800">Global System Settings</h3>
+              <p className="text-gray-400 text-xs mt-1">
+                Configure branding, domains, and global contact information.
+              </p>
+            </div>
+            <form onSubmit={handleSaveSettings} className="p-10 space-y-10">
+              {/* Branding Section */}
+              <div>
+                <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">🎨</span>
+                  Visual Branding
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                      App Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={systemSettings.appName}
+                      onChange={(e) => setSystemSettings({ ...systemSettings, appName: e.target.value })}
+                      className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                      Logo Primary (e.g. "Subha")
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={systemSettings.brandPrimary}
+                      onChange={(e) => setSystemSettings({ ...systemSettings, brandPrimary: e.target.value })}
+                      className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                      Logo Secondary (e.g. "Lagna")
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={systemSettings.brandSecondary}
+                      onChange={(e) => setSystemSettings({ ...systemSettings, brandSecondary: e.target.value })}
+                      className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500 text-rose-600"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-px bg-gray-50" />
+
+              {/* Technical & Communication Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="space-y-6">
+                  <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">⚙️</span>
+                    Technical Config
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                        WhatsApp Country Code
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={systemSettings.whatsappCountryCode}
+                        onChange={(e) => setSystemSettings({ ...systemSettings, whatsappCountryCode: e.target.value })}
+                        className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                        Production Domain
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={systemSettings.productionDomain}
+                        onChange={(e) => setSystemSettings({ ...systemSettings, productionDomain: e.target.value })}
+                        className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">📞</span>
+                    Support Contact
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                        Support Email
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={systemSettings.supportEmail}
+                        onChange={(e) => setSystemSettings({ ...systemSettings, supportEmail: e.target.value })}
+                        className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                        Contact Phone
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={systemSettings.contactPhone}
+                        onChange={(e) => setSystemSettings({ ...systemSettings, contactPhone: e.target.value })}
+                        className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-10 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isSavingSettings}
+                  className={`px-10 py-4 bg-gray-900 text-white rounded-2xl font-bold shadow-2xl shadow-gray-300 hover:scale-105 transition-all ${isSavingSettings ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {isSavingSettings ? 'Saving...' : '💾 Save Global Settings'}
+                </button>
+              </div>
+            </form>
           </div>
         ) : activeTab === 'transactions' ? (
           <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden animate-fade-in">

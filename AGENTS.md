@@ -1,4 +1,4 @@
-# 🤖 AGENTS.md — SubhaLagna v3.1.0 Best Practices & Coding Standards
+# 🤖 AGENTS.md — SubhaLagna v3.1.5 Best Practices & Coding Standards
 
 This document serves as the **Source of Truth** for any developer or AI Agent working on the SubhaLagna Matrimony project. Adherence to these standards is mandatory to maintain the project's premium quality, security, and architectural integrity.
 
@@ -54,7 +54,7 @@ return sendPaginated(res, results, total, page, limit, 'Results retrieved');
 
 ---
 
-## 🛠️ Development Workflow (v3.1.0)
+## 🛠️ Development Workflow (v3.1.5)
 
 ### 1. Unified Formatting
 
@@ -137,11 +137,15 @@ Respect the guard hierarchy in `App.jsx`:
 
 ```javascript
 /**
- * @file        SubhaLagna v3.1.0 — [Brief Title]
- * @description  [Detailed description of file purpose]
- *               - [v3.0.4 changes]
+ * @file        SubhaLagna v3.1.5 — Dynamic Branding & WhatsApp
+ * @description  Premium Matrimony Platform with real-time features.
+ *               - v3.1.4 changes:
+ *                 - Implemented Dynamic Branding (APP_NAME) across UI, Emails, and WhatsApp.
+ *                 - Centralized branding configuration in backend .env and frontend config.js.
+ *               - v3.1.3 changes:
+ *                 - Added Premium WhatsApp Connect feature with personalized messaging.
  * @author       SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  * @example
  * [Usage example here]
  */

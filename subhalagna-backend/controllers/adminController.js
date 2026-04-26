@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.1.0 — Admin Controller
+ * @file        SubhaLagna v3.1.5 — Admin Controller
  * @description   Administrative tools for platform management:
  *                - User and Profile moderation (suspend, delete).
  *                - System-wide statistics and matchmaking analytics.
@@ -15,7 +15,7 @@
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 const User = require('../models/User');
@@ -28,6 +28,7 @@ const storageService = require('../utils/storageService');
 const Message = require('../models/Message');
 const Notification = require('../models/Notification');
 const Payment = require('../models/Payment');
+const SystemSetting = require('../models/SystemSetting');
 const { upgradeUserSubscription } = require('./paymentController');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 
@@ -912,6 +913,57 @@ const getAllPayments = async (req, res, next) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Get global system settings
+// @route   GET /api/admin/settings
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+const getSystemSettings = async (req, res, next) => {
+  try {
+    let settings = await SystemSetting.findOne({});
+    if (!settings) {
+      settings = await SystemSetting.create({});
+    }
+    return sendSuccess(res, settings, 'System settings retrieved');
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Update global system settings
+// @route   PUT /api/admin/settings
+// @access  Admin
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Handles the requested operation.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+const updateSystemSettings = async (req, res, next) => {
+  try {
+    const updateData = req.body;
+    let settings = await SystemSetting.findOneAndUpdate({}, updateData, {
+      new: true,
+      runValidators: true,
+      upsert: true,
+    });
+    return sendSuccess(res, settings, 'System settings updated successfully ✨');
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 module.exports = {
   getDashboardStats,
   getAllUsers,
@@ -932,4 +984,6 @@ module.exports = {
   getAllPlans,
   updatePlan,
   createPlan,
+  getSystemSettings,
+  updateSystemSettings,
 };

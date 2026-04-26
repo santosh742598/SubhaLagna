@@ -1,10 +1,10 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.0 — MasterData Routes
+ * @file SubhaLagna v3.1.5 — MasterData Routes
  * @description   Public endpoints for fetching dynamic dropdown options.
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 
@@ -12,6 +12,7 @@
 const express = require('express');
 const router = express.Router();
 const { getOptions } = require('../services/masterDataService');
+const { getPublicSettings } = require('../controllers/systemController');
 const { sendSuccess } = require('../utils/apiResponse');
 
 /**
@@ -26,5 +27,10 @@ router.get('/', async (req, res, next) => {
     next(err);
   }
 });
+
+/**
+ * Get public system settings (Branding, etc.).
+ */
+router.get('/settings', getPublicSettings);
 
 module.exports = router;

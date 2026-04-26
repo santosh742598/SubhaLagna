@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.1.0 — Main Server Entry Point
+ * @file        SubhaLagna v3.1.5 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
  *                - [v3.0.4 changes]
@@ -12,7 +12,7 @@
  *                - Enhanced JSDoc documentation requirements.
  *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  *
  * @description Architecture:
  *  ┌──────────────────────────────────────────┐
@@ -32,8 +32,9 @@ const http = require('http');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const mongoose = require('mongoose');
 const { Server } = require('socket.io');
+
+const appName = process.env.APP_NAME || 'SubhaLagna';
 
 const connectDB = require('./config/db');
 const socketHandler = require('./socket/socketHandler');
@@ -115,7 +116,7 @@ app.get('/api/health', (req, res) => {
 
   res.json({
     success: true,
-    message: `SubhaLagna API v${version} is running 🚀`,
+    message: `${appName} API v${version} is running 🚀`,
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     database: {
@@ -179,7 +180,7 @@ server.listen(PORT, () => {
       : `ws://<YOUR_PRODUCTION_DOMAIN>:${PORT}`
     : `ws://localhost:${PORT}`;
 
-  console.log(`\n🚀 SubhaLagna v${version} Server`);
+  console.log(`\n🚀 ${appName} v${version} Server`);
   console.log(`   ✅ HTTP  → ${domain}`);
   console.log(`   ✅ WS    → ${wsDomain}  (Socket.io)`);
   console.log(`   ✅ Env   → ${process.env.NODE_ENV || 'development'}\n`);

@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.0 — Email Service
+ * @file SubhaLagna v3.1.5 — Email Service
  * @description   Nodemailer-based email service with pre-built templates for:
  *                - Email verification (OTP)
  *                - Password reset link
@@ -9,10 +9,15 @@
  *                - Payment Success / Membership activation [v2.4.0]
  *                Gracefully degrades (logs to console) if SMTP is not configured.
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 const nodemailer = require('nodemailer');
+
+// Branding
+const appName = process.env.APP_NAME || 'SubhaLagna';
+const brandPrimary = process.env.BRAND_PRIMARY || 'Subha';
+const brandSecondary = process.env.BRAND_SECONDARY || 'Lagna';
 
 // ── Create transporter (lazy init so missing config doesn't crash startup) ────
 let transporter = null;
@@ -66,28 +71,31 @@ const buildEmailHTML = (title, body) => `
   <style>
     body { font-family: 'Segoe UI', sans-serif; background: #fdf2f8; margin: 0; padding: 20px; }
     .card { background: white; border-radius: 16px; padding: 40px; max-width: 560px; margin: 0 auto; box-shadow: 0 4px 24px rgba(244,63,94,0.08); }
-    .logo  { font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 24px; }
-    .logo span { color: #f43f5e; }
+    .header { padding-bottom: 20px; text-align: center; }
+    .logo { font-size: 28px; font-weight: bold; color: #1e293b; text-decoration: none; }
+    .logo span { color: #ec4899; }
     h2   { color: #1f2937; font-size: 22px; margin-bottom: 12px; }
     p    { color: #6b7280; line-height: 1.7; }
     .otp { font-size: 40px; font-weight: 800; color: #f43f5e; letter-spacing: 8px; margin: 24px 0; text-align: center; }
     .btn { display: inline-block; background: linear-gradient(135deg, #f43f5e, #ec4899); color: white !important;
            text-decoration: none; padding: 14px 32px; border-radius: 12px; font-weight: bold; margin: 20px 0; }
-    .footer { color: #9ca3af; font-size: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid #f3f4f6; }
+    .footer { color: #9ca3af; font-size: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid #f3f4f6; text-align: center; }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="logo">Subha<span>Lagna</span></div>
+    <div class="header">
+      <div class="logo">${brandPrimary}<span>${brandSecondary}</span></div>
+    </div>
     <h2>${title}</h2>
     ${body}
     <div class="footer">
-      © ${new Date().getFullYear()} SubhaLagna. You received this because you registered an account.<br/>
-      If you didn't sign up, please ignore this email.
+      © ${new Date().getFullYear()} ${appName}. All rights reserved.
     </div>
   </div>
 </body>
 </html>`;
+};
 
 // ── Email Senders ─────────────────────────────────────────────────────────────
 
@@ -102,16 +110,16 @@ const sendVerificationEmail = async (email, name, otp) => {
   const html = buildEmailHTML(
     'Verify your email address 🎉',
     `<p>Hi <strong>${name}</strong>,</p>
-     <p>Welcome to SubhaLagna! Use the OTP below to verify your email address. It expires in <strong>15 minutes</strong>.</p>
+     <p>Welcome to ${appName}! Use the OTP below to verify your email address. It expires in <strong>15 minutes</strong>.</p>
      <div class="otp">${otp}</div>
      <p>If you didn't create an account, please ignore this email.</p>`,
   );
 
   await getTransporter().sendMail({
-    from: process.env.EMAIL_FROM || 'SubhaLagna <noreply@subhalagna.com>',
+    from: process.env.EMAIL_FROM || `${appName} <noreply@subhalagna.com>`,
     to: email,
-    subject: `${otp} — Verify your SubhaLagna email`,
-    text: `Your SubhaLagna OTP is: ${otp}. It expires in 15 minutes.`,
+    subject: `${otp} — Verify your ${appName} email`,
+    text: `Your ${appName} OTP is: ${otp}. It expires in 15 minutes.`,
     html,
   });
 };
@@ -127,16 +135,16 @@ const sendPasswordResetEmail = async (email, name, resetUrl) => {
   const html = buildEmailHTML(
     'Reset your password 🔐',
     `<p>Hi <strong>${name}</strong>,</p>
-     <p>We received a request to reset your SubhaLagna password. Click the button below to set a new password. This link expires in <strong>1 hour</strong>.</p>
+     <p>We received a request to reset your ${appName} password. Click the button below to set a new password. This link expires in <strong>1 hour</strong>.</p>
      <a href="${resetUrl}" class="btn">Reset My Password</a>
      <p>If you didn't request this, please ignore this email. Your password will remain unchanged.</p>
      <p style="font-size:12px;color:#9ca3af;">Or copy this link: ${resetUrl}</p>`,
   );
 
   await getTransporter().sendMail({
-    from: process.env.EMAIL_FROM || 'SubhaLagna <noreply@subhalagna.com>',
+    from: process.env.EMAIL_FROM || `${appName} <noreply@subhalagna.com>`,
     to: email,
-    subject: 'Reset your SubhaLagna password',
+    subject: `Reset your ${appName} password`,
     text: `Reset your password: ${resetUrl}`,
     html,
   });
@@ -153,15 +161,15 @@ const sendInterestNotificationEmail = async (email, name, senderName) => {
   const html = buildEmailHTML(
     `${senderName} is interested in you! 💌`,
     `<p>Hi <strong>${name}</strong>,</p>
-     <p><strong>${senderName}</strong> has sent you an interest on SubhaLagna. Log in to view their full profile and respond.</p>
+     <p><strong>${senderName}</strong> has sent you an interest on ${appName}. Log in to view their full profile and respond.</p>
      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/matches" class="btn">View Profile</a>`,
   );
 
   await getTransporter().sendMail({
-    from: process.env.EMAIL_FROM || 'SubhaLagna <noreply@subhalagna.com>',
+    from: process.env.EMAIL_FROM || `${appName} <noreply@subhalagna.com>`,
     to: email,
-    subject: `${senderName} sent you an interest on SubhaLagna 💌`,
-    text: `${senderName} is interested in connecting with you on SubhaLagna. Log in to respond.`,
+    subject: `${senderName} sent you an interest on ${appName} 💌`,
+    text: `${senderName} is interested in connecting with you on ${appName}. Log in to respond.`,
     html,
   });
 };
@@ -177,7 +185,7 @@ const sendInterestNotificationEmail = async (email, name, senderName) => {
  */
 const sendPaymentSuccessEmail = async (email, name, planName, amount, expiryDate) => {
   const html = buildEmailHTML(
-    'Welcome to SubhaLagna Premium! 👑',
+    `Welcome to ${appName} Premium! 👑`,
     `<p>Hi <strong>${name}</strong>,</p>
      <p>Congratulations! Your payment of <strong>₹${amount}</strong> was successful, and your <strong>${planName.toUpperCase()}</strong> membership is now active.</p>
      <div style="background:#fef2f2; padding: 24px; border-radius: 12px; margin: 24px 0; border: 1px solid #fee2e2;">
@@ -190,10 +198,10 @@ const sendPaymentSuccessEmail = async (email, name, planName, amount, expiryDate
   );
 
   await getTransporter().sendMail({
-    from: process.env.EMAIL_FROM || 'SubhaLagna <noreply@subhalagna.com>',
+    from: process.env.EMAIL_FROM || `${appName} <noreply@subhalagna.com>`,
     to: email,
-    subject: `👑 Your SubhaLagna ${planName} Membership is Active!`,
-    text: `Hi ${name}, your ${planName} membership is now active until ${expiryDate}. Welcome to Premium!`,
+    subject: `👑 Your ${appName} ${planName} Membership is Active!`,
+    text: `Hi ${name}, your ${planName} membership is now active until ${expiryDate}. Welcome to ${appName} Premium!`,
     html,
   });
 };

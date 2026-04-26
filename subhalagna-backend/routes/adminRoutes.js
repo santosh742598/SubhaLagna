@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.0 — Admin Routes
+ * @file SubhaLagna v3.1.5 — Admin Routes
  * @description Route definitions for the admin dashboard.
  * - v3.0.4 changes:
  *   - Added PUT /api/admin/users/:id/role for staff role management.
@@ -10,7 +10,7 @@
  * - v2.3.0 changes:
  *   - Added GET /api/admin/plans and PUT /api/admin/plans/:id for dynamic membership control.
  *   - Integrated plan management into the administrative API surface.
- * @version      3.1.0
+ * @version      3.1.5
  * @author        SubhaLagna Team
  */
 
@@ -37,6 +37,8 @@ const {
   updateUserAndProfile,
   uploadUserPhotosAdmin,
   updateUserRole,
+  getSystemSettings,
+  updateSystemSettings,
 } = require('../controllers/adminController');
 
 const { protect, adminOnly } = require('../middleware/authMiddleware');
@@ -74,5 +76,9 @@ router.put('/payments/:id/verify', verifyBankPayment);
 router.get('/plans', getAllPlans);
 router.post('/plans', createPlan);
 router.put('/plans/:id', updatePlan);
+
+// Global System Settings
+router.get('/settings', getSystemSettings);
+router.put('/settings', updateSystemSettings);
 
 module.exports = router;

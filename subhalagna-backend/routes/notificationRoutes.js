@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.0 — Notification Routes
+ * @file SubhaLagna v3.1.5 — Notification Routes
  * @description   Route definitions for in-app notification management.
  *
  * Base path: /api/notifications
@@ -11,7 +11,7 @@
  *   PUT    /:id/read   → mark single notification as read
  *   DELETE /:id        → delete a notification
  * @author SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 const express = require('express');

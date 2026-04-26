@@ -1,10 +1,12 @@
 /**
- * @file        SubhaLagna v3.1.0 — Email Verification Component
+ * @file        SubhaLagna v3.1.5 — Email Verification Component
  * @description   Handles 6-digit OTP entry and resend logic.
+ *               - v3.1.4 changes:
+ *                 - Modernized gradient syntax to Tailwind v4 (bg-linear-to-br).
  *               - v3.0.5 changes:
  *                 - Implemented celebratory success banner for newly registered users.
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 import React, { useState, useEffect, useContext, useRef } from 'react';
@@ -118,7 +120,7 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-br from-rose-50 to-pink-50">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-linear-to-br from-rose-50 to-pink-50">
       <div
         className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-xl shadow-rose-100/40 border border-rose-100"
         style={containerStyle}

@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.0 — User Model
+ * @file SubhaLagna v3.1.5 — User Model
  * @description   Core user account schema. Stores authentication credentials
  *                and account-level metadata. Profile details are in Profile.js.
  *
@@ -11,7 +11,7 @@
  *                Fields added in v2.0.0:
  *                  - isEmailVerified, emailVerifyOtp, emailVerifyOtpExpires
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 const mongoose = require('mongoose');
@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: '',
+    },
+    isWhatsappAvailable: {
+      type: Boolean,
+      default: false,
     },
     password: {
       type: String,

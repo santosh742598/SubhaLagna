@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.0 — Notification Controller
+ * @file SubhaLagna v3.1.5 — Notification Controller
  * @description   Handles in-app notifications for the bell icon in the header.
  *                Endpoints:
  *                  - getNotifications → GET paginated list
@@ -9,7 +9,7 @@
  *                  - markAllRead      → PUT mark all as read
  *                  - deleteNotification → DELETE a specific one
  * @author        SubhaLagna Team
- * @version      3.1.0
+ * @version      3.1.5
  */
 
 const Notification = require('../models/Notification');
