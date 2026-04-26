@@ -1682,6 +1682,11 @@ const AdminDashboard = () => {
                         style={{ width: `${healthData?.server.memory.usage}%` }}
                       />
                     </div>
+                    {healthData?.process && (
+                      <p className="text-[9px] text-indigo-400 font-black uppercase mt-3 tracking-tighter">
+                        App Heap: {(healthData.process.memory.heapUsed / 1024 / 1024).toFixed(1)} MB
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

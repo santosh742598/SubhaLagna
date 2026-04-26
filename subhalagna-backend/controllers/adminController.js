@@ -1107,6 +1107,10 @@ const getSystemHealth = async (req, res, next) => {
         platform: os.platform(),
         cpuCount: os.cpus().length,
       },
+      process: {
+        memory: process.memoryUsage(),
+        pid: process.pid,
+      },
       maintenanceMode: settings?.isMaintenanceMode || false,
       recentLogs: logs,
     };
