@@ -1,6 +1,6 @@
 {
   "name": "subhalagna-backend",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "SubhaLagna Matrimony Platform — RESTful API Backend with Socket.io",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "version:sync": "node scripts/sync-version.mjs && npm run format",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch"
   },
   "keywords": [
     "matrimony",

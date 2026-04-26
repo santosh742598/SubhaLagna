@@ -1,17 +1,19 @@
 'use strict';
 
 /**
- * @file SubhaLagna v3.3.2 — User Model
+ * @file        SubhaLagna v3.3.3 — User Model
  * @description   Core user account schema. Stores authentication credentials
  *                and account-level metadata. Profile details are in Profile.js.
- *
- *                Fields added in v2.4.0:
+ *                - v3.3.3 changes:
+ *                  - Deprecated contactsViewed array to prevent MongoDB document size limits.
+ *                    Migrated to ContactView collection for infinite scalability.
+ *                - v2.4.0 changes:
  *                  - otpResendCount, otpLastResend (OTP rate limiting)
  *
- *                Fields added in v2.0.0:
+ *                - v2.0.0 changes:
  *                  - isEmailVerified, emailVerifyOtp, emailVerifyOtpExpires
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  */
 
 const mongoose = require('mongoose');
@@ -117,7 +119,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
-    // ── Contact View Tracking (v2.0.0) ──────────────────────────────────────────
+    // ── Contact View Tracking (DEPRECATED in v3.3.2) ──────────────────────
+    // @deprecated Use the separate ContactView collection for scalable tracking.
+    // This field is kept temporarily for backward compatibility until migration is run.
     contactsViewed: [
       {
         type: mongoose.Schema.Types.ObjectId,

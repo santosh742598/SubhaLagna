@@ -1,11 +1,11 @@
 'use strict';
 
 /**
- * @file SubhaLagna v3.3.2 — Coupon Model
+ * @file SubhaLagna v3.3.3 — Coupon Model
  * @description   Schema for managing discount coupons.
  *                Supports percentage and fixed-amount discounts.
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  */
 
 const mongoose = require('mongoose');

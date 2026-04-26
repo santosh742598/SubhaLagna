@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 /**
- * @file SubhaLagna v3.3.2 — Socket.io Real-Time Handler
+ * @file SubhaLagna v3.3.3 — Socket.io Real-Time Handler
  * @description   Manages all WebSocket connections for the live chat feature.
  *                Architecture:
  *                  - Each authenticated user joins a private room named by their userId
@@ -20,9 +20,10 @@
  *                  new_message        : new message received
  *                  typing             : other user is typing
  *                  stop_typing        : other user stopped typing
+ *                  messages_read      : messages marked as read (with count)
  *                  notification       : real-time notification push
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  */
 
 const { verifyAccessToken } = require('../utils/generateToken');
@@ -129,6 +130,35 @@ const socketHandler = (io) => {
       socket.to(`conversation:${conversationId}`).emit('stop_typing', {
         userId: socket.user._id,
       });
+    });
+
+    // ── Event: Mark messages as read ──────────────────────────────────────────
+    socket.on('mark_read', async ({ conversationId }) => {
+      try {
+        const now = new Date();
+
+        // Mark all unread messages from OTHER users in this conversation as read
+        const result = await Message.updateMany(
+          {
+            conversation: conversationId,
+            sender: { $ne: socket.user._id },
+            isRead: false,
+          },
+          { isRead: true, readAt: now },
+        );
+
+        // Notify the conversation room so the sender can update their UI
+        if (result.modifiedCount > 0) {
+          socket.to(`conversation:${conversationId}`).emit('messages_read', {
+            conversationId,
+            readBy: socket.user._id,
+            readAt: now,
+            count: result.modifiedCount,
+          });
+        }
+      } catch (err) {
+        console.error('mark_read error:', err.message);
+      }
     });
 
     // ── On Disconnect ──────────────────────────────────────────────────────────

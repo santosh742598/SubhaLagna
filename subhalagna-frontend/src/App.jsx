@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.2 — Main Application Router
+ * @file        SubhaLagna v3.3.3 — Main Application Router
  * @description   Entry point for all React routes. Wraps the application
  *                in required context providers (Auth → Notification → Chat)
  *                and configures all route guards.
@@ -13,10 +13,10 @@
  *                - Standardized ESLint & Prettier for premium code quality.
  *                - Enhanced JSDoc requirements for architectural integrity.
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  */
 
-import React, { useContext } from 'react';
+import React, { useContext, Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -34,23 +34,34 @@ import { AuthProvider } from './context/AuthProvider';
 import { NotificationProvider } from './context/NotificationContext';
 import { ChatProvider } from './context/ChatContext';
 
-/* ── Components ────────────────────────────────────────────────────────────── */
+/* ── Eagerly Loaded (present on every page) ────────────────────────────────── */
 import Header from './components/Header';
-import Home from './components/Home';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import ForgotPassword from './components/ForgotPassword';
-import ResetPassword from './components/ResetPassword';
-import CreateProfile from './components/CreateProfile';
-import ProfileDashboard from './components/ProfileDashboard';
-import MatchResults from './components/MatchResults';
-import ProfileDetail from './components/ProfileDetail';
-import PremiumMembership from './components/PremiumMembership';
-import Chat from './components/Chat';
-import AdminDashboard from './components/AdminDashboard';
-import VerifyEmail from './components/VerifyEmail';
-import ShortlistedProfiles from './components/ShortlistedProfiles';
-import InterestButton from './components/InterestButton'; // exported for reference
+
+/* ── Lazy-Loaded Route Components (code-split per route) ───────────────────── */
+const Home = React.lazy(() => import('./components/Home'));
+const Login = React.lazy(() => import('./components/Login'));
+const Signup = React.lazy(() => import('./components/Signup'));
+const ForgotPassword = React.lazy(() => import('./components/ForgotPassword'));
+const ResetPassword = React.lazy(() => import('./components/ResetPassword'));
+const CreateProfile = React.lazy(() => import('./components/CreateProfile'));
+const ProfileDashboard = React.lazy(() => import('./components/ProfileDashboard'));
+const MatchResults = React.lazy(() => import('./components/MatchResults'));
+const ProfileDetail = React.lazy(() => import('./components/ProfileDetail'));
+const PremiumMembership = React.lazy(() => import('./components/PremiumMembership'));
+const Chat = React.lazy(() => import('./components/Chat'));
+const AdminDashboard = React.lazy(() => import('./components/AdminDashboard'));
+const VerifyEmail = React.lazy(() => import('./components/VerifyEmail'));
+const ShortlistedProfiles = React.lazy(() => import('./components/ShortlistedProfiles'));
+
+/**
+ * SuspenseFallback — Full-page loading spinner shown while lazy chunks load.
+ * @returns {React.JSX.Element} The loading spinner element.
+ */
+const SuspenseFallback = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="w-10 h-10 border-4 border-rose-500 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 // ── Route Guards ──────────────────────────────────────────────────────────────
 
@@ -182,6 +193,7 @@ function App() {
                 content="Find your soulmate today with our smart matchmaking and secure connection features."
               />
             </Helmet>
+            <Suspense fallback={<SuspenseFallback />}>
             <div className="min-h-screen relative flex flex-col font-sans">
               <Routes>
                 {/* ── Public Marketing Landing ────────────────────────── */}
@@ -320,6 +332,7 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </div>
+            </Suspense>
           </Router>
         </ChatProvider>
       </NotificationProvider>

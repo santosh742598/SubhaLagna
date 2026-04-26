@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.2 — Admin Dashboard
+ * @file        SubhaLagna v3.3.3 — Admin Dashboard
  * @description Comprehensive management interface for users, plans, and system state.
  *               - v3.3.0 changes:
  *                 - Integrated interactive growth charts (User Growth, Revenue) using Recharts.
@@ -16,7 +16,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.3.2
+ * @version      3.3.3
  * @author        SubhaLagna Team
  */
 

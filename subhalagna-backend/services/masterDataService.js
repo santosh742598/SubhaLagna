@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 /**
- * @file SubhaLagna v3.3.2 — MasterData Service
+ * @file SubhaLagna v3.3.3 — MasterData Service
  * @description   Handles logic for registering and retrieving master data entries.
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  */
 
 const MasterData = require('../models/MasterData');

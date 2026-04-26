@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.2 — User Dashboard
+ * @file        SubhaLagna v3.3.3 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
  *                - v3.3.0 changes:
@@ -14,7 +14,7 @@
  *                - Implemented strict JSDoc validation and standard headers.
  *                - Global UI consistency via unified Prettier tokens.
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  */
 
 import React, { useState, useContext, useEffect, useMemo, useCallback } from 'react';
@@ -51,189 +51,9 @@ const PREDEFINED_TRAITS = [
   'Empathetic',
 ];
 
-// ─── Shared UI Components ──────────────────────────────────────────────────
-const DashboardCard = ({
-  children,
-  title,
-  icon,
-  delay = '0',
-  onSave,
-  isSaving,
-  loadingText = 'Saving...',
-}) => (
-  <div
-    className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-slide-up group transition-all hover:shadow-[0_20px_50px_rgba(225,29,72,0.1)] mb-8"
-    style={{ animationDelay: `${delay}ms` }}
-  >
-    {title && (
-      <div className="flex items-center justify-between mb-8 border-b border-rose-50 pb-6">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-rose-50 rounded-2xl text-rose-500 group-hover:scale-110 transition-transform">
-            {icon}
-          </div>
-          <h2 className="text-2xl font-serif font-bold text-slate-800 tracking-tight">{title}</h2>
-        </div>
-        {onSave && (
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={isSaving}
-            className="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-300 text-white rounded-xl font-bold text-xs transition-all shadow-lg shadow-rose-100 flex items-center gap-2 group/btn"
-          >
-            {isSaving ? (
-              <>
-                <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>{loadingText}</span>
-              </>
-            ) : (
-              <>
-                <Check className="w-3.5 h-3.5 group-hover/btn:scale-125 transition-transform" />
-                <span>Save Section</span>
-              </>
-            )}
-          </button>
-        )}
-      </div>
-    )}
-    {children}
-  </div>
-);
 
-const FormLabel = ({ children }) => (
-  <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 mb-2 block">
-    {children}
-  </label>
-);
-
-const formatDate = (date) => {
-  if (!date) return '—';
-  const d = new Date(date);
-  const day = String(d.getDate()).padStart(2, '0');
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-  const month = months[d.getMonth()];
-  const year = d.getFullYear();
-  return `${day}-${month}-${year}`;
-};
-
-// Formats a date string (ISO) into YYYY-MM-DD for the <input type="date">
-const toInputDate = (date) => {
-  if (!date) return '';
-  try {
-    const d = new Date(date);
-    if (isNaN(d.getTime())) return '';
-    return d.toISOString().split('T')[0];
-  } catch {
-    return '';
-  }
-};
-
-// Re-using consistent Icon style from the app
-const Sparkles = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-    />
-  </svg>
-);
-
-const Check = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-  </svg>
-);
-const Trash = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-    />
-  </svg>
-);
-const Plus = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H12" />
-  </svg>
-);
-const Heart = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-    />
-  </svg>
-);
-
-const X = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-const ShieldCheck = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-    />
-  </svg>
-);
-const Camera = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M3 7a2 2 0 012-2h3.5l1-2h9l1 2H21a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
-    />
-    <circle cx="12" cy="13" r="4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-  </svg>
-);
-const Users = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-    />
-  </svg>
-);
-const ChevronRight = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-  </svg>
-);
-const Bookmark = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-    />
-  </svg>
-);
+import { DashboardCard, FormLabel, formatDate, toInputDate } from './dashboard/DashboardWidgets';
+import { Sparkles, Check, Trash, Plus, Heart, X, ShieldCheck, Camera, Users, ChevronRight, Bookmark } from './dashboard/DashboardIcons';
 
 const ProfileDashboard = () => {
   const { user, updateProfileContext } = useContext(AuthContext);

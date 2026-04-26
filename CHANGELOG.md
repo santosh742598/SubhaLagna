@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.3] - 2026-04-26
+
+### Added (v3.3.3)
+
+- **💸 Razorpay Webhook**: Implemented a secure, asynchronous webhook handler (`/api/payments/webhook`) for `payment.captured` events to guarantee subscription activation even if the client disconnects prematurely.
+- **🏗️ Component Architecture**: Decomposed oversized monolithic React components (`Home.jsx` and `ProfileDashboard.jsx`) into smaller, modular sub-components (`HomeHeader`, `HomeSections`, `DashboardIcons`, `DashboardWidgets`) for improved maintainability.
+- **🧪 Integration Test Suite**: Initialized the foundation for the integration test suite, including in-memory MongoDB bootstrapping (`tests/setup.js`) and basic smoke tests for Auth and Profile flows.
+
+### Changed (v3.3.3)
+
+- **🚀 Scalability Migration**: Deprecated the unbounded `contactsViewed` array on the `User` model, migrating the data to a dedicated `ContactView` collection to prevent document size limits and performance degradation for highly active Platinum members.
+- **🚀 Version Bump**: Universal synchronization of the project to `v3.3.3`.
+
 ## [3.3.2] - 2026-04-26
 
 ### Fixed (v3.3.2)

@@ -1,18 +1,20 @@
 'use strict';
 
 /**
- * @file        SubhaLagna v3.3.2 — Payment & Subscription Controller
+ * @file        SubhaLagna v3.3.3 — Payment & Subscription Controller
  * @description   Handles Razorpay orders, payment verification, and membership logic:
  *                - Integrated Razorpay order creation and signature verification.
  *                - Automated subscription activation and quota management.
  *                - Automated email notifications on successful payment.
+ *                - [v3.3.3 changes]
+ *                - Added `handleWebhook` for secure, asynchronous server-to-server Razorpay payment captures.
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0 with automated coding standards.
  *                - Standardized database plan fetching (MembershipPlan).
  *                - Implemented strict JSDoc validation and security checkpoints.
  *                - Verified audit logging for manual bank transfers.
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  */
 
 const Razorpay = require('razorpay');
@@ -26,8 +28,8 @@ const { sendPaymentSuccessEmail } = require('../utils/emailService');
 // Initialize Razorpay
 // Note: In a real app, these would come from process.env
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'rzp_test_secret_placeholder',
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 /**
@@ -36,7 +38,7 @@ const razorpay = new Razorpay({
  * @param {import('express').Request} req - Express request object.
  * @param {import('express').Response} res - Express response object.
  */
-exports.getPlans = async (req, res) => {
+const getPlans = async (req, res) => {
   try {
     const plans = await MembershipPlan.find({ isActive: true }).lean();
     res.json({ success: true, data: plans });
@@ -51,7 +53,7 @@ exports.getPlans = async (req, res) => {
  * @param {import('express').Request} req - Express request object.
  * @param {import('express').Response} res - Express response object.
  */
-exports.validateCoupon = async (req, res) => {
+const validateCoupon = async (req, res) => {
   const { code, planId } = req.body;
 
   try {
@@ -93,7 +95,7 @@ exports.validateCoupon = async (req, res) => {
  * @param {import('express').Request} req - Express request object.
  * @param {import('express').Response} res - Express response object.
  */
-exports.createOrder = async (req, res) => {
+const createOrder = async (req, res) => {
   const { planId, couponCode } = req.body;
 
   try {
@@ -154,13 +156,13 @@ exports.createOrder = async (req, res) => {
  * @param {import('express').Request} req - Express request object.
  * @param {import('express').Response} res - Express response object.
  */
-exports.verifyPayment = async (req, res) => {
+const verifyPayment = async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, planId, couponCode } =
     req.body;
 
   const sign = razorpay_order_id + '|' + razorpay_payment_id;
   const expectedSign = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || 'rzp_test_secret_placeholder')
+    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
     .update(sign.toString())
     .digest('hex');
 
@@ -196,7 +198,7 @@ exports.verifyPayment = async (req, res) => {
  * @param {import('express').Request} req - Express request object.
  * @param {import('express').Response} res - Express response object.
  */
-exports.confirmFreeSubscription = async (req, res) => {
+const confirmFreeSubscription = async (req, res) => {
   const { planId, couponCode } = req.body;
 
   try {
@@ -298,7 +300,7 @@ const upgradeUserSubscription = async (userId, planId, couponCode, amount, razor
  * @param {import('express').Request} req - Express request object.
  * @param {import('express').Response} res - Express response object.
  */
-exports.requestBankTransfer = async (req, res) => {
+const requestBankTransfer = async (req, res) => {
   const { planId, amount, utrNumber, senderUpiId, paymentDateTime, userRemarks } = req.body;
 
   try {
@@ -337,7 +339,76 @@ exports.requestBankTransfer = async (req, res) => {
   }
 };
 
+/**
+ * Handles Razorpay Webhooks (Unauthenticated)
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>}
+ */
+const handleWebhook = async (req, res, next) => {
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.warn('Webhook received but RAZORPAY_WEBHOOK_SECRET is not configured');
+      return res.status(200).send('OK');
+    }
+
+    const signature = req.headers['x-razorpay-signature'];
+    if (!signature) {
+      return res.status(400).send('Missing signature');
+    }
+
+    const expectedSignature = crypto
+      .createHmac('sha256', webhookSecret)
+      .update(req.body)
+      .digest('hex');
+
+    if (expectedSignature !== signature) {
+      return res.status(400).send('Invalid signature');
+    }
+
+    // Parse the raw body now that signature is verified
+    const payload = JSON.parse(req.body.toString());
+
+    if (payload.event === 'payment.captured') {
+      const payment = payload.payload.payment.entity;
+      const orderId = payment.order_id;
+
+      // Find user who created this order
+      const user = await User.findOne({ razorpayOrderId: orderId }).select('+razorpayOrderId');
+      if (!user) {
+        return res.status(200).send('User not found for order');
+      }
+
+      // If user already active, it's idempotent
+      if (user.isPremiumActive && user.isPremiumActive()) {
+        return res.status(200).send('Already processed');
+      }
+
+      const planId = payment.notes?.planId;
+      if (!planId) {
+        console.warn(`Webhook: No planId in notes for order ${orderId}`);
+        return res.status(200).send('No planId provided');
+      }
+
+      await upgradeUserSubscription(user, planId, payment.id, payment.amount, null, orderId);
+    }
+
+    return res.status(200).send('OK');
+  } catch (err) {
+    console.error('Webhook Error:', err);
+    return res.status(500).send('Internal Server Error');
+  }
+};
+
 module.exports = {
-  ...module.exports,
+  getPlans,
+  validateCoupon,
+  createOrder,
+  verifyPayment,
+  confirmFreeSubscription,
   upgradeUserSubscription,
+  requestBankTransfer,
+  handleWebhook,
 };

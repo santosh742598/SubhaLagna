@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @file        SubhaLagna v3.3.2 — Profile Controller
+ * @file        SubhaLagna v3.3.3 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
  *                - v3.3.0 changes:
  *                  - Implemented real-time Profile View notifications with Socket.io.
@@ -16,12 +16,13 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  */
 
 const Profile = require('../models/Profile');
 const User = require('../models/User');
 const ProfileView = require('../models/ProfileView');
+const ContactView = require('../models/ContactView');
 const Interest = require('../models/Interest');
 const Notification = require('../models/Notification');
 const { emitNotification } = require('../socket/socketHandler');
@@ -191,7 +192,6 @@ const setupProfile = async (req, res, next) => {
     });
 
     // ── Update User Model with Phone & Name ──────────────────────────────────
-    const User = mongoose.model('User');
     await User.findByIdAndUpdate(req.user._id, { name, phone });
 
     return sendSuccess(res, profile, 'Profile created successfully', 201);
@@ -463,7 +463,7 @@ const getProfileById = async (req, res, next) => {
 
     // ── Gating Sensitive Info (Contact Details) ───────────────────────────
     const isPremium = req.user.isPremiumActive ? req.user.isPremiumActive() : req.user.isPremium;
-    const isUnlocked = req.user.contactsViewed?.includes(profile._id);
+    const isUnlocked = await ContactView.exists({ user: req.user._id, viewedProfile: profile._id });
     const isPlatinum = req.user.premiumPlan === 'platinum';
 
     if (!isOwner && !isPlatinum && !isUnlocked && !isAdmin && !isPremium) {
@@ -792,14 +792,17 @@ const unlockContact = async (req, res, next) => {
     }
 
     // 3. Already unlocked check
-    if (user.contactsViewed.includes(profile._id.toString())) {
+    const alreadyUnlocked = await ContactView.exists({
+      user: user._id,
+      viewedProfile: profile._id,
+    });
+    if (alreadyUnlocked) {
       return sendSuccess(res, null, 'Contact already unlocked');
     }
 
     // 4. Platinum check (unlimited)
     if (user.premiumPlan === 'platinum') {
-      user.contactsViewed.push(profile._id);
-      await user.save();
+      await ContactView.create({ user: user._id, viewedProfile: profile._id });
       return sendSuccess(res, null, 'Contact unlocked (Platinum Unlimited)');
     }
 
@@ -814,8 +817,8 @@ const unlockContact = async (req, res, next) => {
       }
 
       user.contactsAllowed -= 1;
-      user.contactsViewed.push(profile._id);
       await user.save();
+      await ContactView.create({ user: user._id, viewedProfile: profile._id });
 
       return sendSuccess(
         res,

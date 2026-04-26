@@ -1,9 +1,11 @@
 'use strict';
 
 /**
- * @file        SubhaLagna v3.3.2 — Main Server Entry Point
+ * @file        SubhaLagna v3.3.3 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
+ *                - [v3.3.3 changes]
+ *                - Mounted Razorpay webhook endpoint BEFORE JSON body parser to allow raw signature verification.
  *                - [v3.2.8 changes]
  *                - Resolved ESM/CommonJS parsing errors by reverting to standard CommonJS.
  *                - Eliminated "Object Injection" security vulnerabilities in startup and health checks.
@@ -25,7 +27,7 @@
  *                - Enhanced JSDoc documentation requirements.
  *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  * @description Architecture:
  *  ┌──────────────────────────────────────────┐
  *  │  Express HTTP Server + Socket.io          │
@@ -154,9 +156,16 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 }
 
+// ── Webhooks (Must be before express.json) ──────────────────────────────────
+app.post(
+  '/api/payments/webhook',
+  express.raw({ type: 'application/json' }),
+  require('./controllers/paymentController').handleWebhook,
+);
+
 // ── Body Parsers ──────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10mb' })); // Allow larger JSON payloads (e.g. for rich profiles)
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // NoSQL Injection Protection
 app.use(mongoSanitize());

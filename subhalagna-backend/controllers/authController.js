@@ -1,18 +1,22 @@
 'use strict';
 
 /**
- * @file        SubhaLagna v3.3.2 — Auth Controller
+ * @file        SubhaLagna v3.3.3 — Auth Controller
  * @description   Handles all authentication operations including:
  *                - Secure registration and 6-digit OTP verification.
  *                - JWT rotation (Access/Refresh) strategy.
  *                - Secure password recovery and logout.
+ *                - v3.3.2 changes:
+ *                  - Hardened OTP generation with crypto.randomInt() (replaces Math.random()).
+ *                  - Implemented SHA-256 hashing for refresh token storage.
+ *                  - Fixed token mismatch in buildAuthResponse (pre-generate and pass tokens).
  *                - [v3.0.0 changes]
  *                - Upgraded to Version 3.0.0.
  *                - Implemented strict JSDoc header validation.
  *                - Standardized security-first error handling (apiResponse).
  *                - Verified Express 5 compatibility layers.
  * @author        SubhaLagna Team
- * @version      3.3.2
+ * @version      3.3.3
  */
 
 const crypto = require('crypto');
@@ -27,17 +31,23 @@ const {
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../utils/emailService');
 const { sendSuccess, sendError } = require('../utils/apiResponse');
 
-// ── Helper: Generate a 6-digit OTP ───────────────────────────────────────────
-const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+// ── Helper: Generate a 6-digit OTP (cryptographically secure) ────────────────
+const generateOTP = () => crypto.randomInt(100000, 999999).toString();
+
+// ── Helper: Hash a token for secure storage ──────────────────────────────────
+const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
 // ── Helper: Token pair response ───────────────────────────────────────────────
 /**
  * Build the standard token-pair response object.
  * @param {object} user     - User Mongoose document
  * @param {object} profile  - Profile Mongoose document | null
- * @returns {object}
+ * @param {object} [tokens] - Optional pre-generated token pair
+ * @param {string} [tokens.accessToken]  - Pre-generated access token
+ * @param {string} [tokens.refreshToken] - Pre-generated refresh token
+ * @returns {object} Auth response payload with user data and tokens
  */
-const buildAuthResponse = (user, profile) => ({
+const buildAuthResponse = (user, profile, tokens = {}) => ({
   _id: user._id,
   name: user.name,
   email: user.email,
@@ -47,8 +57,8 @@ const buildAuthResponse = (user, profile) => ({
   isEmailVerified: user.isEmailVerified,
   hasProfile: !!profile,
   profile: profile || null,
-  accessToken: generateAccessToken(user._id),
-  refreshToken: generateRefreshToken(user._id),
+  accessToken: tokens.accessToken || generateAccessToken(user._id),
+  refreshToken: tokens.refreshToken || generateRefreshToken(user._id),
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -94,10 +104,17 @@ const registerUser = async (req, res, next) => {
       // Continue — user can request resend
     }
 
-    // After registration, fetch full user with hidden fields for OTP comparison
+    // After registration, generate tokens and store hashed refresh token
     const profile = null; // New user has no profile yet
+    const newAccessToken = generateAccessToken(user._id);
+    const newRefreshToken = generateRefreshToken(user._id);
+    user.refreshToken = hashToken(newRefreshToken);
+    await user.save({ validateBeforeSave: false });
 
-    const responseData = buildAuthResponse(user, profile);
+    const responseData = buildAuthResponse(user, profile, {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    });
 
     return sendSuccess(
       res,
@@ -240,12 +257,16 @@ const loginUser = async (req, res, next) => {
     // Fetch associated profile
     const profile = await Profile.findOne({ user: user._id });
 
-    // Generate and store refresh token (for rotation strategy)
-    const refreshToken = generateRefreshToken(user._id);
-    user.refreshToken = refreshToken;
+    // Generate and store hashed refresh token (for rotation strategy)
+    const newAccessToken = generateAccessToken(user._id);
+    const newRefreshToken = generateRefreshToken(user._id);
+    user.refreshToken = hashToken(newRefreshToken);
     await user.save({ validateBeforeSave: false });
 
-    const responseData = buildAuthResponse(user, profile);
+    const responseData = buildAuthResponse(user, profile, {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    });
 
     return sendSuccess(res, responseData, 'Login successful');
   } catch (err) {
@@ -274,16 +295,17 @@ const refreshToken = async (req, res, next) => {
     // Verify the refresh token signature
     const decoded = verifyRefreshToken(incomingToken);
 
-    // Fetch user with stored token for comparison
+    // Fetch user with stored token hash for comparison
     const user = await User.findById(decoded.id).select('+refreshToken');
-    if (!user || user.refreshToken !== incomingToken) {
+    const hashedIncoming = hashToken(incomingToken);
+    if (!user || user.refreshToken !== hashedIncoming) {
       return sendError(res, 'Invalid or expired refresh token. Please log in again.', 401);
     }
 
-    // Issue new tokens (rotation — old refresh token is replaced)
+    // Issue new tokens (rotation — old refresh token hash is replaced)
     const newAccessToken = generateAccessToken(user._id);
     const newRefreshToken = generateRefreshToken(user._id);
-    user.refreshToken = newRefreshToken;
+    user.refreshToken = hashToken(newRefreshToken);
     await user.save({ validateBeforeSave: false });
 
     return sendSuccess(
