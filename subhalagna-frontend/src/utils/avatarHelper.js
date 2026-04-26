@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.1.8 — Avatar Utility
+ * @file        SubhaLagna v3.1.9 — Avatar Utility
  * @description Centralized logic for profile photo selection and fallbacks.
  * @author        SubhaLagna Team
- * @version      3.1.8
+ * @version      3.1.9
  */
 
 /**
@@ -12,22 +12,29 @@
  * @returns {string} The image URL
  */
 export const getProfileAvatar = (profile) => {
-  if (!profile) return '/man.png';
+  // Base backend URL for uploaded images
+  const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || '';
+
+  if (!profile) return '/man.jpg';
 
   // If we have a valid profile photo, use it
   if (
     profile.profilePhoto &&
     profile.profilePhoto !== '' &&
-    profile.profilePhoto !== '/uploads/default-avatar.png'
+    profile.profilePhoto !== '/uploads/default-avatar.png' &&
+    profile.profilePhoto !== '/uploads/default-avatar.jpg'
   ) {
-    return profile.profilePhoto;
+    // If it's already a full URL, return it
+    if (profile.profilePhoto.startsWith('http')) return profile.profilePhoto;
+    // Otherwise prepend the backend base URL
+    return `${API_URL}${profile.profilePhoto}`;
   }
 
-  // Fallback to gender-specific placeholders
+  // Fallback to gender-specific placeholders (.jpg per server configuration)
   if (profile.gender === 'Female') {
-    return '/woman.png';
+    return '/woman.jpg';
   }
 
-  // Default to man.png for Male or unspecified
-  return '/man.png';
+  // Default to man.jpg for Male or unspecified
+  return '/man.jpg';
 };

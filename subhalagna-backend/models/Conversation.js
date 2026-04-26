@@ -1,12 +1,12 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.8 — Conversation Model
+ * @file SubhaLagna v3.1.9 — Conversation Model
  * @description   Represents a one-to-one chat conversation between two users.
  *                Only created after a mutual interest is accepted.
  *                Tracks both participants and the last message for preview.
  * @author        SubhaLagna Team
- * @version      3.1.8
+ * @version      3.1.9
  */
 
 const mongoose = require('mongoose');

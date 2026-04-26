@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.1.8 — Lookup Service
+ * @file        SubhaLagna v3.1.9 — Lookup Service
  * @description Handles API calls for dynamic master data (Caste, City, etc.)
  * @author       SubhaLagna Team
- * @version      3.1.8
+ * @version      3.1.9
  */
 
 import api from './api';

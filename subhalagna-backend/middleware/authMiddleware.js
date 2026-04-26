@@ -1,10 +1,10 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.1.8 — Auth & Role Middleware
+ * @file SubhaLagna v3.1.9 — Auth & Role Middleware
  * @description JWT-based route protection middleware. [v2.4.0]
  * @author SubhaLagna Team
- * @version      3.1.8
+ * @version      3.1.9
  */
 
 const User = require('../models/User');

@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.1.8 — Login Component
+ * @file        SubhaLagna v3.1.9 — Login Component
  * @description   Secure user authentication interface.
  *               - v3.0.5 changes:
  *                 - Resolved bug where 401 errors triggered accidental page refreshes.
@@ -8,7 +8,7 @@
  * - v3.0.4 changes:
  *   - Added navigation link to Forgot Password flow.
  * @author        SubhaLagna Team
- * @version      3.1.8
+ * @version      3.1.9
  */
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
