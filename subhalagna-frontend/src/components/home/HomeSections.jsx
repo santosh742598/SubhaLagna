@@ -1,12 +1,12 @@
 /**  
- * @file        SubhaLagna v3.3.8 — Home Sections Components  
+ * @file        SubhaLagna v3.3.9 — Home Sections Components  
  * @description   Extracted section components for the landing page.  
  *                - v3.3.4 changes:
  *                  - Connected footer support contact details to dynamic system settings.
  *                - v3.3.3 changes:
  *                  - Initial extraction from Home.jsx.  
  * @author        SubhaLagna Team  
- * @version      3.3.8  
+ * @version      3.3.9  
  */  
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';

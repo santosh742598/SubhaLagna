@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.3.8 — Admin Controller
+ * @file        SubhaLagna v3.3.9 — Admin Controller
  * @description   Administrative tools for platform management:
  *                - v3.3.0 changes:
  *                  - Implemented getAnalyticsData for time-series growth tracking (30 days).
@@ -18,7 +18,7 @@
  *                - Standardized security checks for admin-only routes.
  *                - Verified Express 5 compatibility for performance data.
  * @author        SubhaLagna Team
- * @version      3.3.8
+ * @version      3.3.9
  */
 
 const User = require('../models/User');
@@ -36,8 +36,33 @@ const SystemLog = require('../models/SystemLog');
 const { upgradeUserSubscription } = require('./paymentController');
 const { sendSuccess, sendError, sendPaginated } = require('../utils/apiResponse');
 
+const fs = require('fs');
+const path = require('path');
+
 // Utility to escape regex special characters
 const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Utility to calculate folder size recursively
+const getFolderSize = (dirPath) => {
+  let totalSize = 0;
+  try {
+    if (!fs.existsSync(dirPath)) return 0;
+    const files = fs.readdirSync(dirPath);
+    for (const file of files) {
+      const filePath = path.join(dirPath, file);
+      const stats = fs.statSync(filePath);
+      if (stats.isDirectory()) {
+        totalSize += getFolderSize(filePath);
+      } else {
+        totalSize += stats.size;
+      }
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Error calculating folder size:', err);
+  }
+  return totalSize;
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Get platform dashboard statistics
@@ -1083,6 +1108,10 @@ const getSystemHealth = async (req, res, next) => {
     const razorpayStatus =
       process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET ? 'configured' : 'missing';
 
+    // File System Checks
+    const uploadsPath = path.join(__dirname, '..', 'uploads');
+    const uploadsSize = getFolderSize(uploadsPath);
+
     const health = {
       database: {
         status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
@@ -1094,6 +1123,9 @@ const getSystemHealth = async (req, res, next) => {
           notifications: notifCount,
           messages: msgCount,
         },
+      },
+      files: {
+        uploadsSize,
       },
       services: {
         smtp: smtpStatus,

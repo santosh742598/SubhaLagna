@@ -1,12 +1,12 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.3.8 — Centralized Error Middleware
+ * @file        SubhaLagna v3.3.9 — Centralized Error Middleware
  * @description   Handles 404s and global exceptions with DB logging.
  *               - v3.3.5 changes:
  *                 - Implemented automatic SystemLog recording for all API failures.
  * @author       SubhaLagna Team
- * @version      3.3.8
+ * @version      3.3.9
  */
 
 const SystemLog = require('../models/SystemLog');

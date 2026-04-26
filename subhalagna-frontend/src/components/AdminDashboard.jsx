@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.8 — Admin Dashboard
+ * @file        SubhaLagna v3.3.9 — Admin Dashboard
  *                 - Stabilized fetch logic with useCallback/useEffect hooks
  *                 - Resolved infinite render loops
  *                 - Modernized Tailwind v4 shorthand syntax
@@ -10,7 +10,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.3.8
+ * @version      3.3.9
  * @author        SubhaLagna Team
  */
 
@@ -1656,6 +1656,9 @@ const AdminDashboard = () => {
                         ? (healthData.database.size / 1024 / 1024).toFixed(1)
                         : '0'}{' '}
                       MB)
+                    </p>
+                    <p className="text-[9px] text-emerald-400 font-black uppercase mt-1 tracking-tighter">
+                      Media: {healthData ? (healthData.files.uploadsSize / 1024 / 1024).toFixed(1) : '0'} MB
                     </p>
                   </div>
                 </div>

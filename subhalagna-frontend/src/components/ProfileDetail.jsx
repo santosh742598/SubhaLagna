@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.8 — Profile Detail Page
+ * @file        SubhaLagna v3.3.9 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
  *                - v3.3.2 changes:
@@ -16,7 +16,7 @@
  *
  *                v2.1.0 changes:
 ...
- * @version      3.3.8
+ * @version      3.3.9
  * @author        SubhaLagna Team
  */
 

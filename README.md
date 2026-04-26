@@ -1,6 +1,6 @@
-# 💍 SubhaLagna Matrimony — v3.3.8
+# 💍 SubhaLagna Matrimony — v3.3.9
 
-[![Project Version](https://img.shields.io/badge/version-3.3.8-blue.svg)](CHANGELOG.md)
+[![Project Version](https://img.shields.io/badge/version-3.3.9-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![Stack](https://img.shields.io/badge/stack-MERN-green.svg)](#technology-stack)
 [![Status](https://img.shields.io/badge/status-Production--Ready-brightgreen.svg)](CHANGELOG.md)
@@ -13,7 +13,7 @@ SubhaLagna is an enterprise-grade, high-fidelity matrimony platform engineered f
 
 ### 📊 Business Intelligence & Analytics
 
-SubhaLagna v3.3.8 empowers administrators with a high-fidelity **Analytics Dashboard**:
+SubhaLagna v3.3.9 empowers administrators with a high-fidelity **Analytics Dashboard**:
 
 - **Real-time Growth Tracking**: Interactive time-series charts for User Acquisition and Financial Performance.
 - **Financial Oversight**: Unified ledger for Razorpay transactions, bank transfers, and manual upgrades.
