@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.9 — Real-Time Premium Chat
+ * @file        SubhaLagna v3.4.0 — Real-Time Premium Chat
  * @description   Full-featured chat UI with glassmorphism, real-time sync,
  *                and optimized mobile flows.
  *                v2.0.0 changes:
@@ -8,7 +8,7 @@
  *                  - Improved typing indicator visibility
  *                  - Fixed Participant naming logic
  * @author        SubhaLagna Team
- * @version      3.3.9
+ * @version      3.4.0
  */
 
 import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';

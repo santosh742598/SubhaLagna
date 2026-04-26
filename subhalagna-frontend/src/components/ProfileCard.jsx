@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.3.9 — Profile Card
+ * @file        SubhaLagna v3.4.0 — Profile Card
  * @description   Brief overview card for the search results grid.
  *                v2.0.0 changes:
  *                  - Integration with InterestButton for quick interactions
@@ -9,7 +9,7 @@
  *                  - Guna Milan (Traditional Match) badge overlay
  *                  - Pulse animation on high-compatibility cards
  * @author        SubhaLagna Team
- * @version      3.3.9
+ * @version      3.4.0
  */
 
 import React from 'react';

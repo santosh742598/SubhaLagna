@@ -1,11 +1,11 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.3.9 — Subscription Plans Configuration
+ * @file SubhaLagna v3.4.0 — Subscription Plans Configuration
  * @description   Unified source of truth for all membership plans.
  *                Changes here reflect instantly across frontend and payment gateway.
  * @author        SubhaLagna Team
- * @version      3.3.9
+ * @version      3.4.0
  */
 
 const plans = [

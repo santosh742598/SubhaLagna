@@ -1,8 +1,14 @@
 /**
- * @file        SubhaLagna v3.3.9 — Admin Dashboard
- *                 - Stabilized fetch logic with useCallback/useEffect hooks
- *                 - Resolved infinite render loops
- *                 - Modernized Tailwind v4 shorthand syntax
+ * @file        SubhaLagna v3.4.0 — Admin Dashboard
+ * @description   Central hub for platform administrators to manage users, plans, and system settings.
+ *                 - v3.4.0 changes:
+ *                   - Implemented strict gallery upload validation (Max 5 photos, 5MB limit).
+ *                   - Enhanced gallery UI with prominent 'Add New' buttons and icons.
+ *                   - Fixed avatar placeholder rendering in User Moderation modal.
+ *                 - v3.3.9 changes:
+ *                   - Stabilized fetch logic with useCallback/useEffect hooks
+ *                   - Resolved infinite render loops
+ *                   - Modernized Tailwind v4 shorthand syntax
  * - v3.0.4 changes:
  *   - Implemented Admin Role Moderation (Promote/Demote users) with safety confirmations.
  *   - Integrated Role badges and toggle actions in User Moderation table.
@@ -10,7 +16,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.3.9
+ * @version      3.4.0
  * @author        SubhaLagna Team
  */
 
@@ -90,6 +96,16 @@ const History = ({ className }) => (
 );
 
 History.propTypes = {
+  className: PropTypes.string,
+};
+
+const Plus = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+  </svg>
+);
+
+Plus.propTypes = {
   className: PropTypes.string,
 };
 
@@ -2839,7 +2855,7 @@ const AdminDashboard = () => {
                           />
                         ) : (
                           <img
-                            src={userForm.profileData.profilePhoto}
+                            src={getProfileAvatar(userForm.profileData)}
                             className="w-full h-full object-cover opacity-50"
                             alt="Current"
                           />
@@ -2864,23 +2880,33 @@ const AdminDashboard = () => {
                       <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em]">
                         Add Gallery Photos (Max 5)
                       </h4>
-                      <label className="block w-full bg-slate-50 border border-gray-100 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-100 transition-all">
-                        <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">
-                          Click to Select Multiple Images
+                      <label className="block w-full bg-slate-50 border border-gray-200 border-dashed rounded-2xl p-8 text-center cursor-pointer hover:bg-rose-50 hover:border-rose-200 transition-all group">
+                        <Plus className="w-8 h-8 mb-3 mx-auto text-rose-300 group-hover:scale-110 transition-transform" />
+                        <span className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">
+                          Add New Photos
                         </span>
+                        <p className="text-[10px] text-gray-400 mt-2">Select up to 5 images</p>
                         <input
                           type="file"
                           multiple
                           accept="image/*"
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files);
+                            const total = photoFiles.additionalPhotos.length + files.length;
+                            if (total > 5) {
+                              alert('Admin Alert: Gallery is limited to 5 photos.');
+                              return;
+                            }
+                            const oversized = files.filter((f) => f.size > 5 * 1024 * 1024);
+                            if (oversized.length > 0) {
+                              alert('Admin Alert: One or more photos exceed the 5MB limit.');
+                              return;
+                            }
                             setPhotoFiles({
                               ...photoFiles,
-                              additionalPhotos: [
-                                ...photoFiles.additionalPhotos,
-                                ...Array.from(e.target.files),
-                              ],
-                            })
-                          }
+                              additionalPhotos: [...photoFiles.additionalPhotos, ...files],
+                            });
+                          }}
                           className="hidden"
                         />
                       </label>

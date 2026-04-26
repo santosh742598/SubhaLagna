@@ -1,10 +1,10 @@
 /**  
- * @file        SubhaLagna v3.3.9 — Dashboard Icons  
+ * @file        SubhaLagna v3.4.0 — Dashboard Icons  
  * @description   Extracted icons for Profile Dashboard.  
  *                - v3.3.3 changes:  
  *                  - Initial extraction from ProfileDashboard.jsx.  
  * @author        SubhaLagna Team  
- * @version      3.3.9  
+ * @version      3.4.0  
  */  
 import React from 'react';
 

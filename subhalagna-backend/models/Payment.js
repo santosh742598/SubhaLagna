@@ -1,11 +1,11 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.3.9 — Payment Model
+ * @file SubhaLagna v3.4.0 — Payment Model
  * @description   Tracks all financial transactions on the platform, including
  *                Razorpay, manual admin upgrades, and pending bank transfers.
  * @author        SubhaLagna Team
- * @version      3.3.9
+ * @version      3.4.0
  */
 
 const mongoose = require('mongoose');

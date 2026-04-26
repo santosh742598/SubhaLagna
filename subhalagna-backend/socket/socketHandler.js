@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.3.9 — Socket.io Real-Time Handler
+ * @file SubhaLagna v3.4.0 — Socket.io Real-Time Handler
  * @description   Manages all WebSocket connections for the live chat feature.
  *                Architecture:
  *                  - Each authenticated user joins a private room named by their userId
@@ -23,7 +23,7 @@
  *                  messages_read      : messages marked as read (with count)
  *                  notification       : real-time notification push
  * @author        SubhaLagna Team
- * @version      3.3.9
+ * @version      3.4.0
  */
 
 const { verifyAccessToken } = require('../utils/generateToken');

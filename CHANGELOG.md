@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2026-04-26
+
+### Added
+- **Strict Gallery Validation**: Implemented frontend and backend guards for image uploads (Maximum 5 gallery photos and 5MB per file).
+- **Enhanced Admin Media UI**: Modernized the gallery upload section in the Admin User Modal with prominent "Add New" buttons and icons.
+
+### Fixed
+- **Placeholder Synchronization**: Aligned backend image slicing logic with Multer limits (Max 5 photos).
+- **Admin Avatar Preview**: Resolved an issue where the generic gender-specific avatars were not rendering correctly in the Admin moderation modal.
+
 ## [3.3.9] - 2026-04-26
 
 ### Added

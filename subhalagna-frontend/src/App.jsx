@@ -1,10 +1,10 @@
 /**
- * @file        SubhaLagna v3.3.9 — Main Application Router
+ * @file        SubhaLagna v3.4.0 — Main Application Router
  * @description   Entry point for all React routes.
  *                - v3.3.5 changes:
  *                  - Registered /maintenance route for platform downtime handling.
  * @author        SubhaLagna Team
- * @version      3.3.9
+ * @version      3.4.0
  */
 
 import React, { useContext, Suspense } from 'react';

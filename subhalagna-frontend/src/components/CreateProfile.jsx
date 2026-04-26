@@ -1,6 +1,8 @@
 /**
- * @file        SubhaLagna v3.3.9 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.4.0 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
+ *                - v3.4.0 changes:
+ *                  - Implemented strict frontend validation for gallery uploads (Max 5 photos, 5MB limit).
  *                - [v3.0.5 changes]
  *                - Fixed critical bug where API response was not unwrapped, causing profile data to appear missing.
  *                - Refactored submission logic to use profileService for better consistency.
@@ -11,7 +13,7 @@
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  * @author        SubhaLagna Team
- * @version      3.3.9
+ * @version      3.4.0
  */
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -308,6 +310,21 @@ const CreateProfile = () => {
 
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files);
+
+    // 1. Check total count (Limit: 5)
+    if (galleryFiles.length + files.length > 5) {
+      setErrorStr('You can only upload a maximum of 5 gallery photos.');
+      return;
+    }
+
+    // 2. Check individual file size (Limit: 5MB)
+    const oversizedFiles = files.filter((f) => f.size > 5 * 1024 * 1024);
+    if (oversizedFiles.length > 0) {
+      setErrorStr('Each photo must be less than 5MB.');
+      return;
+    }
+
+    setErrorStr(null);
     setGalleryFiles((prev) => [...prev, ...files]);
     const newPreviews = files.map((file) => URL.createObjectURL(file));
     setGalleryPreviews((prev) => [...prev, ...newPreviews]);

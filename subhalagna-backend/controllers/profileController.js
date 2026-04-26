@@ -1,8 +1,10 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.3.9 — Profile Controller
+ * @file        SubhaLagna v3.4.0 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
+ *                - v3.4.0 changes:
+ *                  - Synchronized additionalPhotos slice limit with Multer middleware (Max 5).
  *                - v3.3.0 changes:
  *                  - Implemented real-time Profile View notifications with Socket.io.
  *                  - Added 24-hour cooldown logic to prevent notification spam.
@@ -16,7 +18,7 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.3.9
+ * @version      3.4.0
  */
 
 const Profile = require('../models/Profile');
@@ -574,7 +576,7 @@ const updateProfile = async (req, res, next) => {
       }
 
       const existing = profile.additionalPhotos || [];
-      updateData.additionalPhotos = [...existing, ...newPhotos].slice(0, 6);
+      updateData.additionalPhotos = [...existing, ...newPhotos].slice(0, 5);
     }
 
     // Handle gallery photo deletions

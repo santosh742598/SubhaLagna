@@ -1,7 +1,9 @@
 /**
- * @file        SubhaLagna v3.3.9 — User Dashboard
+ * @file        SubhaLagna v3.4.0 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
+ *                - v3.4.0 changes:
+ *                  - Implemented strict frontend validation for gallery uploads (Max 5 photos, 5MB limit).
  *                - v3.3.0 changes:
  *                  - Implemented gamified Profile Completeness Bar with dynamic messaging.
  *                  - Integrated circular progress gauge for visual strength tracking.
@@ -14,7 +16,7 @@
  *                - Implemented strict JSDoc validation and standard headers.
  *                - Global UI consistency via unified Prettier tokens.
  * @author        SubhaLagna Team
- * @version      3.3.9
+ * @version      3.4.0
  */
 
 import React, { useState, useContext, useEffect, useMemo, useCallback } from 'react';
@@ -188,6 +190,21 @@ const ProfileDashboard = () => {
 
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files);
+
+    // 1. Check total count (Limit: 5, including existing and already added new ones)
+    if (existingGallery.length + galleryFiles.length + files.length > 5) {
+      setStatusMsg('You can only have a maximum of 5 gallery photos in total.');
+      return;
+    }
+
+    // 2. Check individual file size (Limit: 5MB)
+    const oversizedFiles = files.filter((f) => f.size > 5 * 1024 * 1024);
+    if (oversizedFiles.length > 0) {
+      setStatusMsg('Each photo must be less than 5MB.');
+      return;
+    }
+
+    setStatusMsg('');
     setGalleryFiles((prev) => [...prev, ...files]);
     const newPreviews = files.map((file) => URL.createObjectURL(file));
     setGalleryPreviews((prev) => [...prev, ...newPreviews]);
