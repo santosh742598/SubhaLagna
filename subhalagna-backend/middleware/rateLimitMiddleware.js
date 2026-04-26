@@ -1,14 +1,15 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.2.5 — Rate Limiting Middleware
+ * @file SubhaLagna v3.2.6 — Rate Limiting Middleware
  * @description   Defines multiple rate limiters:
  *                - `globalLimiter`  → applied to all routes (100 req / 15 min)
  *                - `authLimiter`    → applied to /api/auth/* (10 req / 15 min)
+ *                - `healthLimiter`  → applied to /api/health (300 req / 15 min)
  *                - `uploadLimiter`  → applied to photo upload routes
  *                All limits are configurable via environment variables.
  * @author        SubhaLagna Team
- * @version      3.2.5
+ * @version      3.2.6
  */
 
 const rateLimit = require('express-rate-limit');
@@ -29,7 +30,21 @@ const globalLimiter = rateLimit({
     success: false,
     message: 'Too many requests. Please try again later.',
   },
-  skip: (req) => req.path === '/api/health', // Health check is exempt
+});
+
+/**
+ * Health check rate limiter — applied to /api/health.
+ * Higher limit to accommodate frequent monitoring tools (e.g., UptimeRobot).
+ */
+const healthLimiter = rateLimit({
+  windowMs: WINDOW_MS,
+  max: 300, // 300 requests per 15 min (allows ~20 monitoring agents @ 1 min interval)
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Health check rate limit exceeded.',
+  },
 });
 
 /**
@@ -62,4 +77,4 @@ const uploadLimiter = rateLimit({
   },
 });
 
-module.exports = { globalLimiter, authLimiter, uploadLimiter };
+module.exports = { globalLimiter, authLimiter, uploadLimiter, healthLimiter };

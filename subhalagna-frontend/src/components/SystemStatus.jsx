@@ -3,10 +3,10 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 
 /**
- * @file        SubhaLagna v3.2.5 — System Status Indicator
+ * @file        SubhaLagna v3.2.6 — System Status Indicator
  * @description   Real-time health monitor that checks API and Database availability.
  * @author        SubhaLagna Team
- * @version      3.2.5
+ * @version      3.2.6
  * @returns {JSX.Element} The status indicator component
  */
 const SystemStatus = () => {

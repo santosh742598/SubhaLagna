@@ -1,9 +1,12 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.2.5 — Main Server Entry Point
+ * @file        SubhaLagna v3.2.6 — Main Server Entry Point
  * @description   Express + Socket.io server with security middleware,
  *                rate limiting, centralized error handling, and real-time chat.
+ *                - [v3.2.6 changes]
+ *                - Hardened /api/health endpoint: stripped sensitive info (version, environment).
+ *                - Applied dedicated rate limiting to /api/health to prevent abuse.
  *                - [v3.0.4 changes]
  *                - Enhanced /api/health endpoint with real-time MongoDB connection status.
  *                - [v3.0.0 changes]
@@ -12,7 +15,7 @@
  *                - Enhanced JSDoc documentation requirements.
  *                - Initialized major version bump for production stability.
  * @author        SubhaLagna Team
- * @version      3.2.5
+ * @version      3.2.6
  *
  * @description Architecture:
  *  ┌──────────────────────────────────────────┐
@@ -104,8 +107,8 @@ app.use(
 );
 
 // ── Health Check ─────────────────────────────────────────────────────────────
-// Placed above rate limiting to ensure health monitoring is always available.
-app.get('/api/health', (req, res) => {
+const { healthLimiter } = require('./middleware/rateLimitMiddleware');
+app.get('/api/health', healthLimiter, (req, res) => {
   // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
   const dbStatus = mongoose.connection.readyState;
   const statusMap = {
@@ -117,9 +120,8 @@ app.get('/api/health', (req, res) => {
 
   res.json({
     success: true,
-    message: `${appName} API v${version} is running 🚀`,
+    message: 'API is running smoothly 🚀',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
     database: {
       status: statusMap[dbStatus] || 'unknown',
       connected: dbStatus === 1,

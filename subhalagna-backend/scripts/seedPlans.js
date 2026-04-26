@@ -1,10 +1,10 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.2.5 — Membership Plan Seeder
+ * @file SubhaLagna v3.2.6 — Membership Plan Seeder
  * @description   Initializes the database with standard Gold and Platinum plans.
  * @author        SubhaLagna Team
- * @version      3.2.5
+ * @version      3.2.6
  */
 
 const mongoose = require('mongoose');

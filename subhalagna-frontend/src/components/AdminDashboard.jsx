@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.2.5 — Admin Dashboard
+ * @file        SubhaLagna v3.2.6 — Admin Dashboard
  * @description Comprehensive management interface for users, plans, and system state.
  *               v3.1.0 changes:
  *                 - Stabilized fetch logic with useCallback/useEffect hooks
@@ -12,7 +12,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.2.5
+ * @version      3.2.6
  * @author        SubhaLagna Team
  */
 
