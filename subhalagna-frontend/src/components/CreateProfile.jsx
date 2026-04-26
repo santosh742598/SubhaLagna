@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.4.0 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.4.1 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
  *                - v3.4.0 changes:
  *                  - Implemented strict frontend validation for gallery uploads (Max 5 photos, 5MB limit).
@@ -13,7 +13,7 @@
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  * @author        SubhaLagna Team
- * @version      3.4.0
+ * @version      3.4.1
  */
 
 import React, { useState, useContext, useEffect } from 'react';

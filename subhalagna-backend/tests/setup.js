@@ -1,9 +1,9 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.4.0 — Test Setup & Utilities
+ * @file        SubhaLagna v3.4.1 — Test Setup & Utilities
  * @description   Initializes in-memory MongoDB for integration testing.
- * @version      3.4.0
+ * @version      3.4.1
  * @author        SubhaLagna Team
  */
 

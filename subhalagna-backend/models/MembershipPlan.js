@@ -1,10 +1,10 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.4.0 — Membership Plan Model
+ * @file SubhaLagna v3.4.1 — Membership Plan Model
  * @description   Dynamic schema for subscription tiers.
  *                Allows admins to customize names, prices, and durations.
- * @version      3.4.0
+ * @version      3.4.1
  * @author        SubhaLagna Team
  */
 

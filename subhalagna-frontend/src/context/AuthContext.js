@@ -1,9 +1,9 @@
 /**
- * @file        SubhaLagna v3.4.0 — Auth Context Core
+ * @file        SubhaLagna v3.4.1 — Auth Context Core
  * @description   The raw React Context object for Authentication.
  *                Separated from the Provider to support Vite Fast Refresh.
  * @author        SubhaLagna Team
- * @version      3.4.0
+ * @version      3.4.1
  */
 
 import { createContext } from 'react';

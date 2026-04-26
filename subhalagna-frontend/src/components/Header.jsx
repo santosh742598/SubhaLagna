@@ -1,10 +1,13 @@
 /**
- * @file        SubhaLagna v3.4.0 — Global Header
+ * @file        SubhaLagna v3.4.1 — Global Header
  * @description   Modern, responsive navigation bar with real-time notifications and chat triggers.
- *               - Restored original gender-based default avatar image (/man.png, /woman.png).
- *               - Integrated SystemStatus indicator for real-time infrastructure monitoring.
+ *               - v3.4.1 changes:
+ *                 - Added 'New User' quick-link shortcut for administrators.
+ *               - v3.4.0 changes:
+ *                 - Restored original gender-based default avatar image (/man.png, /woman.png).
+ *                 - Integrated SystemStatus indicator for real-time infrastructure monitoring.
  * @author        SubhaLagna Team
- * @version      3.4.0
+ * @version      3.4.1
  */
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -48,6 +51,12 @@ const Header = () => {
       name: 'Admin',
       path: '/admin',
       icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z',
+    });
+    navLinks.push({
+      name: 'New User',
+      path: '/admin',
+      icon: 'M12 4v16m8-8H4',
+      state: { openAddModal: true },
     });
   }
 

@@ -1,9 +1,9 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.4.0 — Profile Integration Tests
+ * @file        SubhaLagna v3.4.1 — Profile Integration Tests
  * @description   Basic smoke tests for Profile workflow.
- * @version      3.4.0
+ * @version      3.4.1
  * @author        SubhaLagna Team
  */
 

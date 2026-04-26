@@ -1,6 +1,9 @@
 /**
- * @file        SubhaLagna v3.4.0 — Admin Dashboard
+ * @file        SubhaLagna v3.4.1 — Admin Dashboard
  * @description   Central hub for platform administrators to manage users, plans, and system settings.
+ *                 - v3.4.1 changes:
+ *                   - Added persistent 'New User' button in tab list and prominent 'New' button next to title.
+ *                   - Integrated useLocation to handle incoming creation/edit states from shortcuts.
  *                 - v3.4.0 changes:
  *                   - Implemented strict gallery upload validation (Max 5 photos, 5MB limit).
  *                   - Enhanced gallery UI with prominent 'Add New' buttons and icons.
@@ -16,13 +19,13 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.4.0
+ * @version      3.4.1
  * @author        SubhaLagna Team
  */
 
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import {
   getDashboardStats,
@@ -139,8 +142,10 @@ StatCard.propTypes = {
 };
 
 const AdminDashboard = () => {
-  const { refreshSettings, refreshPlans } = useContext(AuthContext);
-  const [activeTab, setActiveTab] = useState('users');
+  const { user: currentUser } = useContext(AuthContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
   // loading is not currently used for UI feedback, but fetched in fetchData
   // eslint-disable-next-line no-unused-vars
@@ -247,6 +252,15 @@ const AdminDashboard = () => {
   const [stateOptions, setStateOptions] = useState([]);
   const [curCityOptions, setCurCityOptions] = useState([]);
   const [natCityOptions, setNatCityOptions] = useState([]);
+
+  // Handle incoming navigation state (e.g., from Header "New User" shortcut)
+  useEffect(() => {
+    if (location.state?.openAddModal) {
+      handleOpenAddUser();
+      // Clear state to prevent modal reopening on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleManualUpgrade = async (e) => {
     e.preventDefault();
@@ -723,7 +737,16 @@ const AdminDashboard = () => {
         {/* ── Page Header ── */}
         <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
+          <div className="flex items-center gap-4">
             <h1 className="text-3xl font-serif font-bold text-gray-800">Admin Dashboard v2.1</h1>
+            <button
+              onClick={handleOpenAddUser}
+              className="px-4 py-1.5 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 hover:bg-rose-700 transition-all flex items-center gap-2 shadow-xl shadow-rose-100"
+            >
+              <Plus className="w-3 h-3" />
+              New
+            </button>
+          </div>
             <p className="text-gray-400 text-sm mt-1">Platform overview and commercial controls.</p>
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -779,6 +802,14 @@ const AdminDashboard = () => {
               className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${activeTab === 'health' ? 'bg-rose-600 text-white border-rose-600 shadow-lg shadow-rose-100' : 'bg-white text-gray-400 border-gray-100'}`}
             >
               System Health
+            </button>
+            <div className="flex-1" />
+            <button
+              onClick={handleOpenAddUser}
+              className="px-6 py-2.5 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 hover:-translate-y-0.5 transition-all flex items-center gap-2 shadow-xl shadow-slate-100"
+            >
+              <Plus className="w-4 h-4" />
+              New User
             </button>
           </div>
         </div>

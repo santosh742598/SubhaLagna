@@ -1,7 +1,9 @@
 /**
- * @file        SubhaLagna v3.4.0 — Profile Detail Page
+ * @file        SubhaLagna v3.4.1 — Profile Detail Page
  * @description   Deep dive into a specific profile. Shows full bio, family,
  *                horoscope, and interaction options.
+ *                - v3.4.1 changes:
+ *                  - Added 'Admin: Edit User' contextual action for administrators.
  *                - v3.3.2 changes:
  *                  - Resolved Temporal Dead Zone (TDZ) ReferenceError by fixing hook declaration order.
  *                - v3.3.0 changes:
@@ -16,7 +18,7 @@
  *
  *                v2.1.0 changes:
 ...
- * @version      3.4.0
+ * @version      3.4.1
  * @author        SubhaLagna Team
  */
 
@@ -348,6 +350,19 @@ const ProfileDetail = () => {
                     <h1 className="text-3xl font-serif font-bold">
                       {profile.name}, {profile.age}
                     </h1>
+
+                    {currentUser?.role === 'admin' && (
+                      <button
+                        onClick={() => navigate('/admin', { state: { editUser: profile.user?._id || profile.user } })}
+                        className="p-2 bg-slate-900 text-white rounded-xl hover:bg-rose-600 transition-all shadow-lg flex items-center gap-2 group"
+                        title="Admin: Edit User"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        <span className="text-[10px] font-black uppercase tracking-widest max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500">Edit User</span>
+                      </button>
+                    )}
 
                     {profile.isVerified && (
                       <div
