@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file SubhaLagna v3.2.7 — Rate Limiting Middleware
+ * @file SubhaLagna v3.2.8 — Rate Limiting Middleware
  * @description   Defines multiple rate limiters:
  *                - `globalLimiter`  → applied to all routes (500 req / 15 min)
  *                - `authLimiter`    → applied to /api/auth/* (20 req / 15 min)
@@ -9,7 +9,7 @@
  *                - `uploadLimiter`  → applied to photo upload routes
  *                All limits are configurable via environment variables.
  * @author        SubhaLagna Team
- * @version      3.2.7
+ * @version      3.2.8
  */
 
 const rateLimit = require('express-rate-limit');

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
  
+## [3.2.8] - 2026-04-26
+### Fixed
+- Resolved ESM/CommonJS parsing errors in `index.js` by reverting to standard CommonJS syntax to match project `"type": "commonjs"`.
+- Eliminated "Object Injection" security vulnerabilities in `index.js` via explicit property lookups.
+- Standardized `dotenv` initialization for improved IDE and linter compatibility.
+
+### Improved
+- Achieved **100% Lint Clean** status for `index.js` by resolving all `no-console` and `security` warnings.
+- Added comprehensive JSDoc documentation for rate limit optimizations and security hardening.
+
 ## [3.2.7] - 2026-04-26
 ### Changed
 - Optimized rate limits to accommodate production traffic and polling:

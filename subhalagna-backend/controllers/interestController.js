@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * @file        SubhaLagna v3.2.7 — Interest Controller
+ * @file        SubhaLagna v3.2.8 — Interest Controller
  * @description   Manages the interest/connection request system:
  *                - Handles sending, accepting, and rejecting interests.
  *                - Automated Conversation creation upon interest acceptance.
@@ -12,7 +12,7 @@
  *                - Standardized security checks for interest ownership.
  *                - Verified Express 5 compatibility for nested population.
  * @author        SubhaLagna Team
- * @version      3.2.7
+ * @version      3.2.8
  */
 
 const Interest = require('../models/Interest');
