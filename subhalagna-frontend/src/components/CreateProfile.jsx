@@ -344,6 +344,16 @@ const CreateProfile = () => {
 
     const submission = new FormData();
     Object.keys(formData).forEach((key) => submission.append(key, formData[key]));
+    if (formData.dateOfBirth) {
+      const today = new Date();
+      const birthDate = new Date(formData.dateOfBirth);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      submission.append('age', age);
+    }
     if (file) submission.append('profilePhoto', file);
     galleryFiles.forEach((f) => submission.append('additionalPhotos', f));
     submission.append('traits', traits.join(', '));

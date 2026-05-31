@@ -92,9 +92,17 @@ api.interceptors.response.use(
  * @returns {string} The extracted error message
  */
 export const getErrorMessage = (error, fallback = 'An error occurred') => {
+  // If there are specific validation errors (e.g., from express-validator), prioritize showing them
+  if (
+    error?.response?.data?.errors &&
+    Array.isArray(error.response.data.errors) &&
+    error.response.data.errors.length > 0
+  ) {
+    return error.response.data.errors.map((e) => e.message).join(', ');
+  }
+
   return (
     error?.response?.data?.message ||
-    error?.response?.data?.errors?.[0]?.message ||
     error?.message ||
     fallback
   );
