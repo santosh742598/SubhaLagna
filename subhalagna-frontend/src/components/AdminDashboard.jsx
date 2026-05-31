@@ -1,5 +1,5 @@
 /**
- * @file        SubhaLagna v3.4.1 — Admin Dashboard
+ * @file        SubhaLagna v3.4.2 — Admin Dashboard
  * @description   Central hub for platform administrators to manage users, plans, and system settings.
  *                 - v3.4.1 changes:
  *                   - Added persistent 'New User' button in tab list and prominent 'New' button next to title.
@@ -19,7 +19,7 @@
  *   - Integrated Comprehensive Transaction Ledger (Full Payment History). [v2.4.0]
  *   - Integrated 3-state Manglik system (Yes, No, Unknown) in Add/Edit user flows. [v2.4.0]
  *   - Standardized Rashi selection logic in user management forms. [v2.4.0]
- * @version      3.4.1
+ * @version      3.4.2
  * @author        SubhaLagna Team
  */
 

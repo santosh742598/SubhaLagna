@@ -1,6 +1,8 @@
 /**
- * @file        SubhaLagna v3.4.1 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.4.2 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
+ *                - v3.4.2 changes:
+ *                  - Increased frontend photo validation limit from 5MB to 20MB.
  *                - v3.4.0 changes:
  *                  - Implemented strict frontend validation for gallery uploads (Max 5 photos, 5MB limit).
  *                - [v3.0.5 changes]
@@ -13,7 +15,7 @@
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  * @author        SubhaLagna Team
- * @version      3.4.1
+ * @version      3.4.2
  */
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -317,10 +319,10 @@ const CreateProfile = () => {
       return;
     }
 
-    // 2. Check individual file size (Limit: 5MB)
-    const oversizedFiles = files.filter((f) => f.size > 5 * 1024 * 1024);
+    // 2. Check individual file size (Limit: 20MB)
+    const oversizedFiles = files.filter((f) => f.size > 20 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
-      setErrorStr('Each photo must be less than 5MB.');
+      setErrorStr('Each photo must be less than 20MB.');
       return;
     }
 

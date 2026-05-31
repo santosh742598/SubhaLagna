@@ -1,7 +1,9 @@
 /**
- * @file        SubhaLagna v3.4.1 — User Dashboard
+ * @file        SubhaLagna v3.4.2 — User Dashboard
  * @description   Central hub for users to manage their profile, view premium status,
  *                and handle incoming interest requests.
+ *                - v3.4.2 changes:
+ *                  - Increased frontend photo validation limit from 5MB to 20MB.
  *                - v3.4.0 changes:
  *                  - Implemented strict frontend validation for gallery uploads (Max 5 photos, 5MB limit).
  *                - v3.3.0 changes:
@@ -16,7 +18,7 @@
  *                - Implemented strict JSDoc validation and standard headers.
  *                - Global UI consistency via unified Prettier tokens.
  * @author        SubhaLagna Team
- * @version      3.4.1
+ * @version      3.4.2
  */
 
 import React, { useState, useContext, useEffect, useMemo, useCallback } from 'react';
@@ -197,10 +199,10 @@ const ProfileDashboard = () => {
       return;
     }
 
-    // 2. Check individual file size (Limit: 5MB)
-    const oversizedFiles = files.filter((f) => f.size > 5 * 1024 * 1024);
+    // 2. Check individual file size (Limit: 20MB)
+    const oversizedFiles = files.filter((f) => f.size > 20 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
-      setStatusMsg('Each photo must be less than 5MB.');
+      setStatusMsg('Each photo must be less than 20MB.');
       return;
     }
 

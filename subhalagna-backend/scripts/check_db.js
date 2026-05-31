@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
 /* eslint-disable no-console */
 
 /**
- * @file        SubhaLagna v3.4.1 — Database Connectivity Diagnostic
+ * @file        SubhaLagna v3.4.2 — Database Connectivity Diagnostic
  * @description   CLI tool to verify MongoDB connection and collection counts.
  *                - v3.3.4 changes:
  *                  - Initial creation for server-side troubleshooting.
  * @author        SubhaLagna Team
- * @version      3.4.1
+ * @version      3.4.2
  */
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -21,12 +21,18 @@ const check = async () => {
     await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000 });
     console.log('✅ Connected!');
     const collections = await mongoose.connection.db.listCollections().toArray();
-    console.log('Collections:', collections.map(c => c.name));
-    
-    const MembershipPlan = mongoose.model('MembershipPlan', new mongoose.Schema({}, { strict: false }));
+    console.log(
+      'Collections:',
+      collections.map((c) => c.name),
+    );
+
+    const MembershipPlan = mongoose.model(
+      'MembershipPlan',
+      new mongoose.Schema({}, { strict: false }),
+    );
     const count = await MembershipPlan.countDocuments();
     console.log('MembershipPlan count:', count);
-    
+
     process.exit(0);
   } catch (err) {
     console.error('❌ Failed:', err.message);

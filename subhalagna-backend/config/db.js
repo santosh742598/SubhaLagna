@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 /**
- * @file SubhaLagna v3.4.1 — MongoDB Connection Configuration
+ * @file SubhaLagna v3.4.2 — MongoDB Connection Configuration
  * @description   Connects to MongoDB via Mongoose with retry logic and
  *                connection event logging.
  * @author        SubhaLagna Team
- * @version      3.4.1
+ * @version      3.4.2
  */
 
 const mongoose = require('mongoose');

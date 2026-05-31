@@ -1,15 +1,15 @@
-"use strict";
+'use strict';
 
 /* eslint-disable no-console */
 
 /**
- * @file SubhaLagna v3.4.1 — Membership Plan Seeder
+ * @file SubhaLagna v3.4.2 — Membership Plan Seeder
  * @description   Initializes the database with standard Gold and Platinum plans.
  *                - v3.3.4 changes:
  *                  - Fixed relative paths for remote server execution.
  *                  - Standardized ESLint no-console overrides.
  * @author        SubhaLagna Team
- * @version      3.4.1
+ * @version      3.4.2
  */
 
 const mongoose = require('mongoose');

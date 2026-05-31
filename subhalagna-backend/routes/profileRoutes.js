@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 /**
- * @file SubhaLagna v3.4.1 — Profile Routes
+ * @file SubhaLagna v3.4.2 — Profile Routes
  * @description   Route definitions for profile management.
  *                All routes require authentication.
  *
@@ -14,7 +14,7 @@
  *   GET   /:id           → get any profile by ID (tracks view)
  *   PUT   /:id           → update own profile (ownership enforced)
  * @author SubhaLagna Team
- * @version      3.4.1
+ * @version      3.4.2
  */
 
 const express = require('express');

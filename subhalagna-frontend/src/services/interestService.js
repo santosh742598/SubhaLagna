@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.4.1 — Interest Service
+ * @file        SubhaLagna v3.4.2 — Interest Service
  * @description API calls for the interest/connection request system.
  * @author       SubhaLagna Team
- * @version      3.4.1
+ * @version      3.4.2
  */
 
 import api, { getErrorMessage } from './api';
