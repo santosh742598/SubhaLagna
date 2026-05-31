@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @file SubhaLagna v3.4.3 — File Upload Middleware (Multer)
+ * @file SubhaLagna v3.4.4 — File Upload Middleware (Multer)
  * @description   Configures Multer for local disk storage with:
  *                - Image-only file filter (jpg, jpeg, png, webp)
  *                - 20MB size limit per file
@@ -13,7 +13,7 @@
  *                For production, replace diskStorage with a Cloudinary
  *                or S3 storage engine (CloudinaryStorage from multer-storage-cloudinary).
  * @author        SubhaLagna Team
- * @version      3.4.3
+ * @version      3.4.4
  */
 
 const multer = require('multer');
