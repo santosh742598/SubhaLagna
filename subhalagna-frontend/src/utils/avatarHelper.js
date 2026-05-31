@@ -22,7 +22,9 @@ export const getProfileAvatar = (profile) => {
     profile.profilePhoto &&
     profile.profilePhoto !== '' &&
     profile.profilePhoto !== '/uploads/default-avatar.png' &&
-    profile.profilePhoto !== '/uploads/default-avatar.jpg'
+    profile.profilePhoto !== '/uploads/default-avatar.jpg' &&
+    profile.profilePhoto !== '/uploads/man.png' &&
+    profile.profilePhoto !== '/uploads/woman.png'
   ) {
     // If it's already a full URL, return it
     if (profile.profilePhoto.startsWith('http')) return profile.profilePhoto;
