@@ -1,6 +1,8 @@
 /**
- * @file        SubhaLagna v3.4.2 — Profile Creation (Onboarding)
+ * @file        SubhaLagna v3.4.3 — Profile Creation (Onboarding)
  * @description   Multi-step onboarding flow for newly registered users.
+ *                - v3.4.3 changes:
+ *                  - Dynamically calculate and append `age` field to backend submission to resolve validation errors.
  *                - v3.4.2 changes:
  *                  - Increased frontend photo validation limit from 5MB to 20MB.
  *                - v3.4.0 changes:
@@ -15,7 +17,7 @@
  *                  - Multimedia gallery upload management
  *                  - Enhanced Glassmorphism styling
  * @author        SubhaLagna Team
- * @version      3.4.2
+ * @version      3.4.3
  */
 
 import React, { useState, useContext, useEffect } from 'react';

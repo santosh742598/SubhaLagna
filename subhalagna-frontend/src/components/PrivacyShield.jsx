@@ -1,9 +1,9 @@
 /**
- * @file        SubhaLagna v3.4.2 — Privacy Shield Component
+ * @file        SubhaLagna v3.4.3 — Privacy Shield Component
  * @description   Frosted glass overlay for blurred photos.
  *                Includes a lock icon and "Private Profile" message.
  * @author        SubhaLagna Team
- * @version      3.4.2
+ * @version      3.4.3
  */
 
 import React from 'react';

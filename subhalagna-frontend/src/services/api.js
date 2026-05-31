@@ -1,10 +1,12 @@
 /**
- * @file        SubhaLagna v3.4.2 — Axios API Base Instance
+ * @file        SubhaLagna v3.4.3 — Axios API Base Instance
  * @description   Configures a single axios instance used by all service modules.
+ *               - v3.4.3 changes:
+ *                 - Updated error extractor to display precise Express-validator messages instead of generic alerts.
  *               - v3.0.5 changes:
  *                 - Added exception to 401 redirect logic for login endpoint to prevent vanishing error messages.
  * @author        SubhaLagna Team
- * @version      3.4.2
+ * @version      3.4.3
  */
 
 import axios from 'axios';

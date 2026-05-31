@@ -1,8 +1,8 @@
 /**
- * @file        SubhaLagna v3.4.2 — Vite Configuration
+ * @file        SubhaLagna v3.4.3 — Vite Configuration
  * @description   Build pipeline and development server setup for the frontend.
  * @author        SubhaLagna Team
- * @version      3.4.2
+ * @version      3.4.3
  */
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';

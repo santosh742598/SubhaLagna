@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @file        SubhaLagna v3.4.2 — Profile Controller
+ * @file        SubhaLagna v3.4.3 — Profile Controller
  * @description   Manages matrimony profile CRUD operations including:
  *                - v3.4.0 changes:
  *                  - Synchronized additionalPhotos slice limit with Multer middleware (Max 5).
@@ -18,7 +18,7 @@
  *                - Implemented strict JSDoc validation and formatting.
  *                - Enhanced data visibility rules for Premium membership tiers.
  * @author        SubhaLagna Team
- * @version      3.4.2
+ * @version      3.4.3
  */
 
 const Profile = require('../models/Profile');

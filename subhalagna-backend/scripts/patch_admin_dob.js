@@ -1,10 +1,10 @@
 'use strict';
 
 /**
- * @file        SubhaLagna v3.4.2 — Admin DOB Patch
+ * @file        SubhaLagna v3.4.3 — Admin DOB Patch
  * @description   One-time patch to fix Date of Birth formatting for legacy admin profiles.
  * @author        SubhaLagna Team
- * @version      3.4.2
+ * @version      3.4.3
  */
 
 const mongoose = require('mongoose');

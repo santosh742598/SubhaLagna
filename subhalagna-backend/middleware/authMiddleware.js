@@ -1,12 +1,12 @@
 'use strict';
 
 /**
- * @file SubhaLagna v3.4.2 — Auth & Role Middleware
+ * @file SubhaLagna v3.4.3 — Auth & Role Middleware
  * @description JWT-based route protection and system maintenance logic.
  *               - v3.3.5 changes:
  *                 - Implemented checkMaintenance with role-based bypass.
  * @author SubhaLagna Team
- * @version      3.4.2
+ * @version      3.4.3
  */
 
 const User = require('../models/User');
